@@ -6,6 +6,7 @@
 import '../index.css';
 import { INSPECTION_SECTIONS, A_CODES, createNewInspection } from './models.js';
 import { saveInspection, getInspection, getAllInspections, deleteInspection, savePhoto, getPhoto, deletePhoto, compressImage, blobToDataURL, getSetting, setSetting } from './db.js';
+import { signIn, signOut, getSession, isAuthConfigured } from './auth.js';
 
 // ============================================================
 // APP STATE
@@ -22,11 +23,81 @@ const state = {
 // INITIALIZATION
 // ============================================================
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  initAuth();
   initNavigation();
   initACodeModal();
-  navigate('dashboard');
+
+  // Check auth
+  if (isAuthConfigured()) {
+    const session = await getSession();
+    if (session) {
+      showApp();
+    } else {
+      showLogin();
+    }
+  } else {
+    // Auth not configured — show app directly (dev mode)
+    console.warn('Supabase auth not configured. Running without authentication.');
+    showApp();
+  }
 });
+
+// ============================================================
+// AUTHENTICATION
+// ============================================================
+
+function showLogin() {
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('login-screen').style.display = '';
+  document.getElementById('app').classList.add('hidden');
+}
+
+function showApp() {
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').classList.remove('hidden');
+  navigate('dashboard');
+}
+
+function initAuth() {
+  const form = document.getElementById('login-form');
+  const errorEl = document.getElementById('login-error');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    const btn = document.getElementById('login-btn');
+
+    if (!email || !password) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    errorEl.classList.remove('visible');
+
+    try {
+      await signIn(email, password);
+      showApp();
+    } catch (err) {
+      errorEl.textContent = err.message === 'Invalid login credentials'
+        ? 'Invalid email or password. Please try again.'
+        : err.message || 'Login failed. Please try again.';
+      errorEl.classList.add('visible');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
+  });
+
+  // Logout button
+  document.getElementById('btn-logout').addEventListener('click', async () => {
+    try {
+      await signOut();
+    } catch { /* ignore */ }
+    showLogin();
+  });
+}
 
 // ============================================================
 // NAVIGATION

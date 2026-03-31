@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
+    "@supabase/supabase-js": "^2.101.0",
     "idb": "^8.0.3",
     "pdf-lib": "^1.17.1"
   }
