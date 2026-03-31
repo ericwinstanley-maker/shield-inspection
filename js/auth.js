@@ -97,3 +97,10 @@ export function onAuthChange(callback) {
 export function isAuthConfigured() {
   return Boolean(SUPABASE_URL && SUPABASE_ANON_KEY);
 }
+
+/**
+ * Get the Supabase client instance (for use by other modules)
+ */
+export function getSupabaseClient() {
+  return getClient();
+}

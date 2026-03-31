@@ -5,7 +5,7 @@
 
 import '../index.css';
 import { INSPECTION_SECTIONS, A_CODES, createNewInspection } from './models.js';
-import { saveInspection, getInspection, getAllInspections, deleteInspection, savePhoto, getPhoto, deletePhoto, compressImage, blobToDataURL, getSetting, setSetting } from './db.js';
+import { saveInspection, getInspection, getAllInspections, deleteInspection, savePhoto, getPhoto, deletePhoto, compressImage, blobToDataURL, getSetting, setSetting, pullFromCloud, pushToCloud } from './db.js';
 import { signIn, signOut, getSession, isAuthConfigured } from './auth.js';
 
 // ============================================================
@@ -58,6 +58,40 @@ function showApp() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').classList.remove('hidden');
   navigate('dashboard');
+
+  // Cloud sync after showing app
+  syncWithCloud();
+}
+
+async function syncWithCloud() {
+  if (!isAuthConfigured()) return;
+
+  const syncBtn = document.getElementById('btn-logout');
+  const origText = syncBtn.textContent;
+  syncBtn.textContent = '↻ Syncing...';
+  syncBtn.style.color = 'var(--blue)';
+
+  try {
+    // Pull remote data first, then push local data
+    const { pulled } = await pullFromCloud();
+    const { pushed } = await pushToCloud();
+
+    if (pulled > 0) {
+      // Refresh dashboard to show pulled data
+      if (state.currentPage === 'dashboard') {
+        navigate('dashboard');
+      }
+      showToast(`Synced ${pulled} inspection${pulled > 1 ? 's' : ''} from cloud`, 'success');
+    }
+
+    syncBtn.textContent = 'Logout';
+    syncBtn.style.color = '';
+  } catch (e) {
+    console.warn('Cloud sync error:', e);
+    syncBtn.textContent = 'Logout';
+    syncBtn.style.color = '';
+    showToast('Offline — data saved locally', 'error');
+  }
 }
 
 function initAuth() {
