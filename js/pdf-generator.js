@@ -32,6 +32,20 @@ export async function generatePDF(inspection) {
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
   // ============================================================
+  // Remove pages we no longer need from the template
+  // Must remove in reverse order to keep indices stable
+  //   Index 21: Photos Regarding Your Inspection - II
+  //   Index 20: Photos Regarding Your Inspection - I
+  //   Index 16: Summary of Concerns (page 2 w/ signature)
+  //   Index 15: Summary of Concerns (page 1)
+  // ============================================================
+  for (const pageIdx of [21, 20, 16, 15]) {
+    try { pdfDoc.removePage(pageIdx); } catch (e) {
+      console.warn(`Could not remove page ${pageIdx}:`, e.message);
+    }
+  }
+
+  // ============================================================
   // Collect all photos with references FIRST
   // (so we can add "See Photo P1" to comments before filling)
   // ============================================================
@@ -69,15 +83,7 @@ export async function generatePDF(inspection) {
   fillSectionFields(form, inspection, photoRefs);
 
   // ============================================================
-  // PAGES 16-17: Summary of Concerns
-  // ============================================================
-  try {
-    const summaryText = generateSummaryText(inspection, photoRefs);
-    setTextField(form, 'Text Field 166', summaryText, FONT_SIZE_SUMMARY);
-  } catch (e) { console.warn('Summary field:', e.message); }
-
-  // ============================================================
-  // PAGES 18-20: Addendum Checkboxes
+  // ADDENDUM CHECKBOXES (now pages 16-18 after removal)
   // ============================================================
   fillAddendumCheckboxes(form, inspection);
 
