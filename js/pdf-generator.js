@@ -214,14 +214,15 @@ function fillSectionFields(form, inspection, photoRefs) {
     // --- custom logic for Exterior Item 1 ---
     if (sec.id === 'exterior' && sectionData.items[0]) {
       const item1 = sectionData.items[0];
+      // Keys must match app.js storage format: opt.toLowerCase().replace(/[^a-z0-9]/g, '')
       const optMap = {
-        'Vinyl': 'Check Box 23',
-        'Aluminum': 'Check Box 24',
-        'Brick': 'Check Box 25',
-        'Wood': 'Check Box 26',
-        'Composition': 'Check Box 27',
-        'Stucco': 'Check Box 28',
-        'Asb. Shingles': 'Check Box 29'
+        'vinyl': 'Check Box 23',
+        'aluminum': 'Check Box 24',
+        'brick': 'Check Box 25',
+        'wood': 'Check Box 26',
+        'composition': 'Check Box 27',
+        'stucco': 'Check Box 28',
+        'asbshingles': 'Check Box 29'
       };
       
       Object.keys(item1.selectedOptions || {}).forEach(opt => {
