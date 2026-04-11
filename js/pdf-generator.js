@@ -152,6 +152,30 @@ function formatTime(timeStr) {
   return `${h12}:${m.toString().padStart(2, '0')} ${ampm}`;
 }
 
+/**
+ * Word-wrap text to a maximum line length, respecting explicit newlines
+ */
+function wordWrap(text, maxChars) {
+  const result = [];
+  const paragraphs = text.split('\n');
+  for (const para of paragraphs) {
+    const words = para.split(/\s+/);
+    let line = '';
+    for (const word of words) {
+      if (!word) continue;
+      if (line.length + word.length + 1 > maxChars && line.length > 0) {
+        result.push(line);
+        line = word;
+      } else {
+        line = line ? line + ' ' + word : word;
+      }
+    }
+    if (line) result.push(line);
+    else result.push(''); // preserve blank lines
+  }
+  return result;
+}
+
 // ============================================================
 // Collect photo references for cross-referencing
 // Returns an array of { photoId, sectionTitle, itemDesc, itemNum, sectionId, itemIndex, refLabel }
@@ -236,7 +260,7 @@ function fillSectionFields(form, inspection, photoRefs) {
       });
       
       if (item1.otherText) {
-        setTextField(form, 'Text Field 13', item1.otherText, 9);
+        setTextField(form, 'Text Field 13', item1.otherText, 9, { autoFit: true });
       }
       
       if (item1.rating) {
@@ -280,7 +304,7 @@ function fillSectionFields(form, inspection, photoRefs) {
         else text = `See Photo ${refs}`;
       }
 
-      setTextField(form, fieldName, text, FONT_SIZE_COMMENT, { autoFit: true });
+      setTextField(form, fieldName, text, FONT_SIZE_COMMENT);
     }
   }
 }
@@ -506,15 +530,28 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
 
     // Draw comment below photo (if any)
     if (ref.comments) {
-      const comment = ref.comments.length > 120 ? ref.comments.substring(0, 117) + '...' : ref.comments;
-      // Split into lines if needed
-      const maxLineChars = 45;
-      const lines = [];
-      for (let c = 0; c < comment.length; c += maxLineChars) {
-        lines.push(comment.substring(c, c + maxLineChars));
+      // Build full comment text, expanding A-code references with full addendum language
+      let fullComment = ref.comments;
+
+      // Detect A-code references (e.g. A1, A12a, A48a) and append full text
+      const aCodeMatches = ref.comments.match(/A\d+[a-z]?/gi);
+      if (aCodeMatches) {
+        const uniqueCodes = [...new Set(aCodeMatches.map(c => c.toUpperCase()))];
+        for (const code of uniqueCodes) {
+          const aCodeDef = A_CODES.find(ac => ac.code.toUpperCase() === code);
+          if (aCodeDef) {
+            fullComment += `\n${aCodeDef.code} - ${aCodeDef.text}`;
+          }
+        }
       }
 
-      for (let l = 0; l < Math.min(lines.length, 3); l++) {
+      // Word-wrap into lines that fit the cell width
+      const maxLineChars = 45;
+      const lines = wordWrap(fullComment, maxLineChars);
+
+      // Draw as many lines as will fit (limit to available space)
+      const maxLines = 12;
+      for (let l = 0; l < Math.min(lines.length, maxLines); l++) {
         page.drawText(lines[l], {
           x: cellX + 5, y: photoY - 12 - l * 10,
           size: 6.5, font: font, color: darkText
