@@ -398,142 +398,63 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
   const pageH = 792;
   const margin = 40;
   const contentW = pageW - margin * 2;
+  const headerHeight = 70;  // header bar + address
+  const bottomMargin = 40;
+  const lineHeight = 9;
+  const commentFontSize = 6.5;
+  const maxLineChars = 85;  // full-width allows many more chars per line
+  const photoMaxW = contentW - 20;
+  const photoMaxH = 280;
 
-  // Layout: 2 columns, 2 rows per page = 4 photos per page
-  const colW = (contentW - 20) / 2;  // 20px gap between columns
-  const photoMaxW = colW - 10;
-  const photoMaxH = 200;
-  const cellH = 300;  // Total cell height (photo + labels)
-
-  let pageNum = 1;
-  let page = null;
-  let posIndex = 0;
-
-  // Header bar color (Shield blue)
+  // Colors
   const headerBlue = rgb(65 / 255, 101 / 255, 245 / 255);
   const darkText = rgb(0.15, 0.15, 0.15);
   const mutedText = rgb(0.4, 0.4, 0.4);
   const lightBg = rgb(0.96, 0.96, 0.97);
 
-  for (let i = 0; i < photoRefs.length; i++) {
-    // Start new page every 4 photos
-    if (posIndex % 4 === 0) {
-      page = pdfDoc.addPage([pageW, pageH]);
+  let pageNum = 1;
+  let page = null;
+  let cursorY = 0; // tracks current vertical position
 
-      // Draw header bar
-      page.drawRectangle({
-        x: 0, y: pageH - 50,
-        width: pageW, height: 50,
-        color: headerBlue
-      });
+  function startNewPage() {
+    page = pdfDoc.addPage([pageW, pageH]);
 
-      // Header text
-      page.drawText('PHOTO APPENDIX — Shield Inspection Services', {
-        x: margin, y: pageH - 35,
-        size: 12, font: fontBold, color: rgb(1, 1, 1)
-      });
-
-      // Page number
-      page.drawText(`Page ${pageNum}`, {
-        x: pageW - margin - 40, y: pageH - 35,
-        size: 9, font: font, color: rgb(1, 1, 1)
-      });
-
-      // Property address
-      const addr = `${inspection.cover.street}, ${inspection.cover.city}, ${inspection.cover.state} ${inspection.cover.zip}`;
-      page.drawText(addr, {
-        x: margin, y: pageH - 65,
-        size: 8, font: font, color: mutedText
-      });
-
-      pageNum++;
-      posIndex = 0;
-    }
-
-    const ref = photoRefs[i];
-    const col = posIndex % 2;
-    const row = Math.floor(posIndex / 2);
-
-    const cellX = margin + col * (colW + 20);
-    const cellY = pageH - 85 - row * cellH;
-
-    // Draw cell background
+    // Draw header bar
     page.drawRectangle({
-      x: cellX, y: cellY - cellH + 20,
-      width: colW, height: cellH - 10,
-      color: lightBg,
-      borderColor: rgb(0.85, 0.85, 0.87),
-      borderWidth: 0.5
-    });
-
-    // Draw reference label badge (P1, P2, etc.)
-    page.drawRectangle({
-      x: cellX + 5, y: cellY - 3,
-      width: 30, height: 16,
+      x: 0, y: pageH - 50,
+      width: pageW, height: 50,
       color: headerBlue
     });
 
-    page.drawText(ref.refLabel, {
-      x: cellX + 9, y: cellY + 1,
-      size: 9, font: fontBold, color: rgb(1, 1, 1)
+    page.drawText('PHOTO APPENDIX — Shield Inspection Services', {
+      x: margin, y: pageH - 35,
+      size: 12, font: fontBold, color: rgb(1, 1, 1)
     });
 
-    // Draw section & item label
-    page.drawText(`${ref.sectionTitle} — Item #${ref.itemNum}`, {
-      x: cellX + 40, y: cellY,
-      size: 8, font: fontBold, color: darkText
+    page.drawText(`Page ${pageNum}`, {
+      x: pageW - margin - 40, y: pageH - 35,
+      size: 9, font: font, color: rgb(1, 1, 1)
     });
 
-    // Draw item description (truncated)
-    const desc = ref.itemDesc.length > 60 ? ref.itemDesc.substring(0, 57) + '...' : ref.itemDesc;
-    page.drawText(desc, {
-      x: cellX + 5, y: cellY - 18,
-      size: 7, font: font, color: mutedText
+    const addr = `${inspection.cover.street}, ${inspection.cover.city}, ${inspection.cover.state} ${inspection.cover.zip}`;
+    page.drawText(addr, {
+      x: margin, y: pageH - 65,
+      size: 8, font: font, color: mutedText
     });
 
-    // Try to embed the photo
-    let photoY = cellY - 30;
-    try {
-      const photo = await getPhoto(ref.photoId);
-      if (photo && photo.blob) {
-        const arrayBuffer = await photo.blob.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
+    pageNum++;
+    cursorY = pageH - headerHeight - 10;
+  }
 
-        let image;
-        if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8) {
-          image = await pdfDoc.embedJpg(uint8Array);
-        } else if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50) {
-          image = await pdfDoc.embedPng(uint8Array);
-        } else {
-          image = await pdfDoc.embedJpg(uint8Array);
-        }
+  for (let i = 0; i < photoRefs.length; i++) {
+    const ref = photoRefs[i];
 
-        const dims = image.scaleToFit(photoMaxW - 10, photoMaxH);
-        const imgX = cellX + 5 + (photoMaxW - 10 - dims.width) / 2;
-        const imgY = photoY - dims.height;
-
-        page.drawImage(image, {
-          x: imgX, y: imgY,
-          width: dims.width, height: dims.height
-        });
-
-        photoY = imgY - 5;
-      }
-    } catch (e) {
-      console.warn(`Failed to embed photo ${ref.photoId}:`, e.message);
-      page.drawText('[Photo unavailable]', {
-        x: cellX + 5, y: photoY - 20,
-        size: 8, font: font, color: mutedText
-      });
-      photoY -= 30;
-    }
-
-    // Draw comment below photo (if any)
+    // --- Pre-compute comment lines so we know total height ---
+    let commentLines = [];
     if (ref.comments) {
-      // Build full comment text, expanding A-code references with full addendum language
       let fullComment = ref.comments;
 
-      // Detect A-code references (e.g. A1, A12a, A48a) and append full text
+      // Expand A-code references with full addendum text
       const aCodeMatches = ref.comments.match(/A\d+[a-z]?/gi);
       if (aCodeMatches) {
         const uniqueCodes = [...new Set(aCodeMatches.map(c => c.toUpperCase()))];
@@ -545,21 +466,74 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
         }
       }
 
-      // Word-wrap into lines that fit the cell width
-      const maxLineChars = 45;
-      const lines = wordWrap(fullComment, maxLineChars);
-
-      // Draw as many lines as will fit (limit to available space)
-      const maxLines = 12;
-      for (let l = 0; l < Math.min(lines.length, maxLines); l++) {
-        page.drawText(lines[l], {
-          x: cellX + 5, y: photoY - 12 - l * 10,
-          size: 6.5, font: font, color: darkText
-        });
-      }
+      commentLines = wordWrap(fullComment, maxLineChars);
     }
 
-    // Draw rating badge if present
+    // --- Determine photo dimensions ---
+    let image = null;
+    let imgW = 0, imgH = 0;
+    try {
+      const photo = await getPhoto(ref.photoId);
+      if (photo && photo.blob) {
+        const arrayBuffer = await photo.blob.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8) {
+          image = await pdfDoc.embedJpg(uint8Array);
+        } else if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50) {
+          image = await pdfDoc.embedPng(uint8Array);
+        } else {
+          image = await pdfDoc.embedJpg(uint8Array);
+        }
+
+        const dims = image.scaleToFit(photoMaxW, photoMaxH);
+        imgW = dims.width;
+        imgH = dims.height;
+      }
+    } catch (e) {
+      console.warn(`Failed to load photo ${ref.photoId}:`, e.message);
+    }
+
+    // Calculate total entry height:
+    // label header (25) + description (15) + photo + gap (10) + comment lines + padding (20)
+    const commentBlockH = commentLines.length * lineHeight;
+    const entryHeight = 25 + 15 + (image ? imgH + 10 : 30) + commentBlockH + 30;
+
+    // Start new page if needed or if this is the first photo
+    if (!page || cursorY - entryHeight < bottomMargin) {
+      startNewPage();
+    }
+
+    const entryX = margin;
+    const entryTop = cursorY;
+
+    // --- Draw cell background ---
+    page.drawRectangle({
+      x: entryX, y: entryTop - entryHeight,
+      width: contentW, height: entryHeight,
+      color: lightBg,
+      borderColor: rgb(0.85, 0.85, 0.87),
+      borderWidth: 0.5
+    });
+
+    // --- Reference label badge (P1, P2, etc.) ---
+    page.drawRectangle({
+      x: entryX + 5, y: entryTop - 18,
+      width: 30, height: 16,
+      color: headerBlue
+    });
+    page.drawText(ref.refLabel, {
+      x: entryX + 9, y: entryTop - 14,
+      size: 9, font: fontBold, color: rgb(1, 1, 1)
+    });
+
+    // --- Section & item label ---
+    page.drawText(`${ref.sectionTitle} — Item #${ref.itemNum}`, {
+      x: entryX + 42, y: entryTop - 14,
+      size: 9, font: fontBold, color: darkText
+    });
+
+    // --- Rating badge (top right) ---
     if (ref.rating) {
       const ratingColors = {
         S: rgb(34 / 255, 197 / 255, 94 / 255),
@@ -569,19 +543,55 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
         NA: rgb(107 / 255, 114 / 255, 128 / 255),
         D: rgb(139 / 255, 92 / 255, 246 / 255)
       };
-
       const rColor = ratingColors[ref.rating] || mutedText;
       page.drawRectangle({
-        x: cellX + colW - 30, y: cellY - 3,
+        x: entryX + contentW - 30, y: entryTop - 18,
         width: 22, height: 16,
         color: rColor
       });
       page.drawText(ref.rating, {
-        x: cellX + colW - 26, y: cellY + 1,
+        x: entryX + contentW - 26, y: entryTop - 14,
         size: 8, font: fontBold, color: rgb(1, 1, 1)
       });
     }
 
-    posIndex++;
+    // --- Item description ---
+    const desc = ref.itemDesc.length > 90 ? ref.itemDesc.substring(0, 87) + '...' : ref.itemDesc;
+    page.drawText(desc, {
+      x: entryX + 5, y: entryTop - 30,
+      size: 7, font: font, color: mutedText
+    });
+
+    // --- Photo ---
+    let photoBottomY = entryTop - 45;
+    if (image) {
+      const imgX = entryX + 10 + (photoMaxW - imgW) / 2;
+      const imgY = photoBottomY - imgH;
+
+      page.drawImage(image, {
+        x: imgX, y: imgY,
+        width: imgW, height: imgH
+      });
+
+      photoBottomY = imgY - 8;
+    } else {
+      page.drawText('[Photo unavailable]', {
+        x: entryX + 10, y: photoBottomY - 15,
+        size: 8, font: font, color: mutedText
+      });
+      photoBottomY -= 25;
+    }
+
+    // --- Comment + expanded A-codes ---
+    for (let l = 0; l < commentLines.length; l++) {
+      page.drawText(commentLines[l], {
+        x: entryX + 8, y: photoBottomY - l * lineHeight,
+        size: commentFontSize, font: font, color: darkText
+      });
+    }
+
+    // Move cursor down past this entry + some spacing
+    cursorY = entryTop - entryHeight - 10;
   }
 }
+
