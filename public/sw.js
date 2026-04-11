@@ -3,12 +3,11 @@
 // Caches app shell for offline use
 // ============================================================
 
-const CACHE_NAME = 'shield-inspection-v2';
+const CACHE_NAME = 'shield-inspection-v3';
 
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/index.css',
   '/manifest.json',
   '/assets/logo.png',
   '/assets/blank-template.pdf'
@@ -36,7 +35,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: cache-first for static, network-first for dynamic
+// Fetch: network-first for HTML/JS/CSS, cache-fallback for assets
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
@@ -47,28 +46,15 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) {
-        // Return cached, but update cache in background
-        const fetchPromise = fetch(event.request).then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return response;
-        }).catch(() => cached);
-
-        return cached;
+    fetch(event.request).then((response) => {
+      if (response.ok) {
+        const clone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
       }
-
-      // Not cached: fetch and cache
-      return fetch(event.request).then((response) => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      });
+      return response;
+    }).catch(() => {
+      // Network failed — fall back to cache (offline support)
+      return caches.match(event.request);
     })
   );
 });
