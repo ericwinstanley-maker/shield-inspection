@@ -226,7 +226,11 @@ function fillSectionFields(form, inspection, photoRefs) {
       
       Object.keys(item1.selectedOptions || {}).forEach(opt => {
         if (item1.selectedOptions[opt] && optMap[opt]) {
-          trySetCheckbox(form, optMap[opt], true);
+          try {
+            const f = form.getField(optMap[opt]);
+            f.acroField.dict.set(PDFName.of('V'), PDFName.of('Yes'));
+            f.acroField.getWidgets().forEach(w => w.setAppearanceState(PDFName.of('Yes')));
+          } catch(e) {}
         }
       });
       
