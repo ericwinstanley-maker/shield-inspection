@@ -224,8 +224,10 @@ function fillSectionFields(form, inspection, photoRefs) {
         'Asb. Shingles': 'Check Box 29'
       };
       
-      (item1.selectedOptions || []).forEach(opt => {
-        if (optMap[opt]) trySetCheckbox(form, optMap[opt], true);
+      Object.keys(item1.selectedOptions || {}).forEach(opt => {
+        if (item1.selectedOptions[opt] && optMap[opt]) {
+          trySetCheckbox(form, optMap[opt], true);
+        }
       });
       
       if (item1.otherText) {
