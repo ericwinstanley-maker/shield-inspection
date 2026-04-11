@@ -488,6 +488,7 @@ function renderCoverForm() {
     const cb = pill.querySelector('input');
     pill.addEventListener('click', (e) => {
       if (e.target === cb) return;
+      e.preventDefault();
       cb.checked = !cb.checked;
       pill.classList.toggle('checked', cb.checked);
       insp.general.attendees = Array.from(main.querySelectorAll('#gen-attendees input:checked')).map(c => c.value);
