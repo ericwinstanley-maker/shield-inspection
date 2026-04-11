@@ -102,12 +102,16 @@ export async function generatePDF(inspection) {
 // HELPER FUNCTIONS
 // ============================================================
 
-function setTextField(form, fieldName, value, fontSize) {
+function setTextField(form, fieldName, value, fontSize, { autoFit = false } = {}) {
   if (!value) return;
   try {
     const field = form.getTextField(fieldName);
     field.setText(String(value));
-    if (fontSize) {
+    if (autoFit) {
+      // fontSize 0 tells the PDF renderer to auto-scale text to fit the field
+      field.enableMultiline();
+      field.setFontSize(0);
+    } else if (fontSize) {
       field.setFontSize(fontSize);
     }
   } catch (e) {
@@ -276,7 +280,7 @@ function fillSectionFields(form, inspection, photoRefs) {
         else text = `See Photo ${refs}`;
       }
 
-      setTextField(form, fieldName, text, FONT_SIZE_COMMENT);
+      setTextField(form, fieldName, text, FONT_SIZE_COMMENT, { autoFit: true });
     }
   }
 }
