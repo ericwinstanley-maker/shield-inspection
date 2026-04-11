@@ -581,7 +581,7 @@ async function renderSectionForm(sectionIndex) {
       ${optionsHtml}
       ${itemDef.helperText ? `<div class="inspection-item-helper-text">${itemDef.helperText}</div>` : ''}
       <div class="rating-bar" data-item-idx="${i}">
-        ${['S','M','P','U','NA','D'].map(r => `
+        ${['S','M','P','U'].map(r => `
           <div class="rating-pill ${itemData.rating === r ? 'selected-' + r : ''}" data-rating="${r}">${r}</div>
         `).join('')}
       </div>

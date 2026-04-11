@@ -17,20 +17,20 @@
   --red-glow: rgba(231, 31, 48, 0.25);
 
   /* Neutrals */
-  --bg-body: #111318;
-  --bg-surface: #1a1d23;
-  --bg-card: #22262e;
-  --bg-card-hover: #2a2f38;
-  --bg-input: #2a2f38;
-  --bg-input-focus: #333842;
+  --bg-body: #f3f4f6;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f9fafc;
+  --bg-input: #ffffff;
+  --bg-input-focus: #f0f4ff;
 
-  --border: #333842;
-  --border-light: #444b57;
+  --border: #d1d5db;
+  --border-light: #9ca3af;
 
-  --text-primary: #f0f1f3;
-  --text-secondary: #9ca3af;
+  --text-primary: #111827;
+  --text-secondary: #374151;
   --text-muted: #6b7280;
-  --text-inverse: #1a1d23;
+  --text-inverse: #ffffff;
 
   /* Status Colors */
   --green: #22c55e;
