@@ -548,6 +548,12 @@ async function renderSectionForm(sectionIndex) {
               ${opt}
             </div>`;
           }).join('')}
+          ${itemDef.hasOtherOption ? `
+            <div class="other-option-container">
+              <span class="other-label">Other:</span>
+              <input type="text" class="form-input form-input-sm other-input" data-other-idx="${i}" value="${esc(itemData.otherText || '')}" />
+            </div>
+          ` : ''}
         </div>
       `;
     }
@@ -573,6 +579,7 @@ async function renderSectionForm(sectionIndex) {
       <div class="inspection-item-number">Item ${itemDef.num}</div>
       <div class="inspection-item-desc">${itemDef.desc}</div>
       ${optionsHtml}
+      ${itemDef.helperText ? `<div class="inspection-item-helper-text">${itemDef.helperText}</div>` : ''}
       <div class="rating-bar" data-item-idx="${i}">
         ${['S','M','P','U','NA','D'].map(r => `
           <div class="rating-pill ${itemData.rating === r ? 'selected-' + r : ''}" data-rating="${r}">${r}</div>
@@ -645,6 +652,15 @@ async function renderSectionForm(sectionIndex) {
         sectionData.items[idx].selectedOptions[pill.dataset.opt] = isChecked;
         autoSave();
       }
+    });
+  });
+
+  // Other inputs
+  itemsContainer.querySelectorAll('.other-input').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.dataset.otherIdx);
+      sectionData.items[idx].otherText = input.value;
+      autoSave();
     });
   });
 

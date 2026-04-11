@@ -1467,3 +1467,31 @@ body {
   background: var(--red-bg);
 }
 
+/* --- Added for custom item options --- */
+.other-option-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+.other-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.form-input-sm {
+  padding: 4px 8px;
+  font-size: var(--font-size-sm);
+  width: 150px;
+}
+.inspection-item-helper-text {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+  margin-bottom: var(--space-sm);
+  line-height: 1.4;
+  background: var(--bg-input);
+  padding: var(--space-sm);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--border);
+}

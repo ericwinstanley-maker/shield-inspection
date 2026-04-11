@@ -39,7 +39,7 @@ export const INSPECTION_SECTIONS = [
     icon: '🏗️',
     pageNum: 5,
     items: [
-      { id: 'ext-1', num: 1, desc: 'The exterior wall covering', options: ['Vinyl', 'Aluminum', 'Brick', 'Wood', 'Composition', 'Stucco', 'Asb. Shingles'] },
+      { id: 'ext-1', num: 1, desc: 'The exterior wall covering.', hasOtherOption: true, helperText: "If the home has vines growing on the exterior - while aesthetically appealing, it does strictly limit the amount of the visual inspection the inspector can physically perform. In many cases, the home inspector will have to disclaim this item. Masonry walls are more tolerant of vines than is wood siding. Vines should be kept away from windows, doors, soffits, fascia and gutters. They also facilitate insect (pest)entry as well as accelerate moisture deterioration to the wall because of the slow drying effect. If the exterior wall sheathing is stucco, it is generally applied to a metal lath that is secured to the wall over building or felt paper. Stucco should terminate approx. 8 inches above the ground level and there should be a drip screed which is a metal stop that is exposed below the stucco. The stucco should NOT be bonded directly to the foundation. The inspector will pay particular attention to corners and intersections with doors & windows. Vertical cracks above or below wall openings suggest building settlement compared to repetitive vertical cracks across the wall at 16 or 24 inch intervals suggest siding problems. Your home might have a synthetic version of stucco referred to as EIFS which was popular in the 1990s and is much more flexible than it's brittle sibling (traditional stucco). The most common and widespread problem with EIFS has been concealed water damage. Wood siding needs regular maintenance and if cared for will last for many generations.", options: ['Vinyl', 'Brick', 'Wood', 'Stucco', 'Asb. Shingles', 'Aluminum', 'Composition'] },
       { id: 'ext-2', num: 2, desc: 'Flashing and trim' },
       { id: 'ext-3', num: 3, desc: 'All exterior doors' },
       { id: 'ext-4', num: 4, desc: 'All exterior windows' },
@@ -273,7 +273,8 @@ export function createNewInspection() {
         rating: null,
         comments: '',
         photos: [],
-        selectedOptions: item.options ? {} : undefined
+        selectedOptions: item.options ? {} : undefined,
+        otherText: item.hasOtherOption ? '' : undefined
       }))
     };
   }
