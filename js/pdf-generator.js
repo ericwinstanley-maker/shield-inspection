@@ -4,7 +4,7 @@
 // Includes Photo Appendix with labeled, cross-referenced photos
 // ============================================================
 
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts, PDFName } from 'pdf-lib';
 import { INSPECTION_SECTIONS, A_CODES } from './models.js';
 import { getPhoto, blobToDataURL } from './db.js';
 
@@ -210,6 +210,46 @@ function fillSectionFields(form, inspection, photoRefs) {
 
     const mapping = sectionFieldMap[sec.id];
     if (!mapping) continue;
+
+    // --- custom logic for Exterior Item 1 ---
+    if (sec.id === 'exterior' && sectionData.items[0]) {
+      const item1 = sectionData.items[0];
+      const optMap = {
+        'Vinyl': 'Check Box 23',
+        'Aluminum': 'Check Box 24',
+        'Brick': 'Check Box 25',
+        'Wood': 'Check Box 26',
+        'Composition': 'Check Box 27',
+        'Stucco': 'Check Box 28',
+        'Asb. Shingles': 'Check Box 29'
+      };
+      
+      (item1.selectedOptions || []).forEach(opt => {
+        if (optMap[opt]) trySetCheckbox(form, optMap[opt], true);
+      });
+      
+      if (item1.otherText) {
+        setTextField(form, 'Text Field 13', item1.otherText, 9);
+      }
+      
+      if (item1.rating) {
+        const ratingMap = { 'S': 'Yes', 'M': 'Yes1', 'P': 'Yes2', 'U': 'Yes3' };
+        const valName = ratingMap[item1.rating];
+        if (valName) {
+          try {
+            const f = form.getField('CheckBoxGrp1');
+            const widgets = f.acroField.getWidgets();
+            f.acroField.dict.set(PDFName.of('V'), PDFName.of(valName));
+            widgets.forEach(w => {
+              const onVal = w.getOnValue();
+              if (onVal && onVal.value === valName) w.setAppearanceState(PDFName.of(valName));
+              else w.setAppearanceState(PDFName.of('Off'));
+            });
+          } catch(e) { }
+        }
+      }
+    }
+    // ----------------------------------------
 
     // Write comments into available fields
     const itemsWithComments = sectionData.items
