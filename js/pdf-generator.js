@@ -397,14 +397,21 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
   const pageW = 612;
   const pageH = 792;
   const margin = 40;
-  const contentW = pageW - margin * 2;
-  const headerHeight = 70;  // header bar + address
+  const contentW = pageW - margin * 2;  // 532
   const bottomMargin = 40;
   const lineHeight = 9;
-  const commentFontSize = 6.5;
-  const maxLineChars = 85;  // full-width allows many more chars per line
-  const photoMaxW = contentW - 20;
-  const photoMaxH = 280;
+  const fontSize = 6.5;
+
+  // Photo sizing — smaller to allow text beside it
+  const photoMaxW = 200;
+  const photoMaxH = 150;
+  const photoGap = 12;  // gap between photo and right-side text
+
+  // Text column widths
+  const rightTextX = margin + photoMaxW + photoGap;         // where right-column text starts
+  const rightTextW = contentW - photoMaxW - photoGap;       // ~320px
+  const rightCharsPerLine = Math.floor(rightTextW / 3.7);   // ~86 at 6.5pt
+  const fullCharsPerLine = Math.floor(contentW / 3.7);      // ~143 at 6.5pt
 
   // Colors
   const headerBlue = rgb(65 / 255, 101 / 255, 245 / 255);
@@ -414,12 +421,11 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
 
   let pageNum = 1;
   let page = null;
-  let cursorY = 0; // tracks current vertical position
+  let cursorY = 0;
 
   function startNewPage() {
     page = pdfDoc.addPage([pageW, pageH]);
 
-    // Draw header bar
     page.drawRectangle({
       x: 0, y: pageH - 50,
       width: pageW, height: 50,
@@ -443,33 +449,34 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
     });
 
     pageNum++;
-    cursorY = pageH - headerHeight - 10;
+    cursorY = pageH - 80;
   }
 
   for (let i = 0; i < photoRefs.length; i++) {
     const ref = photoRefs[i];
 
-    // --- Pre-compute comment lines so we know total height ---
-    let commentLines = [];
-    if (ref.comments) {
-      let fullComment = ref.comments;
+    // --- Separate user comment from A-code expansions ---
+    const userComment = ref.comments || '';
+    const aCodeLines = [];
 
-      // Expand A-code references with full addendum text
-      const aCodeMatches = ref.comments.match(/A\d+[a-z]?/gi);
-      if (aCodeMatches) {
-        const uniqueCodes = [...new Set(aCodeMatches.map(c => c.toUpperCase()))];
-        for (const code of uniqueCodes) {
-          const aCodeDef = A_CODES.find(ac => ac.code.toUpperCase() === code);
-          if (aCodeDef) {
-            fullComment += `\n${aCodeDef.code} - ${aCodeDef.text}`;
-          }
+    // Detect A-code references and build expanded lines
+    const aCodeMatches = userComment.match(/A\d+[a-z]?/gi);
+    if (aCodeMatches) {
+      const uniqueCodes = [...new Set(aCodeMatches.map(c => c.toUpperCase()))];
+      for (const code of uniqueCodes) {
+        const aCodeDef = A_CODES.find(ac => ac.code.toUpperCase() === code);
+        if (aCodeDef) {
+          // Wrap A-code text at full width
+          const wrapped = wordWrap(`${aCodeDef.code} - ${aCodeDef.text}`, fullCharsPerLine);
+          aCodeLines.push(...wrapped);
         }
       }
-
-      commentLines = wordWrap(fullComment, maxLineChars);
     }
 
-    // --- Determine photo dimensions ---
+    // Wrap user comment for the right-column (beside photo)
+    const rightCommentLines = userComment ? wordWrap(userComment, rightCharsPerLine) : [];
+
+    // --- Load and size the photo ---
     let image = null;
     let imgW = 0, imgH = 0;
     try {
@@ -494,12 +501,17 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       console.warn(`Failed to load photo ${ref.photoId}:`, e.message);
     }
 
-    // Calculate total entry height:
-    // label header (25) + description (15) + photo + gap (10) + comment lines + padding (20)
-    const commentBlockH = commentLines.length * lineHeight;
-    const entryHeight = 25 + 15 + (image ? imgH + 10 : 30) + commentBlockH + 30;
+    // --- Calculate entry height ---
+    const headerH = 22;  // P1 badge + section title line
+    const descH = 12;    // item description line
+    const photoSectionH = image ? imgH : 25;
+    const rightTextH = rightCommentLines.length * lineHeight;
+    const floatZoneH = Math.max(photoSectionH, rightTextH);  // taller of photo vs right text
+    const aCodeBlockH = aCodeLines.length > 0 ? (aCodeLines.length * lineHeight + 6) : 0;  // +6 for gap
+    const entryPadding = 15;
+    const entryHeight = headerH + descH + floatZoneH + aCodeBlockH + entryPadding;
 
-    // Start new page if needed or if this is the first photo
+    // Start new page if entry won't fit
     if (!page || cursorY - entryHeight < bottomMargin) {
       startNewPage();
     }
@@ -516,21 +528,21 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       borderWidth: 0.5
     });
 
-    // --- Reference label badge (P1, P2, etc.) ---
+    // --- P-label badge ---
     page.drawRectangle({
-      x: entryX + 5, y: entryTop - 18,
-      width: 30, height: 16,
+      x: entryX + 5, y: entryTop - 16,
+      width: 28, height: 14,
       color: headerBlue
     });
     page.drawText(ref.refLabel, {
-      x: entryX + 9, y: entryTop - 14,
-      size: 9, font: fontBold, color: rgb(1, 1, 1)
+      x: entryX + 8, y: entryTop - 13,
+      size: 8, font: fontBold, color: rgb(1, 1, 1)
     });
 
     // --- Section & item label ---
     page.drawText(`${ref.sectionTitle} — Item #${ref.itemNum}`, {
-      x: entryX + 42, y: entryTop - 14,
-      size: 9, font: fontBold, color: darkText
+      x: entryX + 38, y: entryTop - 13,
+      size: 8, font: fontBold, color: darkText
     });
 
     // --- Rating badge (top right) ---
@@ -545,53 +557,60 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       };
       const rColor = ratingColors[ref.rating] || mutedText;
       page.drawRectangle({
-        x: entryX + contentW - 30, y: entryTop - 18,
-        width: 22, height: 16,
+        x: entryX + contentW - 28, y: entryTop - 16,
+        width: 20, height: 14,
         color: rColor
       });
       page.drawText(ref.rating, {
-        x: entryX + contentW - 26, y: entryTop - 14,
-        size: 8, font: fontBold, color: rgb(1, 1, 1)
+        x: entryX + contentW - 25, y: entryTop - 13,
+        size: 7, font: fontBold, color: rgb(1, 1, 1)
       });
     }
 
     // --- Item description ---
-    const desc = ref.itemDesc.length > 90 ? ref.itemDesc.substring(0, 87) + '...' : ref.itemDesc;
+    const desc = ref.itemDesc.length > 100 ? ref.itemDesc.substring(0, 97) + '...' : ref.itemDesc;
     page.drawText(desc, {
-      x: entryX + 5, y: entryTop - 30,
-      size: 7, font: font, color: mutedText
+      x: entryX + 5, y: entryTop - headerH - 8,
+      size: 6.5, font: font, color: mutedText
     });
 
-    // --- Photo ---
-    let photoBottomY = entryTop - 45;
-    if (image) {
-      const imgX = entryX + 10 + (photoMaxW - imgW) / 2;
-      const imgY = photoBottomY - imgH;
+    // --- Float zone: photo left + comment right ---
+    const floatTop = entryTop - headerH - descH;
 
+    // Draw photo (left-aligned)
+    if (image) {
+      const imgY = floatTop - imgH;
       page.drawImage(image, {
-        x: imgX, y: imgY,
+        x: entryX + 5, y: imgY,
         width: imgW, height: imgH
       });
-
-      photoBottomY = imgY - 8;
     } else {
       page.drawText('[Photo unavailable]', {
-        x: entryX + 10, y: photoBottomY - 15,
-        size: 8, font: font, color: mutedText
-      });
-      photoBottomY -= 25;
-    }
-
-    // --- Comment + expanded A-codes ---
-    for (let l = 0; l < commentLines.length; l++) {
-      page.drawText(commentLines[l], {
-        x: entryX + 8, y: photoBottomY - l * lineHeight,
-        size: commentFontSize, font: font, color: darkText
+        x: entryX + 10, y: floatTop - 15,
+        size: 7, font: font, color: mutedText
       });
     }
 
-    // Move cursor down past this entry + some spacing
-    cursorY = entryTop - entryHeight - 10;
+    // Draw user comment to the right of the photo
+    for (let l = 0; l < rightCommentLines.length; l++) {
+      page.drawText(rightCommentLines[l], {
+        x: rightTextX, y: floatTop - 10 - l * lineHeight,
+        size: fontSize, font: font, color: darkText
+      });
+    }
+
+    // --- A-code text: full-width below the float zone ---
+    if (aCodeLines.length > 0) {
+      const aCodeTop = floatTop - floatZoneH - 6;
+      for (let l = 0; l < aCodeLines.length; l++) {
+        page.drawText(aCodeLines[l], {
+          x: entryX + 5, y: aCodeTop - l * lineHeight,
+          size: fontSize, font: font, color: darkText
+        });
+      }
+    }
+
+    // Move cursor past this entry + gap between entries
+    cursorY = entryTop - entryHeight - 8;
   }
 }
-
