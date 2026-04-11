@@ -440,10 +440,9 @@ function renderCoverForm() {
         <label class="form-label">Attending / Present</label>
         <div class="checkbox-group" id="gen-attendees">
           ${['Client','Real Estate Agent for Buyer','Real Estate Agent for Seller','Owner','Tenant','No one'].map(att => `
-            <label class="checkbox-pill ${insp.general.attendees.includes(att) ? 'checked' : ''}">
-              <input type="checkbox" value="${att}" ${insp.general.attendees.includes(att) ? 'checked' : ''} />
+            <div class="checkbox-pill ${insp.general.attendees.includes(att) ? 'checked' : ''}" data-value="${att}">
               ${att}
-            </label>
+            </div>
           `).join('')}
         </div>
       </div>
@@ -485,13 +484,9 @@ function renderCoverForm() {
 
   // Attendee checkboxes
   main.querySelectorAll('#gen-attendees .checkbox-pill').forEach(pill => {
-    const cb = pill.querySelector('input');
-    pill.addEventListener('click', (e) => {
-      if (e.target === cb) return;
-      e.preventDefault();
-      cb.checked = !cb.checked;
-      pill.classList.toggle('checked', cb.checked);
-      insp.general.attendees = Array.from(main.querySelectorAll('#gen-attendees input:checked')).map(c => c.value);
+    pill.addEventListener('click', () => {
+      pill.classList.toggle('checked');
+      insp.general.attendees = Array.from(main.querySelectorAll('#gen-attendees .checkbox-pill.checked')).map(el => el.dataset.value);
       autoSave();
     });
   });
@@ -549,10 +544,9 @@ async function renderSectionForm(sectionIndex) {
           ${itemDef.options.map(opt => {
             const key = opt.toLowerCase().replace(/[^a-z0-9]/g, '');
             const checked = itemData.selectedOptions && itemData.selectedOptions[key];
-            return `<label class="checkbox-pill ${checked ? 'checked' : ''}" data-opt="${key}">
-              <input type="checkbox" ${checked ? 'checked' : ''} />
+            return `<div class="checkbox-pill ${checked ? 'checked' : ''}" data-opt="${key}">
               ${opt}
-            </label>`;
+            </div>`;
           }).join('')}
         </div>
       `;
@@ -640,16 +634,15 @@ async function renderSectionForm(sectionIndex) {
 
   // Options checkboxes
   itemsContainer.querySelectorAll('.checkbox-pill[data-opt]').forEach(pill => {
-    pill.addEventListener('click', (e) => {
-      const cb = pill.querySelector('input');
-      if (e.target !== cb) cb.checked = !cb.checked;
-      pill.classList.toggle('checked', cb.checked);
+    pill.addEventListener('click', () => {
+      pill.classList.toggle('checked');
+      const isChecked = pill.classList.contains('checked');
 
       const itemEl = pill.closest('.inspection-item');
       const idx = sectionDef.items.findIndex(it => 'item-' + it.id === itemEl.id);
       if (idx >= 0) {
         if (!sectionData.items[idx].selectedOptions) sectionData.items[idx].selectedOptions = {};
-        sectionData.items[idx].selectedOptions[pill.dataset.opt] = cb.checked;
+        sectionData.items[idx].selectedOptions[pill.dataset.opt] = isChecked;
         autoSave();
       }
     });
