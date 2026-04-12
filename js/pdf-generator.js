@@ -407,7 +407,13 @@ function fillSectionFields(form, inspection, photoRefs) {
         options: {
           'copper': 'Check Box 155', 'galvanized': 'Check Box 156',
           'plastic': 'Check Box 158', 'lead': 'Check Box 157',
-          'castiron': 'Check Box 159', 'nv': 'Check Box 160'
+          'castiron': 'Check Box 159', 'nv': 'Check Box 160',
+          'yes': { type: 'radio', field: 'Gavanized', value: 'Choice1' },
+          'no': { type: 'radio', field: 'Gavanized', value: 'Choice2' },
+          'na': { type: 'radio', field: 'Gavanized', value: 'Choice3' }
+        },
+        extraTextFields: {
+          'galvWhere': 'Text Field 59'
         }
       },
       7: { // Item 8 - Traps (P-Type, S-traps, Drum Trap)
@@ -518,11 +524,20 @@ function fillSectionFields(form, inspection, photoRefs) {
       const itemCBMap = sectionCBMap[idx];
       if (!itemCBMap) continue;
 
-      // Set selected option checkboxes
+      // Set selected option checkboxes (and radio buttons)
       if (item.selectedOptions && itemCBMap.options) {
         Object.keys(item.selectedOptions).forEach(opt => {
           if (item.selectedOptions[opt] && itemCBMap.options[opt]) {
-            trySetCheckbox(form, itemCBMap.options[opt], true);
+            const mapping = itemCBMap.options[opt];
+            if (typeof mapping === 'object' && mapping.type === 'radio') {
+              // Handle radio group (e.g., Galvanized steel Yes/No/N/A)
+              try {
+                const radioGroup = form.getRadioGroup(mapping.field);
+                radioGroup.select(mapping.value);
+              } catch (e) { console.warn('Radio group not found:', mapping.field, e); }
+            } else {
+              trySetCheckbox(form, mapping, true);
+            }
           }
         });
       }
