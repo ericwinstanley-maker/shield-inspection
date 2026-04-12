@@ -542,10 +542,15 @@ async function renderSectionForm(sectionIndex) {
       optionsHtml = `
         <div class="checkbox-group mt-md">
           ${itemDef.options.map(opt => {
-            const key = opt.toLowerCase().replace(/[^a-z0-9]/g, '');
+            const label = typeof opt === 'string' ? opt : opt.label;
+            const hasPercent = typeof opt === 'object' && opt.hasPercent;
+            const key = label.toLowerCase().replace(/[^a-z0-9]/g, '');
             const checked = itemData.selectedOptions && itemData.selectedOptions[key];
-            return `<div class="checkbox-pill ${checked ? 'checked' : ''}" data-opt="${key}">
-              ${opt}
+            const pctVal = (itemData.percentValues && itemData.percentValues[key]) || '';
+            return `<div class="checkbox-pill-wrap">
+              <div class="checkbox-pill ${checked ? 'checked' : ''}" data-opt="${key}">
+                ${label}
+              </div>${hasPercent ? `<input type="text" class="form-input form-input-sm percent-input ${checked ? '' : 'hidden'}" data-pct-key="${key}" data-item-idx="${i}" placeholder="%" value="${esc(pctVal)}" style="width:60px;margin-left:4px;" /><span class="percent-label ${checked ? '' : 'hidden'}" data-pct-label="${key}">% (approx.)</span>` : ''}
             </div>`;
           }).join('')}
           ${itemDef.hasOtherOption ? `
@@ -644,14 +649,43 @@ async function renderSectionForm(sectionIndex) {
     pill.addEventListener('click', () => {
       pill.classList.toggle('checked');
       const isChecked = pill.classList.contains('checked');
+      const optKey = pill.dataset.opt;
 
       const itemEl = pill.closest('.inspection-item');
       const idx = sectionDef.items.findIndex(it => 'item-' + it.id === itemEl.id);
       if (idx >= 0) {
         if (!sectionData.items[idx].selectedOptions) sectionData.items[idx].selectedOptions = {};
-        sectionData.items[idx].selectedOptions[pill.dataset.opt] = isChecked;
+        sectionData.items[idx].selectedOptions[optKey] = isChecked;
+
+        // Toggle percent input visibility if present
+        const wrap = pill.closest('.checkbox-pill-wrap');
+        if (wrap) {
+          const pctInput = wrap.querySelector('.percent-input');
+          const pctLabel = wrap.querySelector('.percent-label');
+          if (pctInput) {
+            pctInput.classList.toggle('hidden', !isChecked);
+            if (!isChecked) {
+              pctInput.value = '';
+              if (!sectionData.items[idx].percentValues) sectionData.items[idx].percentValues = {};
+              sectionData.items[idx].percentValues[optKey] = '';
+            }
+          }
+          if (pctLabel) pctLabel.classList.toggle('hidden', !isChecked);
+        }
+
         autoSave();
       }
+    });
+  });
+
+  // Percent inputs
+  itemsContainer.querySelectorAll('.percent-input').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.dataset.itemIdx);
+      const key = input.dataset.pctKey;
+      if (!sectionData.items[idx].percentValues) sectionData.items[idx].percentValues = {};
+      sectionData.items[idx].percentValues[key] = input.value;
+      autoSave();
     });
   });
 

@@ -543,6 +543,26 @@ body {
   color: var(--blue-light);
 }
 
+.checkbox-pill-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.percent-input {
+  width: 60px !important;
+  padding: 6px 8px !important;
+  font-size: var(--font-size-sm) !important;
+  text-align: center;
+}
+
+.percent-label {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-left: 4px;
+  white-space: nowrap;
+}
+
 /* --- Rating Selector --- */
 .rating-bar {
   display: flex;

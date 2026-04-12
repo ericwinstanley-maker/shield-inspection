@@ -74,7 +74,12 @@ export const INSPECTION_SECTIONS = [
       { id: 'str-1', num: 1, desc: 'The structural components including the foundation and framing.', hasOtherOption: true, options: ['Poured concrete', 'Concrete block', 'Stone', 'Cinder block'] },
       { id: 'str-2', num: 2, desc: 'The foundation for substantial cracks on both the interior & exterior.' },
       { id: 'str-3', num: 3, desc: 'The foundation for any evidence of bowing, compromise such as spalling, leaning & mortar deterioration, etc.' },
-      { id: 'str-4', num: 4, desc: 'Determine the type of foundation present at the subject:', hasOtherOption: true, options: ['Full basement', 'Partial basement', 'Crawl', 'Slab'] },
+      { id: 'str-4', num: 4, desc: 'Determine the type of foundation present at the subject:', hasOtherOption: true, options: [
+        { label: 'Full basement' },
+        { label: 'Partial basement', hasPercent: true },
+        { label: 'Crawl', hasPercent: true },
+        { label: 'Slab', hasPercent: true }
+      ] },
       { id: 'str-5', num: 5, desc: 'The floor, wall & ceiling structures (as applicable).' },
       { id: 'str-6', num: 6, desc: 'Other structural issues/concerns:', noRating: true }
     ]
