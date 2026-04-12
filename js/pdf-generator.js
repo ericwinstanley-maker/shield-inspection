@@ -471,6 +471,27 @@ function fillSectionFields(form, inspection, photoRefs) {
           'gfcisfunctio_yes': 'Check Box19', 'gfcisfunctio_no': 'Check Box1520', 'gfcisfunctio_na': 'Check Box1523',
           'gfciscircuit_yes': 'Check Box1521', 'gfciscircuit_no': 'Check Box1522', 'gfciscircuit_na': 'Check Box1524'
         }
+      },
+      3: { // Item 4 - Amperage/voltage, sub-panels
+        options: {
+          'subpanels_yes': 'Check Box1618', 'subpanels_no': 'Check Box1619', 'subpanels_na': 'Check Box1620'
+        },
+        extraTextFields: {
+          'amperes': 'Combo Box 5',
+          'ifYesWhere': 'Text Field 79',
+          'locationMainPanel': 'Combo Box 6'
+        }
+      },
+      4: { // Item 5 - Aluminum branch wiring, exposed wiring
+        options: {
+          'anyaluminumb_yes': 'Check Box1621', 'anyaluminumb_no': 'Check Box1622', 'anyaluminumb_na': 'Check Box1622',
+          'anyexposedwi_yes': 'Check Box1623', 'anyexposedwi_no': 'Check Box1624', 'anyexposedwi_na': 'Check Box1625',
+          'annualinspectionbyaqualifiedelectricianofaluminumbranchcircuitwiringareminimallysuggested': 'Check Box 189'
+        },
+        extraTextFields: {
+          'aluminumWhere': 'Text Field 81',
+          'exposedWhere': 'Text Field 82'
+        }
       }
     },
 

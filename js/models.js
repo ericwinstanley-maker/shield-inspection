@@ -163,8 +163,28 @@ export const INSPECTION_SECTIONS = [
           { label: "GFCI's circuit or outlet?", options: ['Yes', 'No', 'N/A'], exclusive: true }
         ]
       },
-      { id: 'elec-4', num: 4, desc: 'Describe the amperage and voltage rating of the service and location of the main disconnects & sub-panels.' },
-      { id: 'elec-5', num: 5, desc: 'The wiring methods and report on the presence of solid conductor aluminum branch circuit wiring.', helperText: "If the inspector notes aluminum wiring, particular attention will be paid to investigate whether receptacles have a CO/ALR coding on them as CUAL or non-designated ones are not safe and should be replaced. As a matter of practice, if a few are missing the CO/ALR code, then a qualified electrician should check all outlets. The inspector also checks those areas where overhead lights (often having pull chains) are noted (typically in garages/basements) as overheating aluminum wires can often be detected there. If 8 gauge or larger stranded aluminum wiring is present, there should also be anti-oxidant grease observed. In general, annual re-inspections by a qualified inspector/electrician should be made when a home has aluminum wiring to ensure that connections have not loosened or over-heating conditions occur. Knob & Tube wiring was common in homes between 1920-1950, cloth-sheathed 2 & 3 wire conductors with no ground: 1945-1960s, cloth-sheathed with ground wire: 1960s-early 1970s, cloth-sheathed aluminum w/ground: 1964-1978, plastic-sheathed alum. with ground: 1974-1978 and the modern plastic-sheathed copper with ground: 1974-present." },
+      { id: 'elec-4', num: 4, desc: 'Describe the amperage and voltage rating of the service and location of the main disconnects & sub-panels.',
+        optionGroups: [
+          { label: 'Sub-panels?', options: ['Yes', 'No', 'N/A'], exclusive: true }
+        ],
+        extraFields: [
+          { key: 'amperes', label: 'Amperes', placeholder: '' },
+          { key: 'ifYesWhere', label: 'If yes, where?', placeholder: '' },
+          { key: 'locationMainPanel', label: 'Location of main panel', placeholder: '' }
+        ]
+      },
+      { id: 'elec-5', num: 5, desc: 'The wiring methods and report on the presence of solid conductor aluminum branch circuit wiring.',
+        helperText: "If the inspector notes aluminum wiring, particular attention will be paid to investigate whether receptacles have a CO/ALR coding on them as CUAL or non-designated ones are not safe and should be replaced. As a matter of practice, if a few are missing the CO/ALR code, then a qualified electrician should check all outlets. The inspector also checks those areas where overhead lights (often having pull chains) are noted (typically in garages/basements) as overheating aluminum wires can often be detected there. If 8 gauge or larger stranded aluminum wiring is present, there should also be anti-oxidant grease observed. In general, annual re-inspections by a qualified inspector/electrician should be made when a home has aluminum wiring to ensure that connections have not loosened or over-heating conditions occur. Knob & Tube wiring was common in homes between 1920-1950, cloth-sheathed 2 & 3 wire conductors with no ground: 1945-1960s, cloth-sheathed with ground wire: 1960s-early 1970s, cloth-sheathed aluminum w/ground: 1964-1978, plastic-sheathed alum. with ground: 1974-1978 and the modern plastic-sheathed copper with ground: 1974-present.",
+        optionGroups: [
+          { label: 'Any aluminum branch wiring?', options: ['Yes', 'No', 'N/A'], exclusive: true },
+          { label: 'Any exposed wiring?', options: ['Yes', 'No', 'N/A'], exclusive: true }
+        ],
+        options: ['Annual inspection by a qualified electrician of aluminum branch circuit wiring are minimally suggested'],
+        extraFields: [
+          { key: 'aluminumWhere', label: 'If yes, where? (aluminum)', placeholder: '' },
+          { key: 'exposedWhere', label: 'If yes, where? (exposed)', placeholder: '' }
+        ]
+      },
       { id: 'elec-6', num: 6, desc: 'Comment on the absence of smoke & carbon monoxide detector.', helperText: "Some municipalities require more than one smoke or carbon monoxide detector per level, since a home inspector is not working in the capacity of code-enforcement officer, we recommend that you check on-line or with the local building code official to determine if you need more and the required/recommended placement of each item." },
       { id: 'elec-7', num: 7, desc: 'Other electrical issues/concerns:', noRating: true }
     ]
