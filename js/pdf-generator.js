@@ -514,6 +514,12 @@ function fillSectionFields(form, inspection, photoRefs) {
           'steam': 'Check Box 215', 'spacehtr': 'Check Box 216'
         }
       },
+      1: { // Item 2 - Vent systems, flues & chimneys
+        options: {
+          'uphillslope_yes': 'Check Box1632', 'uphillslope_no': 'Check Box1633', 'uphillslope_na': 'Check Box1637',
+          'rustonexhaus_yes': 'Check Box1634', 'rustonexhaus_no': 'Check Box1635', 'rustonexhaus_na': 'Check Box1636'
+        }
+      },
       2: { // Item 3 - Energy source (Gas, Oil, Propane, Electric, Wood)
         options: {
           'gas': 'Check Box 217', 'oil': 'Check Box 218', 'propane': 'Check Box 219',

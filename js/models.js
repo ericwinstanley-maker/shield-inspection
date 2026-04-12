@@ -205,7 +205,13 @@ export const INSPECTION_SECTIONS = [
     pageNum: 11,
     items: [
       { id: 'heat-1', num: 1, desc: 'The installed heating equipment.', options: ['FHA', 'GHA', 'HWBB', 'ELEC BSBD', 'RAD.', 'STEAM', 'SPACE HTR'] },
-      { id: 'heat-2', num: 2, desc: 'The vent systems, flues & chimneys.', helperText: "Venting should be more than: 7 feet above a sidewalk or driveway, 6 ft. away from doors, windows, or air supply intake systems, 6 ft. away from gas service regulator vents, 6 ft. away from soffits, 3 ft. or more away from the corners of a house, 1 foot above grade level and 3 ft. from an oil tank or fill vent pipe. Vent connectors should slope upward going away from the furnace or appliance at a minimum of 1/4 inch per foot and should be less than 10 feet in length." },
+      { id: 'heat-2', num: 2, desc: 'The vent systems, flues & chimneys.',
+        helperText: "Venting should be more than: 7 feet above a sidewalk or driveway, 6 ft. away from doors, windows, or air supply intake systems, 6 ft. away from gas service regulator vents, 6 ft. away from soffits, 3 ft. or more away from the corners of a house, 1 foot above grade level and 3 ft. from an oil tank or fill vent pipe. Vent connectors should slope upward going away from the furnace or appliance at a minimum of 1/4 inch per foot and should be less than 10 feet in length.",
+        optionGroups: [
+          { label: 'Uphill slope?', options: ['Yes', 'No', 'N/A'], exclusive: true },
+          { label: 'Rust on exhaust flues?', options: ['Yes', 'No', 'N/A'], exclusive: true }
+        ]
+      },
       { id: 'heat-3', num: 3, desc: 'Describe the energy source.', options: ['Gas', 'Oil', 'Propane', 'Electric', 'Wood'] },
       { id: 'heat-4', num: 4, desc: 'Describe the heating method by its distinguishing source.' },
       { id: 'heat-5', num: 5, desc: 'Is gas piping appropriately supported? (3/4 & 1 inch should be minimally supported every 8 feet.)' },
