@@ -387,11 +387,11 @@ function fillSectionFields(form, inspection, photoRefs) {
 
     // === PLUMBING ===
     plumbing: {
-      0: { // Item 1 - Water supply (Copper, Galvanized, Plastic, Lead, Municipal, Private well)
+      0: { // Item 1 - Water supply & distribution
         options: {
-          'copper': 'Check Box 137', 'galvanized': 'Check Box 138',
-          'plastic': 'Check Box 139', 'lead': 'Check Box 148',
-          'municipal': 'Check Box 149', 'privatewell': 'Check Box 150'
+          'visiblesupply_copper': 'Check Box 137', 'visiblesupply_galvanized': 'Check Box 138',
+          'visiblesupply_plastic': 'Check Box 139', 'visiblesupply_lead': 'Check Box 148',
+          'watersource_municipal': 'Check Box 149', 'watersource_privatewell': 'Check Box 150'
         },
         extraTextFields: {
           'shutoffValve': 'Text Field 52'
@@ -403,14 +403,14 @@ function fillSectionFields(form, inspection, photoRefs) {
           'propane': 'Check Box 153', 'electric': 'Check Box 154'
         }
       },
-      2: { // Item 3 - Drain/waste/vent (Copper, Galvanized, Plastic, Lead, Cast iron, NV)
+      2: { // Item 3 - Drain/waste/vent
         options: {
-          'copper': 'Check Box 155', 'galvanized': 'Check Box 156',
-          'plastic': 'Check Box 158', 'lead': 'Check Box 157',
-          'castiron': 'Check Box 159', 'nv': 'Check Box 160',
-          'yes': { type: 'radio', field: 'Gavanized', value: 'Choice1' },
-          'no': { type: 'radio', field: 'Gavanized', value: 'Choice2' },
-          'na': { type: 'radio', field: 'Gavanized', value: 'Choice3' }
+          'visiblewastep_copper': 'Check Box 155', 'visiblewastep_galvanized': 'Check Box 156',
+          'visiblewastep_plastic': 'Check Box 158', 'visiblewastep_lead': 'Check Box 157',
+          'visiblewastep_castiron': 'Check Box 159', 'visiblewastep_nv': 'Check Box 160',
+          'galvanizedste_yes': { type: 'radio', field: 'Gavanized', value: 'Choice1' },
+          'galvanizedste_no': { type: 'radio', field: 'Gavanized', value: 'Choice2' },
+          'galvanizedste_na': { type: 'radio', field: 'Gavanized', value: 'Choice3' }
         },
         extraTextFields: {
           'galvWhere': 'Text Field 59'
@@ -420,6 +420,12 @@ function fillSectionFields(form, inspection, photoRefs) {
         options: {
           'ptype': 'Check Box 162', 'strapslessoptimal': 'Check Box 163',
           'drumtrap': 'Drum trap'
+        }
+      },
+      3: { // Item 4 - Drainage sumps (Sump pump noted, Drain noted)
+        options: {
+          'sumppumpnote_yes': 'Check Box1660', 'sumppumpnote_no': 'Check Box1661', 'sumppumpnote_na': 'Check Box1662',
+          'drainnoted_yes': 'Check Box1663', 'drainnoted_no': 'Check Box1664', 'drainnoted_na': 'Check Box1665'
         }
       }
     },

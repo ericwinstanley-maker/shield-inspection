@@ -563,18 +563,20 @@ async function renderSectionForm(sectionIndex) {
       `;
     } else if (itemDef.optionGroups) {
       // Render labeled groups of checkboxes (e.g., "Visible supply pipes:" and "Water source:")
-      optionsHtml = itemDef.optionGroups.map(group => `
+      optionsHtml = itemDef.optionGroups.map((group, gIdx) => {
+        const groupPrefix = group.label.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 12);
+        return `
         <div class="option-group mt-md">
           <div class="option-group-label">${group.label}</div>
-          <div class="checkbox-group">
+          <div class="checkbox-group" ${group.exclusive ? 'data-exclusive="true"' : ''} data-group="${groupPrefix}">
             ${group.options.map(opt => {
-              const key = opt.toLowerCase().replace(/[^a-z0-9]/g, '');
+              const key = groupPrefix + '_' + opt.toLowerCase().replace(/[^a-z0-9]/g, '');
               const checked = itemData.selectedOptions && itemData.selectedOptions[key];
               return `<div class="checkbox-pill ${checked ? 'checked' : ''}" data-opt="${key}">${opt}</div>`;
             }).join('')}
           </div>
-        </div>
-      `).join('');
+        </div>`;
+      }).join('');
     }
 
     // Build extra fields (e.g. "Location of main shut-off valve", "Ran water from/to")
@@ -676,14 +678,32 @@ async function renderSectionForm(sectionIndex) {
   // Options checkboxes
   itemsContainer.querySelectorAll('.checkbox-pill[data-opt]').forEach(pill => {
     pill.addEventListener('click', () => {
-      pill.classList.toggle('checked');
-      const isChecked = pill.classList.contains('checked');
       const optKey = pill.dataset.opt;
+      const groupEl = pill.closest('.checkbox-group');
+      const isExclusive = groupEl && groupEl.dataset.exclusive === 'true';
+
+      if (isExclusive) {
+        // Radio-button behavior: deselect siblings first
+        groupEl.querySelectorAll('.checkbox-pill').forEach(p => {
+          p.classList.remove('checked');
+        });
+        pill.classList.add('checked');
+      } else {
+        pill.classList.toggle('checked');
+      }
+      const isChecked = pill.classList.contains('checked');
 
       const itemEl = pill.closest('.inspection-item');
       const idx = sectionDef.items.findIndex(it => 'item-' + it.id === itemEl.id);
       if (idx >= 0) {
         if (!sectionData.items[idx].selectedOptions) sectionData.items[idx].selectedOptions = {};
+
+        // If exclusive, clear all options in this group first
+        if (isExclusive && groupEl) {
+          groupEl.querySelectorAll('.checkbox-pill').forEach(p => {
+            sectionData.items[idx].selectedOptions[p.dataset.opt] = false;
+          });
+        }
         sectionData.items[idx].selectedOptions[optKey] = isChecked;
 
         // Toggle percent input visibility if present
