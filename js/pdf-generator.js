@@ -149,6 +149,40 @@ function trySetCheckbox(form, fieldName, checked) {
   }
 }
 
+/**
+ * Set a radio-button-style rating group (S/M/P/U) on the PDF.
+ * All CheckBoxGrp fields have 4 widgets with on-values [Yes, Yes1, Yes2, Yes3]
+ * except CheckBoxGrp28-33 (Electrical) which use [Yes, Yes2, Yes2, Yes3].
+ */
+function setRatingGroup(form, groupName, rating) {
+  if (!rating) return;
+
+  // Standard mapping: S→Yes, M→Yes1, P→Yes2, U→Yes3
+  let ratingMap = { 'S': 'Yes', 'M': 'Yes1', 'P': 'Yes2', 'U': 'Yes3' };
+
+  // Electrical groups 28-33 have M widget using 'Yes2' instead of 'Yes1'
+  const grpNum = parseInt(groupName.replace('CheckBoxGrp', ''), 10);
+  if (grpNum >= 28 && grpNum <= 33) {
+    ratingMap = { 'S': 'Yes', 'M': 'Yes2', 'P': 'Yes2', 'U': 'Yes3' };
+  }
+
+  const valName = ratingMap[rating];
+  if (!valName) return;
+
+  try {
+    const f = form.getField(groupName);
+    const widgets = f.acroField.getWidgets();
+    f.acroField.dict.set(PDFName.of('V'), PDFName.of(valName));
+    widgets.forEach(w => {
+      const onVal = w.getOnValue();
+      if (onVal && onVal.value === valName) w.setAppearanceState(PDFName.of(valName));
+      else w.setAppearanceState(PDFName.of('Off'));
+    });
+  } catch (e) {
+    // Field may not exist; skip silently
+  }
+}
+
 function formatTime(timeStr) {
   if (!timeStr) return '';
   const [h, m] = timeStr.split(':').map(Number);
@@ -238,6 +272,21 @@ function fillSectionFields(form, inspection, photoRefs) {
     fireplace: { commentFields: ['Text Field 140', 'Text Field 141'] }
   };
 
+  // Rating group mapping: sectionId → array of CheckBoxGrp names per item index
+  // null = item has no rating group on the PDF (e.g. "Other issues" text-only items)
+  const ratingGroupMap = {
+    exterior:             ['CheckBoxGrp1','CheckBoxGrp2','CheckBoxGrp3','CheckBoxGrp4','CheckBoxGrp5','CheckBoxGrp6','CheckBoxGrp7','CheckBoxGrp8','CheckBoxGrp9', null],
+    roof:                 ['CheckBoxGrp10','CheckBoxGrp11','CheckBoxGrp12','CheckBoxGrp13','CheckBoxGrp14', null],
+    structural:           ['CheckBoxGrp15','CheckBoxGrp16','CheckBoxGrp17','CheckBoxGrp18','CheckBoxGrp19', null, null, null],
+    plumbing:             ['CheckBoxGrp20','CheckBoxGrp21','CheckBoxGrp22','CheckBoxGrp23','CheckBoxGrp24','CheckBoxGrp25','CheckBoxGrp26','CheckBoxGrp27', null, null],
+    electrical:           ['CheckBoxGrp28','CheckBoxGrp29','CheckBoxGrp30','CheckBoxGrp31','CheckBoxGrp32','CheckBoxGrp33', null, null],
+    heating:              ['CheckBoxGrp34','CheckBoxGrp35','CheckBoxGrp36','CheckBoxGrp37','CheckBoxGrp38','CheckBoxGrp39','CheckBoxGrp40', null],
+    airConditioning:      ['CheckBoxGrp45','CheckBoxGrp46','CheckBoxGrp47','CheckBoxGrp48', null],
+    interior:             ['CheckBoxGrp49','CheckBoxGrp50','CheckBoxGrp51','CheckBoxGrp52','CheckBoxGrp53','CheckBoxGrp54','CheckBoxGrp55','CheckBoxGrp56', null],
+    insulationVentilation:['CheckBoxGrp57','CheckBoxGrp58','CheckBoxGrp59','CheckBoxGrp60', null],
+    fireplace:            ['CheckBoxGrp61','CheckBoxGrp62','CheckBoxGrp63', null]
+  };
+
   for (const sec of INSPECTION_SECTIONS) {
     const sectionData = inspection.sections[sec.id];
     if (!sectionData) continue;
@@ -245,7 +294,17 @@ function fillSectionFields(form, inspection, photoRefs) {
     const mapping = sectionFieldMap[sec.id];
     if (!mapping) continue;
 
-    // --- custom logic for Exterior Item 1 ---
+    // --- Set ratings for ALL items in this section ---
+    const ratingGroups = ratingGroupMap[sec.id] || [];
+    for (let idx = 0; idx < sectionData.items.length; idx++) {
+      const item = sectionData.items[idx];
+      const groupName = ratingGroups[idx];
+      if (groupName && item.rating) {
+        setRatingGroup(form, groupName, item.rating);
+      }
+    }
+
+    // --- Custom checkbox logic for Exterior Item 1 (options + other) ---
     if (sec.id === 'exterior' && sectionData.items[0]) {
       const item1 = sectionData.items[0];
       // Keys must match app.js storage format: opt.toLowerCase().replace(/[^a-z0-9]/g, '')
@@ -267,23 +326,6 @@ function fillSectionFields(form, inspection, photoRefs) {
       
       if (item1.otherText) {
         setTextField(form, 'Text Field 13', item1.otherText, 9, { autoFit: true });
-      }
-      
-      if (item1.rating) {
-        const ratingMap = { 'S': 'Yes', 'M': 'Yes1', 'P': 'Yes2', 'U': 'Yes3' };
-        const valName = ratingMap[item1.rating];
-        if (valName) {
-          try {
-            const f = form.getField('CheckBoxGrp1');
-            const widgets = f.acroField.getWidgets();
-            f.acroField.dict.set(PDFName.of('V'), PDFName.of(valName));
-            widgets.forEach(w => {
-              const onVal = w.getOnValue();
-              if (onVal && onVal.value === valName) w.setAppearanceState(PDFName.of(valName));
-              else w.setAppearanceState(PDFName.of('Off'));
-            });
-          } catch(e) { }
-        }
       }
     }
     // ----------------------------------------
