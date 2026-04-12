@@ -261,17 +261,19 @@ function collectPhotoReferences(inspection) {
 // ============================================================
 
 function fillSectionFields(form, inspection, photoRefs) {
+  // Comment fields: the right-side COMMENTS column for each item (w=122, x≈388)
+  // Ordered top-to-bottom on each page, mapped to items that have comment areas
   const sectionFieldMap = {
-    exterior: { commentFields: ['Text Field 12', 'Text Field 15', 'Text Field 17', 'Text Field 22', 'Text Field 23'] },
-    roof: { commentFields: ['Text Field 25', 'Text Field 28', 'Text Field 31', 'Text Field 32'] },
-    structural: { commentFields: ['Text Field 33', 'Text Field 34', 'Text Field 35'] },
-    plumbing: { commentFields: ['Text Field 47', 'Text Field 50', 'Text Field 51', 'Text Field 52', 'Text Field 60', 'Text Field 62', 'Text Field 63'] },
-    electrical: { commentFields: ['Text Field 67', 'Text Field 68', 'Text Field 78', 'Text Field 210', 'Text Field 212', 'Text125 Electrical'] },
-    heating: { commentFields: ['Text Field 84', 'Text Field 85', 'Text Field 217'] },
-    airConditioning: { commentFields: ['Text Field 106', 'Text Field 107', 'Text Field 108', 'Text Field 109'] },
-    interior: { commentFields: ['Text Field 111', 'Text Field 117', 'Text Field 122', 'Text Field 126', 'Text Field 129', 'Text Field 130'] },
-    insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 139'] },
-    fireplace: { commentFields: ['Text Field 140', 'Text Field 141'] }
+    exterior: { commentFields: ['Text Field 12', 'Text Field 15', 'Text Field 17', 'Text Field 18', 'Text Field 20', 'Text Field 19', 'Text Field 21', 'Text Field 22', 'Text Field 23'] },
+    roof: { commentFields: ['Text Field 25', 'Text Field 28', 'Text Field 30', 'Text Field 31', 'Text Field 32'] },
+    structural: { commentFields: ['Text Field 33', 'Text Field 34', 'Text Field 35', 'Text Field 45', 'Text Field 46'] },
+    plumbing: { commentFields: ['Text Field 47', 'Text Field 50', 'Text Field 51', 'Text Field 60', 'Text Field 61', 'Text Field 64', 'Text Field 65', 'Text Field 213'] },
+    electrical: { commentFields: ['Text Field 67', 'Text Field 68', 'Text Field 78', 'Text Field 210', 'Text Field 211', 'Text Field 212'] },
+    heating: { commentFields: ['Text Field 84', 'Text Field 85', 'Text Field 95', 'Text Field 97', 'Text Field 98', 'Text Field 219', 'Text Field 217', 'Text Field 218', 'Text Field 220', 'Text Field 221', 'Text Field 222'] },
+    airConditioning: { commentFields: ['Text Field 106', 'Text Field 107', 'Text Field 108', 'Text Field 1012'] },
+    interior: { commentFields: ['Text Field 111', 'Text Field 125', 'Text Field 126', 'Text Field 127', 'Text Field 128', 'Text Field 129', 'Text Field 130', 'Text Field 131'] },
+    insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 214', 'Text Field 215', 'Text Field 216'] },
+    fireplace: { commentFields: ['Text Field 140', 'Text Field 142', 'Text Field 143', 'Text Field 144', 'Text Field 145'] }
   };
 
   // Rating group mapping: sectionId → array of CheckBoxGrp names per item index
@@ -340,14 +342,14 @@ function fillSectionFields(form, inspection, photoRefs) {
           'asphalt': 'Check Box 85', 'shingle': 'Check Box 87',
           'wood': 'Check Box 88', 'rubber': 'Check Box 90'
         },
-        otherField: 'Text Field 25'
+        otherField: 'Text Field 26'
       },
       1: { // Item 2 - Roof drainage (Yankee, Plastic, Steel, Aluminum)
         options: {
           'yankee': 'Check Box 96', 'plastic': 'Check Box 97',
           'steel': 'Check Box 98', 'aluminum': 'Check Box 99'
         },
-        otherField: 'Text Field 28'
+        otherField: 'Text Field 27'
       },
       3: { // Item 4 - Skylights
         options: { 'noskylightsobserved': 'Check Box 105' }
@@ -374,7 +376,7 @@ function fillSectionFields(form, inspection, photoRefs) {
           'fullbasement': 'Check Box 126', 'partialbasement': 'Check Box 127',
           'crawl': 'Check Box 130', 'slab': 'Check Box 131'
         },
-        otherField: 'Text Field 45'
+        otherField: 'Text Field 44'
       }
     },
 
@@ -442,7 +444,7 @@ function fillSectionFields(form, inspection, photoRefs) {
           'inside': 'Check Box 236', 'outside': 'Check Box 237',
           'aboveground': 'Check Box 238', 'belowground': 'Check Box 239'
         },
-        otherField: 'Text Field 84'
+        otherField: 'Text Field 100'
       }
     },
 
@@ -468,7 +470,7 @@ function fillSectionFields(form, inspection, photoRefs) {
           'paper': 'Check Box 1084', 'plastic': 'Check Box 1085',
           'foil': 'Check Box 1086', 'na': 'Check Box 1087'
         },
-        otherField: 'Text Field 139'
+        otherField: 'Text Field 216'
       }
     },
 
