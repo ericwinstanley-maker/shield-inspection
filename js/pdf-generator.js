@@ -376,6 +376,11 @@ function fillSectionFields(form, inspection, photoRefs) {
           'fullbasement': 'Check Box 126', 'partialbasement': 'Check Box 127',
           'crawl': 'Check Box 130', 'slab': 'Check Box 131'
         },
+        percentFields: {
+          'partialbasement': 'Text Field 41',
+          'crawl': 'Text Field 42',
+          'slab': 'Text Field 43'
+        },
         otherField: 'Text Field 44'
       }
     },
@@ -522,6 +527,15 @@ function fillSectionFields(form, inspection, photoRefs) {
       // Set "Other" text fields
       if (item.otherText && itemCBMap.otherField) {
         setTextField(form, itemCBMap.otherField, item.otherText, 9, { autoFit: true });
+      }
+
+      // Set percent fields (e.g., Structural Item 4 foundation %)
+      if (item.percentValues && itemCBMap.percentFields) {
+        Object.keys(item.percentValues).forEach(key => {
+          if (item.percentValues[key] && itemCBMap.percentFields[key]) {
+            setTextField(form, itemCBMap.percentFields[key], item.percentValues[key], 9, { autoFit: true });
+          }
+        });
       }
     }
 
