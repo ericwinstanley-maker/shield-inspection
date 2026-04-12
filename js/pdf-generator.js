@@ -277,15 +277,210 @@ function fillSectionFields(form, inspection, photoRefs) {
   const ratingGroupMap = {
     exterior:             ['CheckBoxGrp1','CheckBoxGrp2','CheckBoxGrp3','CheckBoxGrp4','CheckBoxGrp5','CheckBoxGrp6','CheckBoxGrp7','CheckBoxGrp8','CheckBoxGrp9', null],
     roof:                 ['CheckBoxGrp10','CheckBoxGrp11','CheckBoxGrp12','CheckBoxGrp13','CheckBoxGrp14', null],
-    structural:           ['CheckBoxGrp15','CheckBoxGrp16','CheckBoxGrp17','CheckBoxGrp18','CheckBoxGrp19', null, null, null],
-    plumbing:             ['CheckBoxGrp20','CheckBoxGrp21','CheckBoxGrp22','CheckBoxGrp23','CheckBoxGrp24','CheckBoxGrp25','CheckBoxGrp26','CheckBoxGrp27', null, null],
-    electrical:           ['CheckBoxGrp28','CheckBoxGrp29','CheckBoxGrp30','CheckBoxGrp31','CheckBoxGrp32','CheckBoxGrp33', null, null],
-    heating:              ['CheckBoxGrp34','CheckBoxGrp35','CheckBoxGrp36','CheckBoxGrp37','CheckBoxGrp38','CheckBoxGrp39','CheckBoxGrp40', null],
+    structural:           ['CheckBoxGrp15','CheckBoxGrp16','CheckBoxGrp17','CheckBoxGrp18','CheckBoxGrp19', null],
+    plumbing:             ['CheckBoxGrp20','CheckBoxGrp21','CheckBoxGrp22','CheckBoxGrp23','CheckBoxGrp24','CheckBoxGrp25','CheckBoxGrp26','CheckBoxGrp27', null],
+    electrical:           ['CheckBoxGrp28','CheckBoxGrp29','CheckBoxGrp30','CheckBoxGrp31','CheckBoxGrp32','CheckBoxGrp33', null],
+    heating:              ['CheckBoxGrp34','CheckBoxGrp35','CheckBoxGrp36','CheckBoxGrp37','CheckBoxGrp38','CheckBoxGrp39','CheckBoxGrp40','CheckBoxGrp41','CheckBoxGrp42','CheckBoxGrp43','CheckBoxGrp44', null],
     airConditioning:      ['CheckBoxGrp45','CheckBoxGrp46','CheckBoxGrp47','CheckBoxGrp48', null],
     interior:             ['CheckBoxGrp49','CheckBoxGrp50','CheckBoxGrp51','CheckBoxGrp52','CheckBoxGrp53','CheckBoxGrp54','CheckBoxGrp55','CheckBoxGrp56', null],
     insulationVentilation:['CheckBoxGrp57','CheckBoxGrp58','CheckBoxGrp59','CheckBoxGrp60', null],
-    fireplace:            ['CheckBoxGrp61','CheckBoxGrp62','CheckBoxGrp63', null]
+    fireplace:            ['CheckBoxGrp61','CheckBoxGrp62','CheckBoxGrp63','CheckBoxGrp64','CheckBoxGrp65', null]
   };
+
+  // ------------------------------------------------------------------
+  // Checkbox option → PDF field mapping for items with selectable options
+  // Keys must match: opt.toLowerCase().replace(/[^a-z0-9]/g, '')
+  // ------------------------------------------------------------------
+  const checkboxFieldMap = {
+    // === EXTERIOR ===
+    exterior: {
+      0: { // Item 1 - Exterior wall covering
+        options: {
+          'vinyl': 'Check Box 23', 'aluminum': 'Check Box 24', 'brick': 'Check Box 25',
+          'wood': 'Check Box 26', 'composition': 'Check Box 27', 'stucco': 'Check Box 28',
+          'asbshingles': 'Check Box 29'
+        },
+        otherField: 'Text Field 13'
+      },
+      1: { // Item 2 - Flashing and trim
+        options: {
+          'vinyl': 'Check Box 34', 'wood': 'Check Box 35',
+          'aluminum': 'Check Box 36', 'steel': 'Check Box 37'
+        },
+        otherField: 'Text Field 14'
+      },
+      2: { // Item 3 - All exterior doors
+        options: { 'wood': 'Check Box 42', 'steel': 'Check Box 43' },
+        otherField: 'Text Field 16'
+      },
+      3: { // Item 4 - Decks, balconies, stoops, steps, porches, railings
+        options: {
+          'attacheddecks': 'Check Box 48', 'balconies': 'Check Box 49',
+          'stoops': 'Check Box 50', 'steps': 'Check Box 51',
+          'porches': 'Check Box 52', 'associatedrailings': 'Check Box 53'
+        }
+      },
+      5: { // Item 6 - Vegetation/grading
+        options: { 'noretainingwallsobserved': 'Check Box 62' }
+      },
+      6: { // Item 7 - Walkways/patios
+        options: { 'nopatioobserved': 'Check Box 67' }
+      },
+      8: { // Item 9 - Garage
+        options: { 'nogarageobserved': 'Check Box 76' }
+      }
+    },
+
+    // === ROOF ===
+    roof: {
+      0: { // Item 1 - Roof covering (Asphalt, Shingle, Wood, Rubber)
+        options: {
+          'asphalt': 'Check Box 85', 'shingle': 'Check Box 87',
+          'wood': 'Check Box 88', 'rubber': 'Check Box 90'
+        },
+        otherField: 'Text Field 25'
+      },
+      1: { // Item 2 - Roof drainage (Yankee, Plastic, Steel, Aluminum)
+        options: {
+          'yankee': 'Check Box 96', 'plastic': 'Check Box 97',
+          'steel': 'Check Box 98', 'aluminum': 'Check Box 99'
+        },
+        otherField: 'Text Field 28'
+      },
+      3: { // Item 4 - Skylights
+        options: { 'noskylightsobserved': 'Check Box 105' }
+      },
+      4: { // Item 5 - Method to inspect
+        options: {
+          'visualfromtheground': 'Check Box 106', 'binoculars': 'Check Box 107',
+          'fromtheatticscuttle': 'Check Box 108', 'drone': 'drone'
+        }
+      }
+    },
+
+    // === STRUCTURAL ===
+    structural: {
+      0: { // Item 1 - Foundation/framing (Poured concrete, Concrete block, Stone, Cinder block)
+        options: {
+          'pouredconcrete': 'Check Box 110', 'concreteblock': 'Check Box 112',
+          'stone': 'Check Box 114', 'cinderblock': 'Check Box 116'
+        },
+        otherField: 'Text Field 38'
+      },
+      3: { // Item 4 - Foundation type (Full basement, Partial basement, Crawl, Slab)
+        options: {
+          'fullbasement': 'Check Box 126', 'partialbasement': 'Check Box 127',
+          'crawl': 'Check Box 130', 'slab': 'Check Box 131'
+        },
+        otherField: 'Text Field 45'
+      }
+    },
+
+    // === PLUMBING ===
+    plumbing: {
+      0: { // Item 1 - Water supply (Copper, Galvanized, Plastic, Lead, Municipal, Private well)
+        options: {
+          'copper': 'Check Box 137', 'galvanized': 'Check Box 138',
+          'plastic': 'Check Box 139', 'lead': 'Check Box 148',
+          'municipal': 'Check Box 149', 'privatewell': 'Check Box 150'
+        }
+      },
+      1: { // Item 2 - Water heating fuel (Gas, Oil, Propane, Electric)
+        options: {
+          'gas': 'Check Box 151', 'oil': 'Check Box 152',
+          'propane': 'Check Box 153', 'electric': 'Check Box 154'
+        }
+      },
+      2: { // Item 3 - Drain/waste/vent (Copper, Galvanized, Plastic, Lead, Cast iron, NV)
+        options: {
+          'copper': 'Check Box 155', 'galvanized': 'Check Box 156',
+          'plastic': 'Check Box 158', 'lead': 'Check Box 157',
+          'castiron': 'Check Box 159', 'nv': 'Check Box 160'
+        }
+      },
+      7: { // Item 8 - Traps (P-Type, S-traps, Drum Trap)
+        options: {
+          'ptype': 'Check Box 162', 'strapslessoptimal': 'Check Box 163',
+          'drumtrap': 'Drum trap'
+        }
+      }
+    },
+
+    // === ELECTRICAL ===
+    electrical: {
+      0: { // Item 1 - Service drop (underground & not visible)
+        options: { 'undergroundnotvisible': 'Check Box 164' }
+      },
+      1: { // Item 2 - Service entrance (Overhead, Underground, Waterpipe, Rod)
+        options: {
+          'overhead': 'Check Box 180', 'underground': 'Check Box 181',
+          'waterpipe': 'Check Box 182', 'rod': 'Check Box 183'
+        }
+      }
+    },
+
+    // === HEATING ===
+    heating: {
+      0: { // Item 1 - Installed heating (FHA, GHA, HWBB, ELEC BSBD, RAD., STEAM, SPACE HTR)
+        // The PDF has 8 checkboxes for item 1 but we have 7 options (RAD. appears twice on PDF)
+        options: {
+          'fha': 'Check Box 194', 'gha': 'Check Box 210', 'hwbb': 'Check Box 211',
+          'elecbsbd': 'Check Box 212', 'rad': 'Check Box 213',
+          'steam': 'Check Box 215', 'spacehtr': 'Check Box 216'
+        }
+      },
+      2: { // Item 3 - Energy source (Gas, Oil, Propane, Electric, Wood)
+        options: {
+          'gas': 'Check Box 217', 'oil': 'Check Box 218', 'propane': 'Check Box 219',
+          'electric': 'Check Box 220', 'wood': 'Check Box 221'
+        }
+      },
+      6: { // Item 7 - Oil storage tank (Inside, Outside, Above ground, Below ground)
+        options: {
+          'inside': 'Check Box 236', 'outside': 'Check Box 237',
+          'aboveground': 'Check Box 238', 'belowground': 'Check Box 239'
+        },
+        otherField: 'Text Field 84'
+      }
+    },
+
+    // === INTERIOR ===
+    interior: {
+      3: { // Item 4 - Garage doors (Manually, Motorized)
+        options: { 'manually': 'Check Box 272', 'motorized': 'Check Box 273' }
+      },
+      5: { // Item 6 - Materials used for floor/wall/ceiling
+        options: {
+          'wood': 'Check Box 274', 'vinyllaminate': 'Check Box 275',
+          'ceramic': 'Check Box 276', 'carpet': 'Check Box 277',
+          'apparent': 'Check Box 278', 'plaster': 'Check Box 279',
+          'drywall': 'Check Box 280', 'paneling': 'Check Box 281'
+        }
+      }
+    },
+
+    // === INSULATION & VENTILATION ===
+    insulationVentilation: {
+      3: { // Item 4 - Vapor retarders (Paper, Plastic, Foil, N/A)
+        options: {
+          'paper': 'Check Box 1084', 'plastic': 'Check Box 1085',
+          'foil': 'Check Box 1086', 'na': 'Check Box 1087'
+        },
+        otherField: 'Text Field 139'
+      }
+    },
+
+    // === FIREPLACE ===
+    fireplace: {
+      0: { // Item 1 - System components (Gas, Wood-burning, Stove, None)
+        options: {
+          'gas': 'Check Box 1092', 'woodburning': 'Check Box 1093',
+          'stove': 'Check Box 1094', 'none': 'Check Box 1095'
+        }
+      }
+    }
+  };
+  // ------------------------------------------------------------------
 
   for (const sec of INSPECTION_SECTIONS) {
     const sectionData = inspection.sections[sec.id];
@@ -304,31 +499,27 @@ function fillSectionFields(form, inspection, photoRefs) {
       }
     }
 
-    // --- Custom checkbox logic for Exterior Item 1 (options + other) ---
-    if (sec.id === 'exterior' && sectionData.items[0]) {
-      const item1 = sectionData.items[0];
-      // Keys must match app.js storage format: opt.toLowerCase().replace(/[^a-z0-9]/g, '')
-      const optMap = {
-        'vinyl': 'Check Box 23',
-        'aluminum': 'Check Box 24',
-        'brick': 'Check Box 25',
-        'wood': 'Check Box 26',
-        'composition': 'Check Box 27',
-        'stucco': 'Check Box 28',
-        'asbshingles': 'Check Box 29'
-      };
-      
-      Object.keys(item1.selectedOptions || {}).forEach(opt => {
-        if (item1.selectedOptions[opt] && optMap[opt]) {
-          trySetCheckbox(form, optMap[opt], true);
-        }
-      });
-      
-      if (item1.otherText) {
-        setTextField(form, 'Text Field 13', item1.otherText, 9, { autoFit: true });
+    // --- Set checkbox options for ALL items in this section ---
+    const sectionCBMap = checkboxFieldMap[sec.id] || {};
+    for (let idx = 0; idx < sectionData.items.length; idx++) {
+      const item = sectionData.items[idx];
+      const itemCBMap = sectionCBMap[idx];
+      if (!itemCBMap) continue;
+
+      // Set selected option checkboxes
+      if (item.selectedOptions && itemCBMap.options) {
+        Object.keys(item.selectedOptions).forEach(opt => {
+          if (item.selectedOptions[opt] && itemCBMap.options[opt]) {
+            trySetCheckbox(form, itemCBMap.options[opt], true);
+          }
+        });
+      }
+
+      // Set "Other" text fields
+      if (item.otherText && itemCBMap.otherField) {
+        setTextField(form, itemCBMap.otherField, item.otherText, 9, { autoFit: true });
       }
     }
-    // ----------------------------------------
 
     // Write comments into available fields
     const itemsWithComments = sectionData.items

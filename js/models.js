@@ -40,15 +40,15 @@ export const INSPECTION_SECTIONS = [
     pageNum: 5,
     items: [
       { id: 'ext-1', num: 1, desc: 'The exterior wall covering.', hasOtherOption: true, helperText: "If the home has vines growing on the exterior - while aesthetically appealing, it does strictly limit the amount of the visual inspection the inspector can physically perform. In many cases, the home inspector will have to disclaim this item. Masonry walls are more tolerant of vines than is wood siding. Vines should be kept away from windows, doors, soffits, fascia and gutters. They also facilitate insect (pest)entry as well as accelerate moisture deterioration to the wall because of the slow drying effect. If the exterior wall sheathing is stucco, it is generally applied to a metal lath that is secured to the wall over building or felt paper. Stucco should terminate approx. 8 inches above the ground level and there should be a drip screed which is a metal stop that is exposed below the stucco. The stucco should NOT be bonded directly to the foundation. The inspector will pay particular attention to corners and intersections with doors & windows. Vertical cracks above or below wall openings suggest building settlement compared to repetitive vertical cracks across the wall at 16 or 24 inch intervals suggest siding problems. Your home might have a synthetic version of stucco referred to as EIFS which was popular in the 1990s and is much more flexible than it's brittle sibling (traditional stucco). The most common and widespread problem with EIFS has been concealed water damage. Wood siding needs regular maintenance and if cared for will last for many generations.", options: ['Vinyl', 'Brick', 'Wood', 'Stucco', 'Asb. Shingles', 'Aluminum', 'Composition'] },
-      { id: 'ext-2', num: 2, desc: 'Flashing and trim' },
-      { id: 'ext-3', num: 3, desc: 'All exterior doors' },
-      { id: 'ext-4', num: 4, desc: 'All exterior windows' },
-      { id: 'ext-5', num: 5, desc: 'The eaves, soffits and fascias where accessible from the ground level' },
-      { id: 'ext-6', num: 6, desc: 'The vegetation, grading, surface drainage and retaining walls on the property' },
-      { id: 'ext-7', num: 7, desc: 'The walkways, patios, driveways and related service walks' },
-      { id: 'ext-8', num: 8, desc: 'The entry doors, exterior faucets, swale or topography at the site' },
-      { id: 'ext-9', num: 9, desc: 'The garage or carport including its roof, walls, foundation and construction' },
-      { id: 'ext-10', num: 10, desc: 'Other exterior issues/concerns' }
+      { id: 'ext-2', num: 2, desc: 'Flashing and trim.', hasOtherOption: true, options: ['Vinyl', 'Wood', 'Aluminum', 'Steel'] },
+      { id: 'ext-3', num: 3, desc: 'All exterior doors.', hasOtherOption: true, options: ['Wood', 'Steel'] },
+      { id: 'ext-4', num: 4, desc: 'Attached decks, balconies, stoops, steps, porches and associated railings.', options: ['Attached decks', 'Balconies', 'Stoops', 'Steps', 'Porches', 'Associated railings'] },
+      { id: 'ext-5', num: 5, desc: 'The eaves, soffits and fascias where accessible from the ground level.' },
+      { id: 'ext-6', num: 6, desc: 'The vegetation, grading, surface drainage and retaining walls on the property when any of these are likely to adversely affect the building.', options: ['No retaining walls observed'] },
+      { id: 'ext-7', num: 7, desc: 'The walkways, patios, driveways and related service walks leading to the dwelling entrances.', options: ['No patio observed'] },
+      { id: 'ext-8', num: 8, desc: 'The entry doors, exterior faucets, swale or topography at the site, & vegetation proximate to the subject.' },
+      { id: 'ext-9', num: 9, desc: 'The garage or carport including its roof, walls, foundation and overall construction observed.', options: ['No garage observed'] },
+      { id: 'ext-10', num: 10, desc: 'Other exterior issues/concerns:' }
     ]
   },
   {
@@ -57,12 +57,12 @@ export const INSPECTION_SECTIONS = [
     icon: '🏠',
     pageNum: 6,
     items: [
-      { id: 'roof-1', num: 1, desc: 'The roof covering', options: ['Asphalt', 'Wood', 'Rubber', 'Steel', 'Other'] },
-      { id: 'roof-2', num: 2, desc: 'The roof drainage systems', options: ['Yankee', 'Plastic', 'Aluminum', 'Steel', 'Other'] },
-      { id: 'roof-3', num: 3, desc: 'The flashings utilized' },
-      { id: 'roof-4', num: 4, desc: 'The skylights, chimneys and other roof penetrations' },
-      { id: 'roof-5', num: 5, desc: 'The method used to inspect the roof', options: ['Visual from ground', 'From Attic/Scuttle', 'Binoculars', 'Drone'] },
-      { id: 'roof-6', num: 6, desc: 'Other roof issues/concerns' }
+      { id: 'roof-1', num: 1, desc: 'The roof covering.', hasOtherOption: true, options: ['Asphalt', 'Shingle', 'Wood', 'Rubber'] },
+      { id: 'roof-2', num: 2, desc: 'The roof drainage systems.', hasOtherOption: true, options: ['Yankee', 'Plastic', 'Steel', 'Aluminum'] },
+      { id: 'roof-3', num: 3, desc: 'The flashings utilized.' },
+      { id: 'roof-4', num: 4, desc: 'The skylights, chimneys and other roof penetrations. (If applicable)', options: ['No skylights observed'] },
+      { id: 'roof-5', num: 5, desc: 'The method used to inspect the roof:', options: ['Visual from the ground', 'Binoculars', 'From the Attic/Scuttle', 'Drone'] },
+      { id: 'roof-6', num: 6, desc: 'Other roof issues/concerns:' }
     ]
   },
   {
@@ -71,14 +71,12 @@ export const INSPECTION_SECTIONS = [
     icon: '🔨',
     pageNum: 7,
     items: [
-      { id: 'str-1', num: 1, desc: 'The foundation, basements and crawl spaces' },
-      { id: 'str-2', num: 2, desc: 'The basement floor for heaving, settlement and moisture penetration' },
-      { id: 'str-3', num: 3, desc: 'Foundation walls for indications of damage' },
-      { id: 'str-4', num: 4, desc: 'The columns, beams, joists, trusses and sub-flooring' },
-      { id: 'str-5', num: 5, desc: 'Probing of a representative number of structural components where deterioration is suspected' },
-      { id: 'str-6', num: 6, desc: 'The overall grading and drainage at the foundation' },
-      { id: 'str-7', num: 7, desc: 'The overall structural condition' },
-      { id: 'str-8', num: 8, desc: 'Other structural issues/concerns' }
+      { id: 'str-1', num: 1, desc: 'The structural components including the foundation and framing.', hasOtherOption: true, options: ['Poured concrete', 'Concrete block', 'Stone', 'Cinder block'] },
+      { id: 'str-2', num: 2, desc: 'The foundation for substantial cracks on both the interior & exterior.' },
+      { id: 'str-3', num: 3, desc: 'The foundation for any evidence of bowing, compromise such as spalling, leaning & mortar deterioration, etc.' },
+      { id: 'str-4', num: 4, desc: 'Determine the type of foundation present at the subject:', hasOtherOption: true, options: ['Full basement', 'Partial basement', 'Crawl', 'Slab'] },
+      { id: 'str-5', num: 5, desc: 'The floor, wall & ceiling structures (as applicable).' },
+      { id: 'str-6', num: 6, desc: 'Other structural issues/concerns:' }
     ]
   },
   {
@@ -87,16 +85,15 @@ export const INSPECTION_SECTIONS = [
     icon: '🔧',
     pageNum: 8,
     items: [
-      { id: 'plm-1', num: 1, desc: 'The interior water supply including all fixtures and faucets' },
-      { id: 'plm-2', num: 2, desc: 'The interior drain, waste and vent systems' },
-      { id: 'plm-3', num: 3, desc: 'The hot water system, controls, chimneys, flues and vents' },
-      { id: 'plm-4', num: 4, desc: 'Sump pumps and related piping' },
-      { id: 'plm-5', num: 5, desc: 'Overall condition of pipes, support, visual inspection for cross connections' },
-      { id: 'plm-6', num: 6, desc: 'The water heater make, model and approximate age' },
-      { id: 'plm-7', num: 7, desc: 'Water pressure and flow' },
-      { id: 'plm-8', num: 8, desc: 'Hose bibs (exterior faucets)' },
-      { id: 'plm-9', num: 9, desc: 'Laundry connections and drain' },
-      { id: 'plm-10', num: 10, desc: 'Other plumbing issues/concerns' }
+      { id: 'plm-1', num: 1, desc: 'The interior water supply & distribution systems including all fixtures & faucets.', options: ['Copper', 'Galvanized', 'Plastic', 'Lead', 'Municipal', 'Private well'] },
+      { id: 'plm-2', num: 2, desc: 'The water heating equipment, vent systems, flues, chimneys, fuel storage & distribution systems.', options: ['Gas', 'Oil', 'Propane', 'Electric'] },
+      { id: 'plm-3', num: 3, desc: 'The drain, waste & vent systems including all fixtures.', options: ['Copper', 'Galvanized', 'Plastic', 'Lead', 'Cast iron', '(NV)'] },
+      { id: 'plm-4', num: 4, desc: 'The drainage sumps, sump pumps and related pumps.' },
+      { id: 'plm-5', num: 5, desc: 'Overall condition of pipes, support, visual inspection for cross connections and combustible piping.' },
+      { id: 'plm-6', num: 6, desc: 'Comment on the make, approximate age and capacity of the hot water tank and any cross connection concerns.' },
+      { id: 'plm-7', num: 7, desc: 'Is there a built-in dishwasher and if so has the inspector checked for a cross-connection?' },
+      { id: 'plm-8', num: 8, desc: 'The home inspector looks at all traps. Type of traps observed:', options: ['P-Type', 'S-traps (less optimal)', 'Drum Trap'] },
+      { id: 'plm-9', num: 9, desc: 'Other plumbing issues/concerns:' }
     ]
   },
   {
@@ -105,14 +102,13 @@ export const INSPECTION_SECTIONS = [
     icon: '⚡',
     pageNum: 10,
     items: [
-      { id: 'elec-1', num: 1, desc: 'The service entrance conductors and equipment' },
-      { id: 'elec-2', num: 2, desc: 'The main and distribution panels, breakers, fuses and over-current devices' },
-      { id: 'elec-3', num: 3, desc: 'The grounding and bonding of the electrical system' },
-      { id: 'elec-4', num: 4, desc: 'A representative number of installed lighting fixtures, switches and receptacles' },
-      { id: 'elec-5', num: 5, desc: 'The wiring methods and presence of solid conductor aluminum branch circuit wiring' },
-      { id: 'elec-6', num: 6, desc: 'Ground fault circuit interrupters (GFCI)' },
-      { id: 'elec-7', num: 7, desc: 'Smoke/CO detectors' },
-      { id: 'elec-8', num: 8, desc: 'Other electrical issues/concerns' }
+      { id: 'elec-1', num: 1, desc: 'The service drop.', options: ['Underground & not visible'] },
+      { id: 'elec-2', num: 2, desc: 'The service entrance conductors, cables and raceways, equipment and main disconnects and the service grounding.', options: ['Overhead', 'Underground', 'Waterpipe', 'Rod'] },
+      { id: 'elec-3', num: 3, desc: 'The interior components of service panels, sub-panels, the conductors, over-current protection devices, a representative number of installed lighting fixtures, switches, receptacles & ground-fault circuit interrupters (GFCI\'s).' },
+      { id: 'elec-4', num: 4, desc: 'Describe the amperage and voltage rating of the service and location of the main disconnects & sub-panels.' },
+      { id: 'elec-5', num: 5, desc: 'The wiring methods and report on the presence of solid conductor aluminum branch circuit wiring.' },
+      { id: 'elec-6', num: 6, desc: 'Comment on the absence of smoke & carbon monoxide detector.' },
+      { id: 'elec-7', num: 7, desc: 'Other electrical issues/concerns:' }
     ]
   },
   {
@@ -121,14 +117,18 @@ export const INSPECTION_SECTIONS = [
     icon: '🔥',
     pageNum: 11,
     items: [
-      { id: 'heat-1', num: 1, desc: 'The installed heating equipment' },
-      { id: 'heat-2', num: 2, desc: 'The energy source and heating method by its distinguishing characteristics' },
-      { id: 'heat-3', num: 3, desc: 'The heating unit and its adequacy' },
-      { id: 'heat-4', num: 4, desc: 'The vent systems, flues, and chimneys' },
-      { id: 'heat-5', num: 5, desc: 'The condition of the furnace/boiler and operation' },
-      { id: 'heat-6', num: 6, desc: 'The distribution system (ducts, pipes, radiators as applicable)' },
-      { id: 'heat-7', num: 7, desc: 'The thermostat operation' },
-      { id: 'heat-8', num: 8, desc: 'Other heating issues/concerns' }
+      { id: 'heat-1', num: 1, desc: 'The installed heating equipment.', options: ['FHA', 'GHA', 'HWBB', 'ELEC BSBD', 'RAD.', 'STEAM', 'SPACE HTR'] },
+      { id: 'heat-2', num: 2, desc: 'The vent systems, flues & chimneys.' },
+      { id: 'heat-3', num: 3, desc: 'Describe the energy source.', options: ['Gas', 'Oil', 'Propane', 'Electric', 'Wood'] },
+      { id: 'heat-4', num: 4, desc: 'Describe the heating method by its distinguishing source.' },
+      { id: 'heat-5', num: 5, desc: 'Is gas piping appropriately supported? (3/4 & 1 inch should be minimally supported every 8 feet.)' },
+      { id: 'heat-6', num: 6, desc: 'Evidence of drip legs.' },
+      { id: 'heat-7', num: 7, desc: 'Evidence/location of the oil storage tank.', hasOtherOption: true, options: ['Inside', 'Outside', 'Above ground', 'Below ground'] },
+      { id: 'heat-8', num: 8, desc: 'If hot water boiling system is in place, is there a pressure-relief valve?' },
+      { id: 'heat-9', num: 9, desc: 'Shut-off valves noted appropriately throughout?' },
+      { id: 'heat-10', num: 10, desc: 'Any evidence of scorching on the exterior of any fossil-fuel burning appliance?' },
+      { id: 'heat-11', num: 11, desc: 'Satisfactory clearance distance observed on all sides of any fossil-fuel burning appliance?' },
+      { id: 'heat-12', num: 12, desc: 'Other heating issues/concerns:' }
     ]
   },
   {
@@ -137,11 +137,11 @@ export const INSPECTION_SECTIONS = [
     icon: '❄️',
     pageNum: 12,
     items: [
-      { id: 'ac-1', num: 1, desc: 'The installed cooling equipment (if outside air temperature is above 65°F)' },
-      { id: 'ac-2', num: 2, desc: 'The cooling method by its distinguishing characteristics' },
-      { id: 'ac-3', num: 3, desc: 'The cooling unit and its adequacy' },
-      { id: 'ac-4', num: 4, desc: 'The heat pump' },
-      { id: 'ac-5', num: 5, desc: 'Other air conditioning/heat-pump issues/concerns' }
+      { id: 'ac-1', num: 1, desc: 'The installed cooling equipment (if outside air temperature is above 65°F).' },
+      { id: 'ac-2', num: 2, desc: 'The cooling method by its distinguishing characteristics.' },
+      { id: 'ac-3', num: 3, desc: 'The cooling unit and its adequacy.' },
+      { id: 'ac-4', num: 4, desc: 'The heat pump.' },
+      { id: 'ac-5', num: 5, desc: 'Other air conditioning/heat-pump issues/concerns:' }
     ]
   },
   {
@@ -150,15 +150,15 @@ export const INSPECTION_SECTIONS = [
     icon: '🚪',
     pageNum: 13,
     items: [
-      { id: 'int-1', num: 1, desc: 'The steps, stairways and railings' },
-      { id: 'int-2', num: 2, desc: 'The countertops and a representative number of installed cabinets' },
-      { id: 'int-3', num: 3, desc: 'A representative number of doors and windows throughout' },
-      { id: 'int-4', num: 4, desc: 'Garage doors and garage door openers including reversing mechanisms' },
-      { id: 'int-5', num: 5, desc: 'The kitchen: walls, floors, cabinets, sink plumbing, electrical' },
-      { id: 'int-6', num: 6, desc: 'Comment on the materials used for flooring, walls, and ceilings' },
-      { id: 'int-7', num: 7, desc: 'The bathroom: walls, ceilings, floor, tub/shower, plumbing, toilet' },
-      { id: 'int-8', num: 8, desc: 'The living areas: family rooms, dens, bedrooms and living rooms' },
-      { id: 'int-9', num: 9, desc: 'Other interior issues/concerns' }
+      { id: 'int-1', num: 1, desc: 'The steps, stairways & railings.' },
+      { id: 'int-2', num: 2, desc: 'The countertops and a representative number of installed cabinets.' },
+      { id: 'int-3', num: 3, desc: 'A representative number of doors and windows throughout.' },
+      { id: 'int-4', num: 4, desc: 'Garage doors and garage door openers as well as reversing mechanisms and other related safety items with the garage.', options: ['Manually', 'Motorized'] },
+      { id: 'int-5', num: 5, desc: 'The kitchen, walls, floors, cabinets, sink plumbing, electrical switches & receptacles.' },
+      { id: 'int-6', num: 6, desc: 'Comment on the materials used for:', options: ['Wood', 'Vinyl/Laminate', 'Ceramic', 'Carpet', 'Apparent', 'Plaster', 'Drywall', 'Paneling'] },
+      { id: 'int-7', num: 7, desc: 'The bathroom walls, ceilings, floor, tub/shower area, plumbing, heat, electrical & toilet/vanity or basin.' },
+      { id: 'int-8', num: 8, desc: 'The living areas including: family rooms, dens, recreation, bedrooms & living rooms as applicable.' },
+      { id: 'int-9', num: 9, desc: 'Other interior issues/concerns:' }
     ]
   },
   {
@@ -167,11 +167,11 @@ export const INSPECTION_SECTIONS = [
     icon: '🌡️',
     pageNum: 14,
     items: [
-      { id: 'ins-1', num: 1, desc: 'The insulation, vapor-retarders (in unfinished areas)' },
-      { id: 'ins-2', num: 2, desc: 'The ventilation of attics and foundation areas and mechanical ventilation systems' },
-      { id: 'ins-3', num: 3, desc: 'The bathroom vents, foundation vents, dryer vents and limitations' },
-      { id: 'ins-4', num: 4, desc: 'Describe the visible vapor retarders if applicable' },
-      { id: 'ins-5', num: 5, desc: 'Other insulation/ventilation issues/concerns' }
+      { id: 'ins-1', num: 1, desc: 'The insulation, vapor-retarders (in unfinished areas).' },
+      { id: 'ins-2', num: 2, desc: 'The ventilation of attics and foundation areas as well as the mechanical ventilation systems of the home.' },
+      { id: 'ins-3', num: 3, desc: 'The bathroom vents (ventilation), foundation vents, dryer vents and any limitations thereof.' },
+      { id: 'ins-4', num: 4, desc: 'Describe the visible vapor retarders if applicable:', hasOtherOption: true, options: ['Paper', 'Plastic', 'Foil', 'N/A'] },
+      { id: 'ins-5', num: 5, desc: 'Other insulation/ventilation issues/concerns:' }
     ]
   },
   {
@@ -180,10 +180,12 @@ export const INSPECTION_SECTIONS = [
     icon: '🪵',
     pageNum: 15,
     items: [
-      { id: 'fp-1', num: 1, desc: 'The system components' },
-      { id: 'fp-2', num: 2, desc: 'The vent systems, flues and chimneys' },
-      { id: 'fp-3', num: 3, desc: 'Describe the fireplaces and solid fuel burning appliances as well as the chimney' },
-      { id: 'fp-4', num: 4, desc: 'Other fireplace/solid fuel issues/concerns' }
+      { id: 'fp-1', num: 1, desc: 'The system components.', options: ['Gas', 'Wood-burning', 'Stove', 'None'] },
+      { id: 'fp-2', num: 2, desc: 'The vent systems, flues & chimneys.' },
+      { id: 'fp-3', num: 3, desc: 'Describe the fireplaces & solid fuel burning appliances as well as the chimney.' },
+      { id: 'fp-4', num: 4, desc: 'Clearance from component is adequate to ensure safety.' },
+      { id: 'fp-5', num: 5, desc: 'Door or screen present, any loose fire bricks noted.' },
+      { id: 'fp-6', num: 6, desc: 'Other fireplace or wood stove issues/concerns:' }
     ]
   }
 ];
