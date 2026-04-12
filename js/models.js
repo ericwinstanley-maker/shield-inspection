@@ -213,7 +213,17 @@ export const INSPECTION_SECTIONS = [
         ]
       },
       { id: 'heat-3', num: 3, desc: 'Describe the energy source.', options: ['Gas', 'Oil', 'Propane', 'Electric', 'Wood'] },
-      { id: 'heat-4', num: 4, desc: 'Describe the heating method by its distinguishing source.' },
+      { id: 'heat-4', num: 4, desc: 'Describe the heating method by its distinguishing source.',
+        optionGroups: [
+          { label: 'Color of flame at burner:', options: ['Blue', 'Orange', 'Red', 'Yellow'] },
+          { label: 'Flame characteristics:', options: ['Steady', 'Some flickering', 'Significant flickering'] },
+          { label: 'Corrosion noted on burner:', options: ['None', 'Some', 'Significant'] },
+          { label: 'Any exposed exterior plastic gas piping noted?', options: ['None', 'Yes', 'Adequate', 'N/A'] }
+        ],
+        extraFields: [
+          { key: 'exposedPipingDetail', label: 'If yes, detail', placeholder: '' }
+        ]
+      },
       { id: 'heat-5', num: 5, desc: 'Is gas piping appropriately supported? (3/4 & 1 inch should be minimally supported every 8 feet.)' },
       { id: 'heat-6', num: 6, desc: 'Evidence of drip legs.' },
       { id: 'heat-7', num: 7, desc: 'Evidence/location of the oil storage tank.', hasOtherOption: true, helperText: "Any evidence of leakage, corrosion, rust on the legs, is the distance of the tank at least 10 ft. or greater from the burner or separated by the masonry wall, missing or damaged cap, missing or corroded shutoff valve, black or smoky flame tips, on older systems more orange flames with some yellow at the tips is acceptable - black flame tips may be caused by incomplete combustion, condition of the fan inlet, oil pooling in the refractory pot or evidence of pieces of the pot that might have fallen on the bottom of the chamber, condition of the primary controller (the automatic safety device found on all oil furnaces), condition of the barometric damper - not required on new systems, maximum length for vent connectors is 10 ft., if there's a draft inducer - what's the condition, any loose connections in the venting, and if multiple vent connectors going into a chimney are observed (is the smaller appliance connected above the larger).", options: ['Inside', 'Outside', 'Above ground', 'Below ground'] },

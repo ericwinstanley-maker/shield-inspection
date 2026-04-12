@@ -526,6 +526,23 @@ function fillSectionFields(form, inspection, photoRefs) {
           'electric': 'Check Box 220', 'wood': 'Check Box 221'
         }
       },
+      3: { // Item 4 - Heating method distinguishing source
+        options: {
+          // Exposed exterior plastic gas piping checkboxes
+          'anyexposedex_none': 'Check Box1638', 'anyexposedex_yes': 'Check Box1639',
+          'anyexposedex_adequate': 'Check Box1640', 'anyexposedex_na': 'Check Box1641'
+        },
+        // Text fields for flame color, characteristics, corrosion (no PDF checkboxes for these)
+        extraTextFields: {
+          'exposedPipingDetail': 'Text Field 1012'
+        },
+        // Special: write selected option group values into these text fields
+        optionGroupTextFields: {
+          'colorofflame': 'Text Field 109',
+          'flamecharact': 'Text Field 1010',
+          'corrosionnot': 'Text Field 1011'
+        }
+      },
       6: { // Item 7 - Oil storage tank (Inside, Outside, Above ground, Below ground)
         options: {
           'inside': 'Check Box 236', 'outside': 'Check Box 237',
@@ -649,6 +666,20 @@ function fillSectionFields(form, inspection, photoRefs) {
               // Not a dropdown, set as text field
               setTextField(form, fieldName, item.extraFieldValues[key], 9, { autoFit: true });
             }
+          }
+        });
+      }
+
+      // Write option group selections into text fields (for groups without PDF checkboxes)
+      if (item.selectedOptions && itemCBMap.optionGroupTextFields) {
+        Object.keys(itemCBMap.optionGroupTextFields).forEach(groupPrefix => {
+          const fieldName = itemCBMap.optionGroupTextFields[groupPrefix];
+          // Collect all selected options for this group prefix
+          const selected = Object.keys(item.selectedOptions)
+            .filter(k => k.startsWith(groupPrefix + '_') && item.selectedOptions[k])
+            .map(k => k.substring(groupPrefix.length + 1));
+          if (selected.length > 0) {
+            setTextField(form, fieldName, selected.join(', '), 9, { autoFit: true });
           }
         });
       }
