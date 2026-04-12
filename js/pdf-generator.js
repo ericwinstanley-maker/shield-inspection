@@ -443,6 +443,11 @@ function fillSectionFields(form, inspection, photoRefs) {
           'gallons': 'Gallons',
           'tprValve': 'TPR'
         }
+      },
+      6: { // Item 7 - Dishwasher cross-connection (Yes, No, N/A)
+        options: {
+          'yes': 'Check Box1504', 'no': 'Check Box1505', 'na': 'Check Box1506'
+        }
       }
     },
 
