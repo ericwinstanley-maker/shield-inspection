@@ -185,7 +185,16 @@ export const INSPECTION_SECTIONS = [
           { key: 'exposedWhere', label: 'If yes, where? (exposed)', placeholder: '' }
         ]
       },
-      { id: 'elec-6', num: 6, desc: 'Comment on the absence of smoke & carbon monoxide detector.', helperText: "Some municipalities require more than one smoke or carbon monoxide detector per level, since a home inspector is not working in the capacity of code-enforcement officer, we recommend that you check on-line or with the local building code official to determine if you need more and the required/recommended placement of each item." },
+      { id: 'elec-6', num: 6, desc: 'Comment on the absence of smoke & carbon monoxide detector.',
+        helperText: "Some municipalities require more than one smoke or carbon monoxide detector per level, since a home inspector is not working in the capacity of code-enforcement officer, we recommend that you check on-line or with the local building code official to determine if you need more and the required/recommended placement of each item.",
+        optionGroups: [
+          { label: 'Smoke detector:', options: ['Battery', 'Hard-wired'] },
+          { label: 'Tested (smoke):', options: ['Yes', 'No', 'N/A'], exclusive: true },
+          { label: 'Carbon Monoxide Detector:', options: ['Battery', 'Hard-wired'] },
+          { label: 'Tested (CO):', options: ['Yes', 'No', 'N/A'], exclusive: true }
+        ],
+        options: ['A5', 'A6']
+      },
       { id: 'elec-7', num: 7, desc: 'Other electrical issues/concerns:', noRating: true }
     ]
   },

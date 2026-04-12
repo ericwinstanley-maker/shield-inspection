@@ -492,6 +492,15 @@ function fillSectionFields(form, inspection, photoRefs) {
           'aluminumWhere': 'Text Field 81',
           'exposedWhere': 'Text Field 82'
         }
+      },
+      5: { // Item 6 - Smoke & CO detectors
+        options: {
+          'smokedetecto_battery': 'Check Box 190', 'smokedetecto_hardwired': 'Check Box 191',
+          'testedsmoke_yes': 'Check Box1626', 'testedsmoke_no': 'Check Box1627', 'testedsmoke_na': 'Check Box1628',
+          'carbonmonoxi_battery': 'Check Box 192', 'carbonmonoxi_hardwired': 'Check Box 193',
+          'testedco_yes': 'Check Box1629', 'testedco_no': 'Check Box1630', 'testedco_na': 'Check Box1631',
+          'a5': 'Check Box 241', 'a6': 'Check Box 242'
+        }
       }
     },
 
