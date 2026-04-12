@@ -456,10 +456,20 @@ function fillSectionFields(form, inspection, photoRefs) {
       0: { // Item 1 - Service drop (underground & not visible)
         options: { 'undergroundnotvisible': 'Check Box 164' }
       },
-      1: { // Item 2 - Service entrance (Overhead, Underground, Waterpipe, Rod)
+      1: { // Item 2 - Service entrance location + Grounding location
         options: {
-          'overhead': 'Check Box 180', 'underground': 'Check Box 181',
-          'waterpipe': 'Check Box 182', 'rod': 'Check Box 183'
+          'serviceentra_overhead': 'Check Box 180', 'serviceentra_underground': 'Check Box 181',
+          'groundingloc_waterpipe': 'Check Box 182', 'groundingloc_rod': 'Check Box 183'
+        }
+      },
+      2: { // Item 3 - 6 Yes/No/N/A checkbox groups
+        options: {
+          'copperwiring_yes': 'Check Box1507', 'copperwiring_no': 'Check Box1508', 'copperwiring_na': 'Check Box1509',
+          'circuitbreak_yes': 'Check Box1510', 'circuitbreak_no': 'Check Box1511', 'circuitbreak_na': 'Check Box1512',
+          'fuses_yes': 'Check Box1513', 'fuses_no': 'Check Box1514', 'fuses_na': 'Check Box1515',
+          'anyknobtubew_yes': 'Check Box1516', 'anyknobtubew_no': 'Check Box1517', 'anyknobtubew_na': 'Check Box1518',
+          'gfcisfunctio_yes': 'Check Box19', 'gfcisfunctio_no': 'Check Box1520', 'gfcisfunctio_na': 'Check Box1523',
+          'gfciscircuit_yes': 'Check Box1521', 'gfciscircuit_no': 'Check Box1522', 'gfciscircuit_na': 'Check Box1524'
         }
       }
     },
