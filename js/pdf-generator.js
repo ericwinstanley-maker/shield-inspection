@@ -175,7 +175,9 @@ function setRatingGroup(form, groupName, rating) {
     f.acroField.dict.set(PDFName.of('V'), PDFName.of(valName));
     widgets.forEach(w => {
       const onVal = w.getOnValue();
-      if (onVal && onVal.value === valName) w.setAppearanceState(PDFName.of(valName));
+      // Use decodeText() for reliable comparison — .value is a getter function in this pdf-lib version
+      const onValStr = onVal ? onVal.decodeText() : '';
+      if (onValStr === valName) w.setAppearanceState(PDFName.of(valName));
       else w.setAppearanceState(PDFName.of('Off'));
     });
   } catch (e) {
