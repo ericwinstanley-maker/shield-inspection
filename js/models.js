@@ -90,7 +90,17 @@ export const INSPECTION_SECTIONS = [
     icon: '🔧',
     pageNum: 8,
     items: [
-      { id: 'plm-1', num: 1, desc: 'The interior water supply & distribution systems including all fixtures & faucets.', options: ['Copper', 'Galvanized', 'Plastic', 'Lead', 'Municipal', 'Private well'] },
+      { id: 'plm-1', num: 1, desc: 'The interior water supply & distribution systems including all fixtures & faucets.',
+        optionGroups: [
+          { label: 'Visible supply pipes:', options: ['Copper', 'Galvanized', 'Plastic', 'Lead'] },
+          { label: 'Water source:', options: ['Municipal', 'Private well'] }
+        ],
+        extraFields: [
+          { key: 'shutoffValve', label: 'Location of main shut-off valve' },
+          { key: 'waterFrom', label: 'Ran water from', placeholder: 'Start time' },
+          { key: 'waterTo', label: 'to', placeholder: 'End time' }
+        ]
+      },
       { id: 'plm-2', num: 2, desc: 'The water heating equipment, vent systems, flues, chimneys, fuel storage & distribution systems.', options: ['Gas', 'Oil', 'Propane', 'Electric'] },
       { id: 'plm-3', num: 3, desc: 'The drain, waste & vent systems including all fixtures.', helperText: "Vertical supports should be observed at every other floor level and generally 10 feet vertically for copper piping. Waste pipe sizes should always go from smaller to larger diameters. If cast iron piping is observed, the inspector will especially check the top areas of horizontal runs to check for splits or cracks as this is often found in residential dwellings (especially if sewer odor is noticed). The inspector pays particular attention to sections of the plumbing whenever the pipe changes direction (or materials) for potential leak spots. Galvanized steel (or iron piping) should be more than 6 inches above grade as rusting is more likely occur closer to the ground level.", options: ['Copper', 'Galvanized', 'Plastic', 'Lead', 'Cast iron', '(NV)'] },
       { id: 'plm-4', num: 4, desc: 'The drainage sumps, sump pumps and related pumps.' },

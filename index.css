@@ -563,6 +563,43 @@ body {
   white-space: nowrap;
 }
 
+/* --- Option Groups --- */
+.option-group {
+  margin-bottom: var(--space-sm);
+}
+
+.option-group-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+/* --- Extra Fields (e.g. shut-off valve, water times) --- */
+.extra-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.extra-field-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.extra-field-label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.extra-field-input {
+  flex: 1;
+  max-width: 240px;
+}
+
 /* --- Rating Selector --- */
 .rating-bar {
   display: flex;

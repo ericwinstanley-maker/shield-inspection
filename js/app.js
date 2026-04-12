@@ -561,6 +561,34 @@ async function renderSectionForm(sectionIndex) {
           ` : ''}
         </div>
       `;
+    } else if (itemDef.optionGroups) {
+      // Render labeled groups of checkboxes (e.g., "Visible supply pipes:" and "Water source:")
+      optionsHtml = itemDef.optionGroups.map(group => `
+        <div class="option-group mt-md">
+          <div class="option-group-label">${group.label}</div>
+          <div class="checkbox-group">
+            ${group.options.map(opt => {
+              const key = opt.toLowerCase().replace(/[^a-z0-9]/g, '');
+              const checked = itemData.selectedOptions && itemData.selectedOptions[key];
+              return `<div class="checkbox-pill ${checked ? 'checked' : ''}" data-opt="${key}">${opt}</div>`;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Build extra fields (e.g. "Location of main shut-off valve", "Ran water from/to")
+    let extraFieldsHtml = '';
+    if (itemDef.extraFields) {
+      if (!itemData.extraFieldValues) itemData.extraFieldValues = {};
+      extraFieldsHtml = `<div class="extra-fields mt-md">
+        ${itemDef.extraFields.map(ef => `
+          <div class="extra-field-row">
+            <label class="extra-field-label">${ef.label}</label>
+            <input type="text" class="form-input form-input-sm extra-field-input" data-extra-key="${ef.key}" data-item-idx="${i}" placeholder="${ef.placeholder || ''}" value="${esc(itemData.extraFieldValues[ef.key] || '')}" />
+          </div>
+        `).join('')}
+      </div>`;
     }
 
     // Build photo thumbnails
@@ -584,6 +612,7 @@ async function renderSectionForm(sectionIndex) {
       <div class="inspection-item-number">Item ${itemDef.num}</div>
       <div class="inspection-item-desc">${itemDef.desc}</div>
       ${optionsHtml}
+      ${extraFieldsHtml}
       ${itemDef.helperText ? `<div class="inspection-item-helper-text">${itemDef.helperText}</div>` : ''}
       ${!itemDef.noRating ? `<div class="rating-bar" data-item-idx="${i}">
         ${['S','M','P','U'].map(r => `
@@ -694,6 +723,17 @@ async function renderSectionForm(sectionIndex) {
     input.addEventListener('input', () => {
       const idx = parseInt(input.dataset.otherIdx);
       sectionData.items[idx].otherText = input.value;
+      autoSave();
+    });
+  });
+
+  // Extra field inputs (e.g., Location of main shut-off valve, Ran water from/to)
+  itemsContainer.querySelectorAll('.extra-field-input').forEach(input => {
+    input.addEventListener('input', () => {
+      const idx = parseInt(input.dataset.itemIdx);
+      const key = input.dataset.extraKey;
+      if (!sectionData.items[idx].extraFieldValues) sectionData.items[idx].extraFieldValues = {};
+      sectionData.items[idx].extraFieldValues[key] = input.value;
       autoSave();
     });
   });

@@ -392,6 +392,9 @@ function fillSectionFields(form, inspection, photoRefs) {
           'copper': 'Check Box 137', 'galvanized': 'Check Box 138',
           'plastic': 'Check Box 139', 'lead': 'Check Box 148',
           'municipal': 'Check Box 149', 'privatewell': 'Check Box 150'
+        },
+        extraTextFields: {
+          'shutoffValve': 'Text Field 52'
         }
       },
       1: { // Item 2 - Water heating fuel (Gas, Oil, Propane, Electric)
@@ -537,19 +540,42 @@ function fillSectionFields(form, inspection, photoRefs) {
           }
         });
       }
+
+      // Set extra text fields (e.g., shut-off valve location)
+      if (item.extraFieldValues && itemCBMap.extraTextFields) {
+        Object.keys(itemCBMap.extraTextFields).forEach(key => {
+          if (item.extraFieldValues[key]) {
+            setTextField(form, itemCBMap.extraTextFields[key], item.extraFieldValues[key], 9, { autoFit: true });
+          }
+        });
+      }
     }
 
     // Write comments into available fields
     const itemsWithComments = sectionData.items
       .map((it, idx) => ({ ...it, originalIndex: idx }))
-      .filter(it => it.comments || (it.photos && it.photos.length > 0));
+      .filter(it => it.comments || (it.photos && it.photos.length > 0) || (it.extraFieldValues && Object.values(it.extraFieldValues).some(v => v)));
 
     for (let i = 0; i < itemsWithComments.length && i < (mapping.commentFields || []).length; i++) {
       const fieldName = mapping.commentFields[i];
       const item = itemsWithComments[i];
 
-      // Build comment text
-      let text = item.comments || '';
+      // Build comment text with extra field values prepended
+      let textParts = [];
+
+      // Add extra field values as labeled lines (e.g., "Location of main shut-off valve: ...")
+      if (item.extraFieldValues) {
+        if (item.extraFieldValues.shutoffValve) {
+          textParts.push(`Location of main shut-off valve: ${item.extraFieldValues.shutoffValve}`);
+        }
+        if (item.extraFieldValues.waterFrom || item.extraFieldValues.waterTo) {
+          textParts.push(`Ran water from: ${item.extraFieldValues.waterFrom || ''} to ${item.extraFieldValues.waterTo || ''}`);
+        }
+      }
+
+      if (item.comments) textParts.push(item.comments);
+
+      let text = textParts.join('\n');
 
       // Add photo references
       const itemPhotos = photoRefs.filter(
