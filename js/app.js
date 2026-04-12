@@ -580,11 +580,11 @@ async function renderSectionForm(sectionIndex) {
       <div class="inspection-item-desc">${itemDef.desc}</div>
       ${optionsHtml}
       ${itemDef.helperText ? `<div class="inspection-item-helper-text">${itemDef.helperText}</div>` : ''}
-      <div class="rating-bar" data-item-idx="${i}">
+      ${!itemDef.noRating ? `<div class="rating-bar" data-item-idx="${i}">
         ${['S','M','P','U'].map(r => `
           <div class="rating-pill ${itemData.rating === r ? 'selected-' + r : ''}" data-rating="${r}">${r}</div>
         `).join('')}
-      </div>
+      </div>` : ''}
       <div class="comment-row">
         <textarea class="form-textarea" placeholder="Comments..." data-item-idx="${i}">${esc(itemData.comments)}</textarea>
         <div class="comment-actions">

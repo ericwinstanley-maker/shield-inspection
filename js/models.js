@@ -48,7 +48,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'ext-7', num: 7, desc: 'The walkways, patios, driveways and related service walks leading to the dwelling entrances.', options: ['No patio observed'] },
       { id: 'ext-8', num: 8, desc: 'The entry doors, exterior faucets, swale or topography at the site, & vegetation proximate to the subject.' },
       { id: 'ext-9', num: 9, desc: 'The garage or carport including its roof, walls, foundation and overall construction observed.', options: ['No garage observed'] },
-      { id: 'ext-10', num: 10, desc: 'Other exterior issues/concerns:' }
+      { id: 'ext-10', num: 10, desc: 'Other exterior issues/concerns:', noRating: true }
     ]
   },
   {
@@ -62,7 +62,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'roof-3', num: 3, desc: 'The flashings utilized.' },
       { id: 'roof-4', num: 4, desc: 'The skylights, chimneys and other roof penetrations. (If applicable)', options: ['No skylights observed'] },
       { id: 'roof-5', num: 5, desc: 'The method used to inspect the roof:', options: ['Visual from the ground', 'Binoculars', 'From the Attic/Scuttle', 'Drone'] },
-      { id: 'roof-6', num: 6, desc: 'Other roof issues/concerns:' }
+      { id: 'roof-6', num: 6, desc: 'Other roof issues/concerns:', noRating: true }
     ]
   },
   {
@@ -76,7 +76,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'str-3', num: 3, desc: 'The foundation for any evidence of bowing, compromise such as spalling, leaning & mortar deterioration, etc.' },
       { id: 'str-4', num: 4, desc: 'Determine the type of foundation present at the subject:', hasOtherOption: true, options: ['Full basement', 'Partial basement', 'Crawl', 'Slab'] },
       { id: 'str-5', num: 5, desc: 'The floor, wall & ceiling structures (as applicable).' },
-      { id: 'str-6', num: 6, desc: 'Other structural issues/concerns:' }
+      { id: 'str-6', num: 6, desc: 'Other structural issues/concerns:', noRating: true }
     ]
   },
   {
@@ -93,7 +93,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'plm-6', num: 6, desc: 'Comment on the make, approximate age and capacity of the hot water tank and any cross connection concerns.' },
       { id: 'plm-7', num: 7, desc: 'Is there a built-in dishwasher and if so has the inspector checked for a cross-connection?' },
       { id: 'plm-8', num: 8, desc: 'The home inspector looks at all traps. Type of traps observed:', options: ['P-Type', 'S-traps (less optimal)', 'Drum Trap'] },
-      { id: 'plm-9', num: 9, desc: 'Other plumbing issues/concerns:' }
+      { id: 'plm-9', num: 9, desc: 'Other plumbing issues/concerns:', noRating: true }
     ]
   },
   {
@@ -108,7 +108,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'elec-4', num: 4, desc: 'Describe the amperage and voltage rating of the service and location of the main disconnects & sub-panels.' },
       { id: 'elec-5', num: 5, desc: 'The wiring methods and report on the presence of solid conductor aluminum branch circuit wiring.' },
       { id: 'elec-6', num: 6, desc: 'Comment on the absence of smoke & carbon monoxide detector.' },
-      { id: 'elec-7', num: 7, desc: 'Other electrical issues/concerns:' }
+      { id: 'elec-7', num: 7, desc: 'Other electrical issues/concerns:', noRating: true }
     ]
   },
   {
@@ -128,7 +128,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'heat-9', num: 9, desc: 'Shut-off valves noted appropriately throughout?' },
       { id: 'heat-10', num: 10, desc: 'Any evidence of scorching on the exterior of any fossil-fuel burning appliance?' },
       { id: 'heat-11', num: 11, desc: 'Satisfactory clearance distance observed on all sides of any fossil-fuel burning appliance?' },
-      { id: 'heat-12', num: 12, desc: 'Other heating issues/concerns:' }
+      { id: 'heat-12', num: 12, desc: 'Other heating issues/concerns:', noRating: true }
     ]
   },
   {
@@ -141,7 +141,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'ac-2', num: 2, desc: 'The cooling method by its distinguishing characteristics.' },
       { id: 'ac-3', num: 3, desc: 'The cooling unit and its adequacy.' },
       { id: 'ac-4', num: 4, desc: 'The heat pump.' },
-      { id: 'ac-5', num: 5, desc: 'Other air conditioning/heat-pump issues/concerns:' }
+      { id: 'ac-5', num: 5, desc: 'Other air conditioning/heat-pump issues/concerns:', noRating: true }
     ]
   },
   {
@@ -158,7 +158,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'int-6', num: 6, desc: 'Comment on the materials used for:', options: ['Wood', 'Vinyl/Laminate', 'Ceramic', 'Carpet', 'Apparent', 'Plaster', 'Drywall', 'Paneling'] },
       { id: 'int-7', num: 7, desc: 'The bathroom walls, ceilings, floor, tub/shower area, plumbing, heat, electrical & toilet/vanity or basin.' },
       { id: 'int-8', num: 8, desc: 'The living areas including: family rooms, dens, recreation, bedrooms & living rooms as applicable.' },
-      { id: 'int-9', num: 9, desc: 'Other interior issues/concerns:' }
+      { id: 'int-9', num: 9, desc: 'Other interior issues/concerns:', noRating: true }
     ]
   },
   {
@@ -171,7 +171,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'ins-2', num: 2, desc: 'The ventilation of attics and foundation areas as well as the mechanical ventilation systems of the home.' },
       { id: 'ins-3', num: 3, desc: 'The bathroom vents (ventilation), foundation vents, dryer vents and any limitations thereof.' },
       { id: 'ins-4', num: 4, desc: 'Describe the visible vapor retarders if applicable:', hasOtherOption: true, options: ['Paper', 'Plastic', 'Foil', 'N/A'] },
-      { id: 'ins-5', num: 5, desc: 'Other insulation/ventilation issues/concerns:' }
+      { id: 'ins-5', num: 5, desc: 'Other insulation/ventilation issues/concerns:', noRating: true }
     ]
   },
   {
@@ -185,7 +185,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'fp-3', num: 3, desc: 'Describe the fireplaces & solid fuel burning appliances as well as the chimney.' },
       { id: 'fp-4', num: 4, desc: 'Clearance from component is adequate to ensure safety.' },
       { id: 'fp-5', num: 5, desc: 'Door or screen present, any loose fire bricks noted.' },
-      { id: 'fp-6', num: 6, desc: 'Other fireplace or wood stove issues/concerns:' }
+      { id: 'fp-6', num: 6, desc: 'Other fireplace or wood stove issues/concerns:', noRating: true }
     ]
   }
 ];
