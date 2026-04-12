@@ -561,9 +561,10 @@ async function renderSectionForm(sectionIndex) {
           ` : ''}
         </div>
       `;
-    } else if (itemDef.optionGroups) {
+    }
+    if (itemDef.optionGroups) {
       // Render labeled groups of checkboxes (e.g., "Visible supply pipes:" and "Water source:")
-      optionsHtml = itemDef.optionGroups.map((group, gIdx) => {
+      optionsHtml += itemDef.optionGroups.map((group, gIdx) => {
         const groupPrefix = group.label.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 12);
         return `
         <div class="option-group mt-md">

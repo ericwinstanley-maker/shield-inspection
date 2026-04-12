@@ -427,6 +427,22 @@ function fillSectionFields(form, inspection, photoRefs) {
           'sumppumpnote_yes': 'Check Box1660', 'sumppumpnote_no': 'Check Box1661', 'sumppumpnote_na': 'Check Box1662',
           'drainnoted_yes': 'Check Box1663', 'drainnoted_no': 'Check Box1664', 'drainnoted_na': 'Check Box1665'
         }
+      },
+      5: { // Item 6 - Hot water tank
+        options: {
+          'tankless': 'Tankless',
+          'appearsintact': 'Check Box 161',
+          'anycrossconn_yes': { type: 'radio', field: 'Radio Button 4', value: '0' },
+          'anycrossconn_no': { type: 'radio', field: 'Radio Button 4', value: '1' },
+          'anycrossconn_na': { type: 'radio', field: 'Radio Button 4', value: '2' },
+          'ifthewaterhe_yes': 'Check Box1500', 'ifthewaterhe_no': 'Check Box1501', 'ifthewaterhe_na': 'Check Box1503'
+        },
+        extraTextFields: {
+          'brand': 'Text Field 62',
+          'age': 'Text Field 63',
+          'gallons': 'Gallons',
+          'tprValve': 'TPR'
+        }
       }
     },
 
@@ -562,11 +578,26 @@ function fillSectionFields(form, inspection, photoRefs) {
         });
       }
 
-      // Set extra text fields (e.g., shut-off valve location)
+      // Set extra text fields (e.g., shut-off valve location, brand, age)
       if (item.extraFieldValues && itemCBMap.extraTextFields) {
         Object.keys(itemCBMap.extraTextFields).forEach(key => {
           if (item.extraFieldValues[key]) {
-            setTextField(form, itemCBMap.extraTextFields[key], item.extraFieldValues[key], 9, { autoFit: true });
+            const fieldName = itemCBMap.extraTextFields[key];
+            // Try dropdown first, then text field
+            try {
+              const dropdown = form.getDropdown(fieldName);
+              const options = dropdown.getOptions();
+              const val = item.extraFieldValues[key];
+              if (options.includes(val)) {
+                dropdown.select(val);
+              } else {
+                // If value doesn't match any option, try "Other" or set as text
+                if (options.includes('Other')) dropdown.select('Other');
+              }
+            } catch (e) {
+              // Not a dropdown, set as text field
+              setTextField(form, fieldName, item.extraFieldValues[key], 9, { autoFit: true });
+            }
           }
         });
       }
