@@ -612,6 +612,13 @@ function fillSectionFields(form, inspection, photoRefs) {
     for (let idx = 0; idx < sectionData.items.length; idx++) {
       const item = sectionData.items[idx];
       const itemCBMap = sectionCBMap[idx];
+      if (sec.id === 'heating' && idx === 3) {
+        console.log('[DEBUG] Heating item 4:', JSON.stringify({ 
+          hasItemCBMap: !!itemCBMap, 
+          selectedOptions: item.selectedOptions, 
+          extraFieldValues: item.extraFieldValues 
+        }));
+      }
       if (!itemCBMap) continue;
 
       // Set selected option checkboxes (and radio buttons)
