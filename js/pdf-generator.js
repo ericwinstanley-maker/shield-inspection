@@ -549,9 +549,18 @@ function fillSectionFields(form, inspection, photoRefs) {
       6: { // Item 7 - Oil storage tank (Inside, Outside, Above ground, Below ground)
         options: {
           'inside': 'Check Box 236', 'outside': 'Check Box 237',
-          'aboveground': 'Check Box 238', 'belowground': 'Check Box 239'
+          'aboveground': 'Check Box 238', 'belowground': 'Check Box 239',
+          'nawillapplyifoilisnotthefuel': 'Check Box 240'
         },
-        otherField: 'Text Field 100'
+        otherField: 'Text Field 100',
+        extraTextFields: {
+          'fillPipeLocation': 'Text Field 101'
+        }
+      },
+      7: { // Item 8 - Pressure-relief valve
+        options: {
+          'pressurereli_yes': 'Check Box1600', 'pressurereli_no': 'Check Box1601', 'pressurereli_na': 'Check Box1602'
+        }
       }
     },
 
