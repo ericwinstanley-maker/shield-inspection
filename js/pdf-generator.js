@@ -561,6 +561,21 @@ function fillSectionFields(form, inspection, photoRefs) {
         options: {
           'pressurereli_yes': 'Check Box1600', 'pressurereli_no': 'Check Box1601', 'pressurereli_na': 'Check Box1602'
         }
+      },
+      8: { // Item 9 - Shut-off valves
+        options: {
+          'shutoffvalve_yes': 'Check Box1603', 'shutoffvalve_no': 'Check Box1604', 'shutoffvalve_na': 'Check Box1605'
+        }
+      },
+      9: { // Item 10 - Scorching
+        options: {
+          'evidenceofsc_yes': 'Check Box1606', 'evidenceofsc_no': 'Check Box1607', 'evidenceofsc_na': 'Check Box1608'
+        }
+      },
+      10: { // Item 11 - Clearance distance
+        options: {
+          'satisfactory_yes': 'Check Box1609', 'satisfactory_no': 'Check Box1610', 'satisfactory_na': 'Check Box1611'
+        }
       }
     },
 

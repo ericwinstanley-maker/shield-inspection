@@ -239,9 +239,23 @@ export const INSPECTION_SECTIONS = [
           { label: 'Pressure-relief valve?', options: ['Yes', 'No', 'N/A'], exclusive: true }
         ]
       },
-      { id: 'heat-9', num: 9, desc: 'Shut-off valves noted appropriately throughout?', helperText: "Shut-off valves should generally be located in the same room as the appliance on the rigid side of the piping, if flexible connectors are used they should be less than 6 ft. in length and should not go through ceilings, walls, floors, etc." },
-      { id: 'heat-10', num: 10, desc: 'Any evidence of scorching on the exterior of any fossil-fuel burning appliance?' },
-      { id: 'heat-11', num: 11, desc: 'Satisfactory clearance distance observed on all sides of any fossil-fuel burning appliance?', helperText: "The data plate on most furnaces specifies the required clearances from combustibles. The home inspector should compare the actual clearances to the data plate. Generally, 30 inches of clearance is usually required in front of any furnace for access & service. The supply plenum on any up-flow furnace should be at least 1 inch - below a combustible framing or ceiling area." },
+      { id: 'heat-9', num: 9, desc: 'Shut-off valves noted appropriately throughout?',
+        helperText: "Shut-off valves should generally be located in the same room as the appliance on the rigid side of the piping, if flexible connectors are used they should be less than 6 ft. in length and should not go through ceilings, walls, floors, etc.",
+        optionGroups: [
+          { label: 'Shut-off valves?', options: ['Yes', 'No', 'N/A'], exclusive: true }
+        ]
+      },
+      { id: 'heat-10', num: 10, desc: 'Any evidence of scorching on the exterior of any fossil-fuel burning appliance?',
+        optionGroups: [
+          { label: 'Evidence of scorching?', options: ['Yes', 'No', 'N/A'], exclusive: true }
+        ]
+      },
+      { id: 'heat-11', num: 11, desc: 'Satisfactory clearance distance observed on all sides of any fossil-fuel burning appliance?',
+        helperText: "The data plate on most furnaces specifies the required clearances from combustibles. The home inspector should compare the actual clearances to the data plate. Generally, 30 inches of clearance is usually required in front of any furnace for access & service. The supply plenum on any up-flow furnace should be at least 1 inch - below a combustible framing or ceiling area.",
+        optionGroups: [
+          { label: 'Satisfactory clearance?', options: ['Yes', 'No', 'N/A'], exclusive: true }
+        ]
+      },
       { id: 'heat-12', num: 12, desc: 'Other heating issues/concerns:', noRating: true }
     ]
   },
