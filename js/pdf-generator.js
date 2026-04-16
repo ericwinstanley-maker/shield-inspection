@@ -740,9 +740,11 @@ function fillSectionFields(form, inspection, photoRefs) {
       .map((it, idx) => ({ ...it, originalIndex: idx }))
       .filter(it => it.comments || (it.photos && it.photos.length > 0) || (it.extraFieldValues && Object.values(it.extraFieldValues).some(v => v)));
 
-    for (let i = 0; i < itemsWithComments.length && i < (mapping.commentFields || []).length; i++) {
-      const fieldName = mapping.commentFields[i];
+    for (let i = 0; i < itemsWithComments.length; i++) {
       const item = itemsWithComments[i];
+      // FIX: Use the item's original absolute index on the page to find its designated comment box
+      const fieldName = (mapping.commentFields || [])[item.originalIndex];
+      if (!fieldName) continue;
 
       // Build comment text with extra field values prepended
       let textParts = [];
@@ -774,9 +776,16 @@ function fillSectionFields(form, inspection, photoRefs) {
       setTextField(form, fieldName, text, FONT_SIZE_COMMENT);
     }
 
-    // Clear any unused comment fields for this section
-    for (let i = itemsWithComments.length; i < (mapping.commentFields || []).length; i++) {
-        setTextField(form, mapping.commentFields[i], '', FONT_SIZE_COMMENT);
+    // Clear any unused comment fields for this section by checking the original indices
+    for (let i = 0; i < (mapping.commentFields || []).length; i++) {
+        const fieldName = mapping.commentFields[i];
+        if (!fieldName) continue;
+        
+        // If this item index was NOT in our itemsWithComments array, it has no comment, so wipe it
+        const hasComment = itemsWithComments.some(it => it.originalIndex === i);
+        if (!hasComment) {
+            setTextField(form, fieldName, '', FONT_SIZE_COMMENT);
+        }
     }
   }
 }
