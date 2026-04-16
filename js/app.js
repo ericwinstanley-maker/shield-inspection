@@ -884,23 +884,8 @@ async function renderSummary() {
     }
   }
 
-  // Auto-detect A-codes from comments
+  // No longer auto-detecting A-codes from comments per user request
   const detectedACodes = new Set(insp.addendumCodes || []);
-  for (const concern of concerns) {
-    const matches = concern.comments.match(/A\d+[a-z]?/g);
-    if (matches) {
-      matches.forEach(m => detectedACodes.add(m.toUpperCase()));
-    }
-  }
-  // Also scan all comments across all sections
-  for (const sec of INSPECTION_SECTIONS) {
-    const sectionData = insp.sections[sec.id];
-    if (!sectionData) continue;
-    for (const item of sectionData.items) {
-      const matches = (item.comments || '').match(/A\d+[a-z]?/gi);
-      if (matches) matches.forEach(m => detectedACodes.add(m.toUpperCase()));
-    }
-  }
 
   main.innerHTML = `
     <div class="section-header">
