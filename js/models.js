@@ -265,10 +265,26 @@ export const INSPECTION_SECTIONS = [
     icon: '❄️',
     pageNum: 12,
     items: [
-      { id: 'ac-1', num: 1, desc: 'The installed cooling equipment (if outside air temperature is above 65°F).' },
-      { id: 'ac-2', num: 2, desc: 'The cooling method by its distinguishing characteristics.' },
+      { id: 'ac-1', num: 1, desc: 'The installed cooling equipment (if outside air temperature is above 65°F).',
+        optionGroups: [
+          { label: 'Central Air:', options: ['N/A', 'Applicable'], exclusive: true },
+          { label: 'Tested:', options: ['Yes', 'No', 'N/A', 'Disclaimed'], exclusive: true }
+        ],
+        options: ['Disclaimed due to factors noted above']
+      },
+      { id: 'ac-2', num: 2, desc: 'The cooling method by its distinguishing characteristics.',
+        extraFields: [
+          { key: 'condRefrig', label: 'Condition of refrig. lines', placeholder: '' },
+          { key: 'condThermostat', label: 'Condition of thermostat', placeholder: '' },
+          { key: 'condDrain', label: 'Condition of condensate drain', placeholder: '' }
+        ]
+      },
       { id: 'ac-3', num: 3, desc: 'The cooling unit and its adequacy.' },
-      { id: 'ac-4', num: 4, desc: 'The heat pump.' },
+      { id: 'ac-4', num: 4, desc: 'The heat-pump.',
+        optionGroups: [
+          { label: 'Heat-pump:', options: ['Yes', 'No', 'N/A', 'Disclaimed'], exclusive: true }
+        ]
+      },
       { id: 'ac-5', num: 5, desc: 'Other air conditioning/heat-pump issues/concerns:', noRating: true }
     ]
   },

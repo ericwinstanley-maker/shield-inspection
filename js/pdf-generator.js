@@ -273,7 +273,7 @@ function fillSectionFields(form, inspection, photoRefs) {
     plumbing: { commentFields: ['Text Field 47', 'Text Field 50', 'Text Field 51', 'Text Field 60', 'Text Field 61', 'Text Field 64', 'Text Field 65', 'Text Field 213'] },
     electrical: { commentFields: ['Text Field 67', 'Text Field 68', 'Text Field 78', 'Text Field 210', 'Text Field 211', 'Text Field 212'] },
     heating: { commentFields: ['Text Field 84', 'Text Field 85', 'Text Field 95', 'Text Field 97', 'Text Field 98', 'Text Field 219', 'Text Field 217', 'Text Field 218', 'Text Field 220', 'Text Field 221', 'Text Field 222', 'Text Field 90'] },
-    airConditioning: { commentFields: ['Text Field 106', 'Text Field 107', 'Text Field 108', 'Text Field 1012'] },
+    airConditioning: { commentFields: ['Text Field 106', 'Text Field 107', 'Text Field 108', 'Text Field 1012', 'Text Field 110'] },
     interior: { commentFields: ['Text Field 111', 'Text Field 125', 'Text Field 126', 'Text Field 127', 'Text Field 128', 'Text Field 129', 'Text Field 130', 'Text Field 131'] },
     insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 214', 'Text Field 215', 'Text Field 216'] },
     fireplace: { commentFields: ['Text Field 140', 'Text Field 142', 'Text Field 143', 'Text Field 144', 'Text Field 145'] }
@@ -573,6 +573,31 @@ function fillSectionFields(form, inspection, photoRefs) {
       10: { // Item 11 - Clearance distance
         options: {
           'satisfactory_yes': 'Check Box1609', 'satisfactory_no': 'Check Box1610', 'satisfactory_na': 'Check Box1611'
+        }
+      }
+    },
+
+    // === AIR CONDITIONING ===
+    airConditioning: {
+      0: { // Item 1
+        options: {
+          'disclaimedduetofactorsnotedabove': 'Check Box 255',
+          'centralair_na': 'Check Box1632', 'centralair_applicable': 'Check Box1633',
+          'tested_yes': 'Check Box1634', 'tested_no': 'Check Box1635',
+          'tested_na': 'Check Box1636', 'tested_disclaimed': 'Check Box1637'
+        }
+      },
+      1: { // Item 2
+        extraTextFields: {
+          'condRefrig': 'Text Field 109',
+          'condThermostat': 'Text Field 1010',
+          'condDrain': 'Text Field 1011'
+        }
+      },
+      3: { // Item 4
+        options: {
+          'heatpump_yes': 'Check Box1638', 'heatpump_no': 'Check Box1639',
+          'heatpump_na': 'Check Box1640', 'heatpump_disclaimed': 'Check Box1641'
         }
       }
     },
