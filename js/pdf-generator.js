@@ -609,10 +609,10 @@ function fillSectionFields(form, inspection, photoRefs) {
       },
       5: { // Item 6 - Materials used for floor/wall/ceiling
         options: {
-          'floorsheathing_wood': 'Check Box 274', 'floorsheathing_vinyllaminate': 'Check Box 275',
-          'floorsheathing_ceramic': 'Check Box 276', 'floorsheathing_carpet': 'Check Box 277',
-          'wallsheathing_apparent': 'Check Box 278', 'wallsheathing_plaster': 'Check Box 279',
-          'wallsheathing_drywall': 'Check Box 280', 'wallsheathing_paneling': 'Check Box 281',
+          'floorsheathi_wood': 'Check Box 274', 'floorsheathi_vinyllaminate': 'Check Box 275',
+          'floorsheathi_ceramic': 'Check Box 276', 'floorsheathi_carpet': 'Check Box 277',
+          'wallsheathin_apparent': 'Check Box 278', 'wallsheathin_plaster': 'Check Box 279',
+          'wallsheathin_drywall': 'Check Box 280', 'wallsheathin_paneling': 'Check Box 281',
           'ceilings_apparent': 'Check Box 282', 'ceilings_plaster': 'Check Box 283',
           'ceilings_drywall': 'Check Box 284', 'ceilings_wood': 'Check Box 285'
         },
