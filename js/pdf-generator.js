@@ -30,7 +30,6 @@ export async function generatePDF(inspection) {
   const form = pdfDoc.getForm();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  form.helfFont = font;
 
   // ============================================================
   // Remove pages we no longer need from the template
@@ -276,7 +275,7 @@ function fillSectionFields(form, inspection, photoRefs) {
     heating: { commentFields: ['Text Field 84', 'Text Field 85', 'Text Field 95', 'Text Field 97', 'Text Field 98', 'Text Field 219', 'Text Field 217', 'Text Field 218', 'Text Field 220', 'Text Field 221', 'Text Field 222', 'Text Field 90'] },
     airConditioning: { commentFields: ['Text Field 106', 'Text Field 107', 'Text Field 108', 'Text Field 1012', 'Text Field 110'] },
     interior: { commentFields: ['Text Field 111', 'Text Field 125', 'Text Field 126', 'Text Field 127', 'Text Field 128', 'Text Field 129', 'Text Field 130', 'Text Field 131', 'Text Field 117'] },
-    insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 214', 'Text Field 215', 'Text Field 216', 'Text Field 139'] },
+    insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 214', 'Text Field 215', 'Text Field 216'] },
     fireplace: { commentFields: ['Text Field 140', 'Text Field 142', 'Text Field 143', 'Text Field 144', 'Text Field 145'] }
   };
 
@@ -632,19 +631,12 @@ function fillSectionFields(form, inspection, photoRefs) {
 
     // === INSULATION & VENTILATION ===
     insulationVentilation: {
-      1: { // Item 2 - Attic vents
-        options: {
-          'atticventsnoted_yes': { type: 'drawText', x: 89, y: 656, pageIndex: 13 },
-          'atticventsnoted_no':  { type: 'drawText', x: 125, y: 655, pageIndex: 13 },
-          'atticventsnoted_na':  'Check Box1643'
-        }
-      },
       3: { // Item 4 - Vapor retarders (Paper, Plastic, Foil, N/A)
         options: {
           'paper': 'Check Box 1084', 'plastic': 'Check Box 1085',
           'foil': 'Check Box 1086', 'na': 'Check Box 1087'
         },
-        otherField: 'Utilities 3'
+        otherField: 'Text Field 216'
       }
     },
 
@@ -689,22 +681,12 @@ function fillSectionFields(form, inspection, photoRefs) {
         Object.keys(item.selectedOptions).forEach(opt => {
           if (item.selectedOptions[opt] && itemCBMap.options[opt]) {
             const mapping = itemCBMap.options[opt];
-            if (typeof mapping === 'object') {
-              if (mapping.type === 'radio') {
-                // Handle radio group (e.g., Galvanized steel Yes/No/N/A)
-                try {
-                  const radioGroup = form.getRadioGroup(mapping.field);
-                  radioGroup.select(mapping.value);
-                } catch (e) {
-                  console.warn(`Could not find radio group ${mapping.field}`);
-                }
-              } else if (mapping.type === 'drawText') {
-                // Handle PDF CheckBox overlapping/shadow fields by physically drawing an X
-                const page = form.doc.getPages()[mapping.pageIndex];
-                if (page && form.helfFont) {
-                  page.drawText('X', { x: mapping.x, y: mapping.y, size: 14, font: form.helfFont });
-                }
-              }
+            if (typeof mapping === 'object' && mapping.type === 'radio') {
+              // Handle radio group (e.g., Galvanized steel Yes/No/N/A)
+              try {
+                const radioGroup = form.getRadioGroup(mapping.field);
+                radioGroup.select(mapping.value);
+              } catch (e) { console.warn('Radio group not found:', mapping.field, e); }
             } else {
               trySetCheckbox(form, mapping, true);
             }
