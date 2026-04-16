@@ -698,11 +698,18 @@ function fillSectionFields(form, inspection, photoRefs) {
                 } catch (e) {
                   console.warn(`Could not find radio group ${mapping.field}`);
                 }
-              } else if (mapping.type === 'drawText') {
-                // Handle PDF CheckBox overlapping/shadow fields by physically drawing an X
+              } else if (mapping.type === 'drawText' || mapping.type === 'drawCheck') {
+                // Handle PDF CheckBox overlapping/shadow fields by physically drawing an override mark
                 const page = form.doc.getPages()[mapping.pageIndex];
-                if (page && form.helfFont) {
-                  page.drawText('X', { x: mapping.x, y: mapping.y, size: 14, font: form.helfFont });
+                if (page) {
+                  if (mapping.type === 'drawCheck') {
+                    // Procedurally render a highly precise geometric vector checkmark to mirror native PDF boxes
+                    const { rgb } = require('pdf-lib');
+                    page.drawLine({ start: { x: mapping.x + 2, y: mapping.y + 5 }, end: { x: mapping.x + 5, y: mapping.y + 2 }, thickness: 1.5, color: rgb(0,0,0) });
+                    page.drawLine({ start: { x: mapping.x + 5, y: mapping.y + 2 }, end: { x: mapping.x + 11, y: mapping.y + 10 }, thickness: 1.5, color: rgb(0,0,0) });
+                  } else if (form.helfFont) {
+                    page.drawText('X', { x: mapping.x, y: mapping.y, size: 14, font: form.helfFont });
+                  }
                 }
               }
             } else {
