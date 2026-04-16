@@ -721,8 +721,9 @@ function fillSectionFields(form, inspection, photoRefs) {
               if (options.includes(val)) {
                 dropdown.select(val);
               } else {
-                // If value doesn't match any option, try "Other" or set as text
-                if (options.includes('Other')) dropdown.select('Other');
+                // If value doesn't match predefined options, dynamically inject and force-select it
+                dropdown.addOptions([val]);
+                dropdown.select(val);
               }
             } catch (e) {
               // Not a dropdown, set as text field
