@@ -519,8 +519,8 @@ function fillSectionFields(form, inspection, photoRefs) {
       },
       1: { // Item 2 - Vent systems, flues & chimneys
         options: {
-          'uphillslope_yes': 'Check Box1632', 'uphillslope_no': 'Check Box1633', 'uphillslope_na': 'Check Box1637',
-          'rustonexhaus_yes': 'Check Box1634', 'rustonexhaus_no': 'Check Box1635', 'rustonexhaus_na': 'Check Box1636'
+          'uphillslope_yes': 'Check Box1612', 'uphillslope_no': 'Check Box1613', 'uphillslope_na': 'Check Box1614',
+          'rustonexhaus_yes': 'Check Box1615', 'rustonexhaus_no': 'Check Box1616', 'rustonexhaus_na': 'Check Box1617'
         }
       },
       2: { // Item 3 - Energy source (Gas, Oil, Propane, Electric, Wood)
