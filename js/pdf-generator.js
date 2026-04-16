@@ -634,9 +634,9 @@ function fillSectionFields(form, inspection, photoRefs) {
     insulationVentilation: {
       1: { // Item 2 - Attic vents
         options: {
-          'atticventsnoted_yes': { type: 'drawText', x: 89, y: 656, pageIndex: 13 },
-          'atticventsnoted_no':  { type: 'drawText', x: 125, y: 655, pageIndex: 13 },
-          'atticventsnoted_na':  'Check Box1643'
+          'atticventsno_yes': { type: 'drawText', x: 89, y: 656, pageIndex: 13 },
+          'atticventsno_no':  { type: 'drawText', x: 125, y: 655, pageIndex: 13 },
+          'atticventsno_na':  'Check Box1643'
         }
       },
       3: { // Item 4 - Vapor retarders (Paper, Plastic, Foil, N/A)
@@ -714,7 +714,13 @@ function fillSectionFields(form, inspection, photoRefs) {
 
       // Set "Other" text fields
       if (item.otherText && itemCBMap.otherField) {
-        setTextField(form, itemCBMap.otherField, item.otherText, 9, { autoFit: true });
+        try {
+          const dropdown = form.getDropdown(itemCBMap.otherField);
+          dropdown.addOptions([item.otherText]);
+          dropdown.select(item.otherText);
+        } catch (e) {
+          setTextField(form, itemCBMap.otherField, item.otherText, 9, { autoFit: true });
+        }
       }
 
       // Set percent fields (e.g., Structural Item 4 foundation %)
