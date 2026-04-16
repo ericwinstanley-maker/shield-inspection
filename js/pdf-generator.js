@@ -531,19 +531,17 @@ function fillSectionFields(form, inspection, photoRefs) {
       },
       3: { // Item 4 - Heating method distinguishing source
         options: {
-          // Exposed exterior plastic gas piping checkboxes
-          'anyexposedex_none': 'Check Box1638', 'anyexposedex_yes': 'Check Box1639',
-          'anyexposedex_adequate': 'Check Box1640', 'anyexposedex_na': 'Check Box1641'
+          'colorofflame_blue': 'Check Box 222', 'colorofflame_orange': 'Check Box 223',
+          'colorofflame_red': 'Check Box 224', 'colorofflame_yellow': 'Check Box 225',
+          'flamecharact_steady': 'Check Box 226', 'flamecharact_someflickering': 'Check Box 227',
+          'flamecharact_significantflickering': 'Check Box 228',
+          'corrosionnot_none': 'Check Box 229', 'corrosionnot_some': 'Check Box 230',
+          'corrosionnot_significant': 'Check Box 231',
+          'anyexposedex_none': 'Check Box 232', 'anyexposedex_yes': 'Check Box 233',
+          'anyexposedex_adequate': 'Check Box 234', 'anyexposedex_na': 'Check Box 235'
         },
-        // Text fields for flame color, characteristics, corrosion (no PDF checkboxes for these)
         extraTextFields: {
-          'exposedPipingDetail': 'Text Field 1012'
-        },
-        // Special: write selected option group values into these text fields
-        optionGroupTextFields: {
-          'colorofflame': 'Text Field 109',
-          'flamecharact': 'Text Field 1010',
-          'corrosionnot': 'Text Field 1011'
+          'exposedPipingDetail': 'Text Field 96'
         }
       },
       6: { // Item 7 - Oil storage tank (Inside, Outside, Above ground, Below ground)
