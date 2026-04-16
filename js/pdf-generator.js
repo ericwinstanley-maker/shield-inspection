@@ -274,7 +274,7 @@ function fillSectionFields(form, inspection, photoRefs) {
     electrical: { commentFields: ['Text Field 67', 'Text Field 68', 'Text Field 78', 'Text Field 210', 'Text Field 211', 'Text Field 212'] },
     heating: { commentFields: ['Text Field 84', 'Text Field 85', 'Text Field 95', 'Text Field 97', 'Text Field 98', 'Text Field 219', 'Text Field 217', 'Text Field 218', 'Text Field 220', 'Text Field 221', 'Text Field 222', 'Text Field 90'] },
     airConditioning: { commentFields: ['Text Field 106', 'Text Field 107', 'Text Field 108', 'Text Field 1012', 'Text Field 110'] },
-    interior: { commentFields: ['Text Field 111', 'Text Field 125', 'Text Field 126', 'Text Field 127', 'Text Field 128', 'Text Field 129', 'Text Field 130', 'Text Field 131'] },
+    interior: { commentFields: ['Text Field 111', 'Text Field 125', 'Text Field 126', 'Text Field 127', 'Text Field 128', 'Text Field 129', 'Text Field 130', 'Text Field 131', 'Text Field 117'] },
     insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 214', 'Text Field 215', 'Text Field 216'] },
     fireplace: { commentFields: ['Text Field 140', 'Text Field 142', 'Text Field 143', 'Text Field 144', 'Text Field 145'] }
   };
@@ -604,15 +604,27 @@ function fillSectionFields(form, inspection, photoRefs) {
 
     // === INTERIOR ===
     interior: {
-      3: { // Item 4 - Garage doors (Manually, Motorized)
-        options: { 'manually': 'Check Box 272', 'motorized': 'Check Box 273' }
+      3: { // Item 4 - Garage doors 
+        options: { 'dooropens_manually': 'Check Box 272', 'dooropens_motorized': 'Check Box 273' }
       },
       5: { // Item 6 - Materials used for floor/wall/ceiling
         options: {
-          'wood': 'Check Box 274', 'vinyllaminate': 'Check Box 275',
-          'ceramic': 'Check Box 276', 'carpet': 'Check Box 277',
-          'apparent': 'Check Box 278', 'plaster': 'Check Box 279',
-          'drywall': 'Check Box 280', 'paneling': 'Check Box 281'
+          'floorsheathing_wood': 'Check Box 274', 'floorsheathing_vinyllaminate': 'Check Box 275',
+          'floorsheathing_ceramic': 'Check Box 276', 'floorsheathing_carpet': 'Check Box 277',
+          'wallsheathing_apparent': 'Check Box 278', 'wallsheathing_plaster': 'Check Box 279',
+          'wallsheathing_drywall': 'Check Box 280', 'wallsheathing_paneling': 'Check Box 281',
+          'ceilings_apparent': 'Check Box 282', 'ceilings_plaster': 'Check Box 283',
+          'ceilings_drywall': 'Check Box 284', 'ceilings_wood': 'Check Box 285'
+        },
+        extraTextFields: {
+          'floorOther': 'Text Field 122',
+          'wallOther': 'Text Field 123',
+          'ceilOther': 'Text Field 124'
+        }
+      },
+      7: { // Item 8 - Living areas
+        extraTextFields: {
+          'numBedrooms': 'Utilities 2'
         }
       }
     },

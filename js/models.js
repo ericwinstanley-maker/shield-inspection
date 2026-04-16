@@ -297,11 +297,30 @@ export const INSPECTION_SECTIONS = [
       { id: 'int-1', num: 1, desc: 'The steps, stairways & railings.', helperText: "Steps can be trip hazards, therefore the inspector will check for uniformity in the rise, run and tread. The rise (which should be no more than 8 inches high) is the part of the step you see when looking head-on at the steps (where your foot is NOT placed). The tread is where you place your foot and it should be about an inch more than the run. Most runs are a maximum of 9-11 inches." },
       { id: 'int-2', num: 2, desc: 'The countertops and a representative number of installed cabinets.' },
       { id: 'int-3', num: 3, desc: 'A representative number of doors and windows throughout.', helperText: "The inspector will generally check for the water-tightness of the home. This includes a spot check around the top, bottom and sides of doors, windows, etc. Caulking may be missing, loose or deteriorated as well as applicable flashing materials. The standards of practice do not require inspectors to check and inspect storm windows and screens, however, the home inspector will bring this to your attention as applicable. The inspection includes a careful observation for cracked, broken or missing window panes. Condensation typically shows up when there is a compromised seal and during great temperature differences between the indoors and outdoors." },
-      { id: 'int-4', num: 4, desc: 'Garage doors and garage door openers as well as reversing mechanisms and other related safety items with the garage.', options: ['Manually', 'Motorized'] },
+      { id: 'int-4', num: 4, desc: 'Garage doors and garage door openers as well as reversing mechanisms and other related safety items with the garage.',
+        optionGroups: [
+          { label: 'Door opens:', options: ['Manually', 'Motorized'], exclusive: true }
+        ]
+      },
       { id: 'int-5', num: 5, desc: 'The kitchen, walls, floors, cabinets, sink plumbing, electrical switches & receptacles.' },
-      { id: 'int-6', num: 6, desc: 'Comment on the materials used for:', options: ['Wood', 'Vinyl/Laminate', 'Ceramic', 'Carpet', 'Apparent', 'Plaster', 'Drywall', 'Paneling'] },
+      { id: 'int-6', num: 6, desc: 'Comment on the materials used for:',
+        optionGroups: [
+          { label: 'Floor sheathing:', options: ['Wood', 'Vinyl/Laminate', 'Ceramic', 'Carpet'], exclusive: true },
+          { label: 'Wall sheathing:', options: ['Apparent', 'Plaster', 'Drywall', 'Paneling'], exclusive: true },
+          { label: 'Ceilings:', options: ['Apparent', 'Plaster', 'Drywall', 'Wood'], exclusive: true }
+        ],
+        extraFields: [
+          { key: 'floorOther', label: 'Other Floor Sheathing', placeholder: 'e.g. Concrete' },
+          { key: 'wallOther', label: 'Other Wall Sheathing', placeholder: 'e.g. Brick' },
+          { key: 'ceilOther', label: 'Other Ceilings', placeholder: 'e.g. Drop tiles' }
+        ]
+      },
       { id: 'int-7', num: 7, desc: 'The bathroom walls, ceilings, floor, tub/shower area, plumbing, heat, electrical & toilet/vanity or basin.' },
-      { id: 'int-8', num: 8, desc: 'The living areas including: family rooms, dens, recreation, bedrooms & living rooms as applicable.' },
+      { id: 'int-8', num: 8, desc: 'The living areas including: family rooms, dens, recreation, bedrooms & living rooms as applicable.',
+        extraFields: [
+          { key: 'numBedrooms', label: 'Number of bedrooms above grade', placeholder: 'e.g. 3' }
+        ]
+      },
       { id: 'int-9', num: 9, desc: 'Other interior issues/concerns:', noRating: true }
     ]
   },
