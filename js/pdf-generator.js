@@ -30,7 +30,6 @@ export async function generatePDF(inspection) {
   const form = pdfDoc.getForm();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
-  const fontCheck = await pdfDoc.embedFont(StandardFonts.ZapfDingbats);
 
   // ============================================================
   // Remove pages we no longer need from the template
@@ -81,7 +80,7 @@ export async function generatePDF(inspection) {
   // ============================================================
   // INSPECTION SECTIONS (Pages 5-15): Fill ratings and comments
   // ============================================================
-  fillSectionFields(form, pdfDoc, font, fontCheck, inspection, photoRefs);
+  fillSectionFields(form, pdfDoc, font, inspection, photoRefs);
 
   // ============================================================
   // ADDENDUM CHECKBOXES (now pages 16-18 after removal)
@@ -264,7 +263,7 @@ function collectPhotoReferences(inspection) {
 // Now includes photo cross-references
 // ============================================================
 
-function fillSectionFields(form, pdfDoc, font, fontCheck, inspection, photoRefs) {
+function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
   // Comment fields: the right-side COMMENTS column for each item (w=122, x≈388)
   // Ordered top-to-bottom on each page, mapped to items that have comment areas
   const sectionFieldMap = {
@@ -745,12 +744,24 @@ function fillSectionFields(form, pdfDoc, font, fontCheck, inspection, photoRefs)
           Object.keys(itemCBMap.drawText).forEach(opt => {
             if (item.selectedOptions[opt]) {
               const coords = itemCBMap.drawText[opt];
-              // ZapfDingbats character '4' = ✓ checkmark, matching the rest of the form
-              drawPage.drawText('4', {
-                x: coords.x,
-                y: coords.y,
-                size: coords.size || 10,
-                font: fontCheck,
+              const sz = coords.size || 10;
+              const x = coords.x;
+              const y = coords.y;
+              // Draw a ✓ checkmark as two lines matching the form's native checkbox style
+              const checkColor = rgb(0.2, 0.2, 0.2);
+              // Short stroke: bottom-left to bottom-center
+              drawPage.drawLine({
+                start: { x: x, y: y + sz * 0.45 },
+                end: { x: x + sz * 0.35, y: y + sz * 0.1 },
+                thickness: 1.5,
+                color: checkColor,
+              });
+              // Long stroke: bottom-center to top-right
+              drawPage.drawLine({
+                start: { x: x + sz * 0.35, y: y + sz * 0.1 },
+                end: { x: x + sz * 0.85, y: y + sz * 0.85 },
+                thickness: 1.5,
+                color: checkColor,
               });
             }
           });
