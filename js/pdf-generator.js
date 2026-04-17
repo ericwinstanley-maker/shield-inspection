@@ -636,11 +636,11 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
         // and identical onValue ('Yes'). Using drawText overrides to physically draw an 'X'
         // at the exact pixel coordinates instead.
         options: {
-          'atticventsnot_na': 'Check Box1643'
+          'atticventsno_na': 'Check Box1643'
         },
         drawText: {
-          'atticventsnot_yes': { x: 93, y: 659, size: 10 },
-          'atticventsnot_no': { x: 129, y: 658, size: 10 }
+          'atticventsno_yes': { x: 93, y: 659, size: 10 },
+          'atticventsno_no': { x: 129, y: 658, size: 10 }
         }
       },
       3: { // Item 4 - Vapor retarders (Paper, Plastic, Foil, N/A)
