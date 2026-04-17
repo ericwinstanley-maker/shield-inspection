@@ -963,7 +963,7 @@ function generateSummaryText(inspection, photoRefs) {
 function fillAddendumCheckboxes(form, inspection) {
   const codeToCheckbox = {};
 
-  const addendumI = ['A1','A2','A3','A4','A5','A6','A7','A8','A8a','A9','A10','A11','A12','A12a','A13','A14','A15','A16','A17','A18','A19','A20','A21','A22','A23','A24'];
+  const addendumI = ['A1','A2','A3','A4','A5','A6','A7','A7a','A8','A8a','A9','A10','A11','A12','A12a','A13','A14','A15','A16','A17','A18','A19','A20','A21','A22','A23','A24'];
   const cbNamesI = ['CB 8','CB 1','CB 2','CB 3','CB 4','CB 5','CB 6','CB 7','CB 7a','CB 8a','CB 9','CB 10','CB 11','CB 12','CB 12A','CB 13','CB 14','CB 15','CB 16','CB 17','CB 18','CB 19','CB 20','CB 21','CB 22','CB 23','CB 24'];
   for (let i = 0; i < addendumI.length && i < cbNamesI.length; i++) {
     codeToCheckbox[addendumI[i].toUpperCase()] = cbNamesI[i];
