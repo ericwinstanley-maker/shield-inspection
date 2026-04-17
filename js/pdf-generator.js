@@ -30,6 +30,7 @@ export async function generatePDF(inspection) {
   const form = pdfDoc.getForm();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const fontCheck = await pdfDoc.embedFont(StandardFonts.ZapfDingbats);
 
   // ============================================================
   // Remove pages we no longer need from the template
@@ -80,7 +81,7 @@ export async function generatePDF(inspection) {
   // ============================================================
   // INSPECTION SECTIONS (Pages 5-15): Fill ratings and comments
   // ============================================================
-  fillSectionFields(form, pdfDoc, font, inspection, photoRefs);
+  fillSectionFields(form, pdfDoc, font, fontCheck, inspection, photoRefs);
 
   // ============================================================
   // ADDENDUM CHECKBOXES (now pages 16-18 after removal)
@@ -263,7 +264,7 @@ function collectPhotoReferences(inspection) {
 // Now includes photo cross-references
 // ============================================================
 
-function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
+function fillSectionFields(form, pdfDoc, font, fontCheck, inspection, photoRefs) {
   // Comment fields: the right-side COMMENTS column for each item (w=122, x≈388)
   // Ordered top-to-bottom on each page, mapped to items that have comment areas
   const sectionFieldMap = {
@@ -722,12 +723,20 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
       }
 
       // Handle drawText overrides (for duplicate/broken PDF checkboxes)
-      // Must remove the broken fields first so flatten() doesn't stamp empty boxes on top
+      // Blanks out the broken widget appearances, then draws a ✓ using ZapfDingbats
       if (itemCBMap.drawText) {
-        // Remove broken duplicate fields that would cover our drawn text
+        // Blank out the broken duplicate widgets so they render as invisible
         if (itemCBMap.removeFields) {
           for (const fieldName of itemCBMap.removeFields) {
-            try { form.removeField(form.getField(fieldName)); } catch (e) { /* already removed */ }
+            try {
+              const brokenField = form.getField(fieldName);
+              const widgets = brokenField.acroField.getWidgets();
+              for (const w of widgets) {
+                // Remove the appearance dictionary so the widget draws nothing
+                w.dict.delete(PDFName.of('AP'));
+              }
+              form.removeField(brokenField);
+            } catch (e) { /* field may not exist */ }
           }
         }
 
@@ -736,11 +745,12 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
           Object.keys(itemCBMap.drawText).forEach(opt => {
             if (item.selectedOptions[opt]) {
               const coords = itemCBMap.drawText[opt];
-              drawPage.drawText('X', {
+              // ZapfDingbats character '4' = ✓ checkmark, matching the rest of the form
+              drawPage.drawText('4', {
                 x: coords.x,
                 y: coords.y,
                 size: coords.size || 10,
-                font: font,
+                font: fontCheck,
               });
             }
           });
