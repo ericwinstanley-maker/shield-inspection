@@ -634,7 +634,9 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
       1: { // Item 2 - Attic vents noted (Yes/No/N/A)
         // Check Box1642 is DUPLICATED: both the Yes and No widgets share the same field name
         // and identical onValue ('Yes'). Using drawText overrides to physically draw an 'X'
-        // at the exact pixel coordinates instead.
+        // at the exact pixel coordinates instead. Must remove the broken field so flatten()
+        // doesn't stamp empty checkbox appearances over our drawn text.
+        removeFields: ['Check Box1642'],
         options: {
           'atticventsno_na': 'Check Box1643'
         },
@@ -720,19 +722,29 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
       }
 
       // Handle drawText overrides (for duplicate/broken PDF checkboxes)
-      if (item.selectedOptions && itemCBMap.drawText) {
-        const insPage = pdfDoc.getPages()[sec.pageNum - 1];
-        Object.keys(itemCBMap.drawText).forEach(opt => {
-          if (item.selectedOptions[opt]) {
-            const coords = itemCBMap.drawText[opt];
-            insPage.drawText('X', {
-              x: coords.x,
-              y: coords.y,
-              size: coords.size || 10,
-              font: font,
-            });
+      // Must remove the broken fields first so flatten() doesn't stamp empty boxes on top
+      if (itemCBMap.drawText) {
+        // Remove broken duplicate fields that would cover our drawn text
+        if (itemCBMap.removeFields) {
+          for (const fieldName of itemCBMap.removeFields) {
+            try { form.removeField(form.getField(fieldName)); } catch (e) { /* already removed */ }
           }
-        });
+        }
+
+        if (item.selectedOptions) {
+          const drawPage = pdfDoc.getPages()[sec.pageNum - 1];
+          Object.keys(itemCBMap.drawText).forEach(opt => {
+            if (item.selectedOptions[opt]) {
+              const coords = itemCBMap.drawText[opt];
+              drawPage.drawText('X', {
+                x: coords.x,
+                y: coords.y,
+                size: coords.size || 10,
+                font: font,
+              });
+            }
+          });
+        }
       }
 
       // Set percent fields (e.g., Structural Item 4 foundation %)
