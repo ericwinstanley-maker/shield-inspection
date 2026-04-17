@@ -80,7 +80,7 @@ export async function generatePDF(inspection) {
   // ============================================================
   // INSPECTION SECTIONS (Pages 5-15): Fill ratings and comments
   // ============================================================
-  fillSectionFields(form, inspection, photoRefs);
+  fillSectionFields(form, pdfDoc, font, inspection, photoRefs);
 
   // ============================================================
   // ADDENDUM CHECKBOXES (now pages 16-18 after removal)
@@ -263,7 +263,7 @@ function collectPhotoReferences(inspection) {
 // Now includes photo cross-references
 // ============================================================
 
-function fillSectionFields(form, inspection, photoRefs) {
+function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
   // Comment fields: the right-side COMMENTS column for each item (w=122, x≈388)
   // Ordered top-to-bottom on each page, mapped to items that have comment areas
   const sectionFieldMap = {
@@ -275,7 +275,7 @@ function fillSectionFields(form, inspection, photoRefs) {
     heating: { commentFields: ['Text Field 84', 'Text Field 85', 'Text Field 95', 'Text Field 97', 'Text Field 98', 'Text Field 219', 'Text Field 217', 'Text Field 218', 'Text Field 220', 'Text Field 221', 'Text Field 222', 'Text Field 90'] },
     airConditioning: { commentFields: ['Text Field 106', 'Text Field 107', 'Text Field 108', 'Text Field 1012', 'Text Field 110'] },
     interior: { commentFields: ['Text Field 111', 'Text Field 125', 'Text Field 126', 'Text Field 127', 'Text Field 128', 'Text Field 129', 'Text Field 130', 'Text Field 131', 'Text Field 117'] },
-    insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 214', 'Text Field 215', 'Text Field 216'] },
+    insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 214', 'Text Field 215', 'Text Field 216', 'Text Field 139'] },
     fireplace: { commentFields: ['Text Field 140', 'Text Field 142', 'Text Field 143', 'Text Field 144', 'Text Field 145'] }
   };
 
@@ -631,12 +631,24 @@ function fillSectionFields(form, inspection, photoRefs) {
 
     // === INSULATION & VENTILATION ===
     insulationVentilation: {
+      1: { // Item 2 - Attic vents noted (Yes/No/N/A)
+        // Check Box1642 is DUPLICATED: both the Yes and No widgets share the same field name
+        // and identical onValue ('Yes'). Using drawText overrides to physically draw an 'X'
+        // at the exact pixel coordinates instead.
+        options: {
+          'atticventsnot_na': 'Check Box1643'
+        },
+        drawText: {
+          'atticventsnot_yes': { x: 93, y: 659, size: 10 },
+          'atticventsnot_no': { x: 129, y: 658, size: 10 }
+        }
+      },
       3: { // Item 4 - Vapor retarders (Paper, Plastic, Foil, N/A)
         options: {
           'paper': 'Check Box 1084', 'plastic': 'Check Box 1085',
           'foil': 'Check Box 1086', 'na': 'Check Box 1087'
         },
-        otherField: 'Text Field 216'
+        otherField: 'Utilities 3'
       }
     },
 
@@ -694,9 +706,33 @@ function fillSectionFields(form, inspection, photoRefs) {
         });
       }
 
-      // Set "Other" text fields
+      // Set "Other" text fields (may be a dropdown like Utilities 3)
       if (item.otherText && itemCBMap.otherField) {
-        setTextField(form, itemCBMap.otherField, item.otherText, 9, { autoFit: true });
+        try {
+          const dropdown = form.getDropdown(itemCBMap.otherField);
+          // It's a dropdown — inject and select the custom text
+          dropdown.addOptions([item.otherText]);
+          dropdown.select(item.otherText);
+        } catch (e) {
+          // Not a dropdown, set as regular text field
+          setTextField(form, itemCBMap.otherField, item.otherText, 9, { autoFit: true });
+        }
+      }
+
+      // Handle drawText overrides (for duplicate/broken PDF checkboxes)
+      if (item.selectedOptions && itemCBMap.drawText) {
+        const insPage = pdfDoc.getPages()[sec.pageNum - 1];
+        Object.keys(itemCBMap.drawText).forEach(opt => {
+          if (item.selectedOptions[opt]) {
+            const coords = itemCBMap.drawText[opt];
+            insPage.drawText('X', {
+              x: coords.x,
+              y: coords.y,
+              size: coords.size || 10,
+              font: font,
+            });
+          }
+        });
       }
 
       // Set percent fields (e.g., Structural Item 4 foundation %)

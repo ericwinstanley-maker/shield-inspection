@@ -331,7 +331,11 @@ export const INSPECTION_SECTIONS = [
     pageNum: 14,
     items: [
       { id: 'ins-1', num: 1, desc: 'The insulation, vapor-retarders (in unfinished areas).' },
-      { id: 'ins-2', num: 2, desc: 'The ventilation of attics and foundation areas as well as the mechanical ventilation systems of the home.' },
+      { id: 'ins-2', num: 2, desc: 'The ventilation of attics and foundation areas as well as the mechanical ventilation systems of the home.',
+        optionGroups: [
+          { label: 'Attic vents noted:', options: ['Yes', 'No', 'N/A'], exclusive: true }
+        ]
+      },
       { id: 'ins-3', num: 3, desc: 'The bathroom vents (ventilation), foundation vents, dryer vents and any limitations thereof.' },
       { id: 'ins-4', num: 4, desc: 'Describe the visible vapor retarders if applicable:', hasOtherOption: true, options: ['Paper', 'Plastic', 'Foil', 'N/A'] },
       { id: 'ins-5', num: 5, desc: 'Other insulation/ventilation issues/concerns:', noRating: true }
