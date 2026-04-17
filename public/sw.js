@@ -3,7 +3,7 @@
 // Caches app shell for offline use
 // ============================================================
 
-const CACHE_NAME = 'shield-inspection-v3';
+const CACHE_NAME = 'shield-inspection-v4';
 
 const STATIC_ASSETS = [
   '/',
