@@ -92,30 +92,27 @@ export async function generatePDF(inspection) {
   // ============================================================
   await generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRefs);
 
-  // ============================================================
-  // Pre-flatten fixup: repair broken PDF fields before flatten
-  // ============================================================
-  // Check Box1642 (Insulation Item 2 - Attic Vents Yes/No) has DUPLICATE
-  // onValues: both widgets have onValue 'Yes'. This crashes form.flatten().
-  // Fix: (1) uncheck it, (2) updateFieldAppearances, (3) rename the second
-  // widget's AP/N key from 'Yes' to 'No' so flatten() can distinguish them.
-  try {
-    const cb1642 = form.getCheckBox('Check Box1642');
-    cb1642.uncheck();
-  } catch (e) {
-    console.warn('Could not uncheck Check Box1642:', e.message);
-  }
-
-  // Update appearance streams FIRST (while Check Box1642 is unchecked)
+  // Update appearance streams for all fields
   form.updateFieldAppearances();
 
-  // NOW rename the second widget's onValue so flatten() doesn't crash
+  // ============================================================
+  // Pre-flatten fixup: repair broken Check Box1642
+  // ============================================================
+  // Check Box1642 (Insulation Item 2 - Attic Vents Yes/No) has DUPLICATE
+  // onValues: both widgets have onValue 'Yes'. This causes form.flatten()
+  // to crash, leaving checkboxes interactive and potentially checked.
+  //
+  // Fix strategy:
+  // 1. Rename second widget's onValue from 'Yes' to 'No' (so they're unique)
+  // 2. Force ALL widgets to 'Off' appearance state (since we draw our own checkmarks)
+  // 3. Set the field value to 'Off'
   try {
     const cb1642 = form.getCheckBox('Check Box1642');
     const widgets1642 = cb1642.acroField.getWidgets();
+
+    // Rename second widget's onValue so flatten() can distinguish them
     if (widgets1642.length >= 2) {
       const noWidget = widgets1642[1];
-      // Use .lookup() to follow PDF references (unlike .get() which returns raw refs)
       const ap = noWidget.dict.lookup(PDFName.of('AP'));
       if (ap) {
         const n = ap.lookup(PDFName.of('N'));
@@ -128,8 +125,16 @@ export async function generatePDF(inspection) {
         }
       }
     }
+
+    // Force ALL widgets to 'Off' appearance state — critical because
+    // uncheck() only sets the first widget, and updateFieldAppearances()
+    // may have set some widgets back to 'Yes' state
+    cb1642.acroField.setValue(PDFName.of('Off'));
+    for (const w of widgets1642) {
+      w.setAppearanceState(PDFName.of('Off'));
+    }
   } catch (e) {
-    console.warn('Could not fix Check Box1642 onValues:', e.message);
+    console.warn('Could not fix Check Box1642:', e.message);
   }
 
   try {
