@@ -338,7 +338,7 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
     airConditioning: { commentFields: ['Text Field 106', 'Text Field 107', 'Text Field 108', 'Text Field 1012', 'Text Field 110'] },
     interior: { commentFields: ['Text Field 111', 'Text Field 125', 'Text Field 126', 'Text Field 127', 'Text Field 128', 'Text Field 129', 'Text Field 130', 'Text Field 131', 'Text Field 117'] },
     insulationVentilation: { commentFields: ['Text Field 132', 'Text Field 214', 'Text Field 215', 'Text Field 216', 'Text Field 139'] },
-    fireplace: { commentFields: ['Text Field 140', 'Text Field 142', 'Text Field 143', 'Text Field 144', 'Text Field 145'] }
+    fireplace: { commentFields: ['Text Field 140', 'Text Field 142', 'Text Field 143', 'Text Field 144', 'Text Field 145', 'Text Field 141'] }
   };
 
   // Rating group mapping: sectionId → array of CheckBoxGrp names per item index
