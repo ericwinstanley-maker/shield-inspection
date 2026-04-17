@@ -93,8 +93,33 @@ export async function generatePDF(inspection) {
   await generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRefs);
 
   // ============================================================
-  // Flatten form and return bytes
+  // Pre-flatten fixup: repair broken PDF fields before flatten
   // ============================================================
+  // Check Box1642 (Insulation Item 2 - Attic Vents Yes/No) has DUPLICATE
+  // onValues: both widgets have onValue 'Yes'. This crashes form.flatten().
+  // Fix: rename the second widget's onValue to 'No' so they're distinguishable.
+  try {
+    const cb1642 = form.getCheckBox('Check Box1642');
+    cb1642.uncheck();
+    const widgets1642 = cb1642.acroField.getWidgets();
+    if (widgets1642.length >= 2) {
+      const noWidget = widgets1642[1];
+      const ap = noWidget.dict.get(PDFName.of('AP'));
+      if (ap) {
+        const n = ap.get(PDFName.of('N'));
+        if (n) {
+          const yesAppearance = n.get(PDFName.of('Yes'));
+          if (yesAppearance) {
+            n.set(PDFName.of('No'), yesAppearance);
+            n.delete(PDFName.of('Yes'));
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn('Could not fix Check Box1642:', e.message);
+  }
+
   // Update appearance streams so field values are visible even if flatten fails
   form.updateFieldAppearances();
 
@@ -655,17 +680,15 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
     // === INSULATION & VENTILATION ===
     insulationVentilation: {
       1: { // Item 2 - Attic vents noted (Yes/No/N/A)
-        // Check Box1642 is DUPLICATED: both the Yes and No widgets share the same field name
-        // and identical onValue ('Yes'). Using drawText overrides to physically draw an 'X'
-        // at the exact pixel coordinates instead. Must remove the broken field so flatten()
-        // doesn't stamp empty checkbox appearances over our drawn text.
-        removeFields: ['Check Box1642'],
+        // Check Box1642 is fixed pre-flatten (duplicate onValues renamed).
+        // We use drawText to draw checkmarks AFTER flatten for Yes/No.
         options: {
           'atticventsno_na': 'Check Box1643'
         },
         drawText: {
-          'atticventsno_yes': { x: 93, y: 659, size: 10 },
-          'atticventsno_no': { x: 129, y: 658, size: 10 }
+          // Coordinates match actual widget positions from PDF scan
+          'atticventsno_yes': { x: 89, y: 656, size: 10 },
+          'atticventsno_no': { x: 125, y: 655, size: 9 }
         }
       },
       3: { // Item 4 - Vapor retarders (Paper, Plastic, Foil, N/A)
