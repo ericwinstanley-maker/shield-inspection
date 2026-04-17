@@ -97,17 +97,29 @@ export async function generatePDF(inspection) {
   // ============================================================
   // Check Box1642 (Insulation Item 2 - Attic Vents Yes/No) has DUPLICATE
   // onValues: both widgets have onValue 'Yes'. This crashes form.flatten().
-  // Fix: rename the second widget's onValue to 'No' so they're distinguishable.
+  // Fix: (1) uncheck it, (2) updateFieldAppearances, (3) rename the second
+  // widget's AP/N key from 'Yes' to 'No' so flatten() can distinguish them.
   try {
     const cb1642 = form.getCheckBox('Check Box1642');
     cb1642.uncheck();
+  } catch (e) {
+    console.warn('Could not uncheck Check Box1642:', e.message);
+  }
+
+  // Update appearance streams FIRST (while Check Box1642 is unchecked)
+  form.updateFieldAppearances();
+
+  // NOW rename the second widget's onValue so flatten() doesn't crash
+  try {
+    const cb1642 = form.getCheckBox('Check Box1642');
     const widgets1642 = cb1642.acroField.getWidgets();
     if (widgets1642.length >= 2) {
       const noWidget = widgets1642[1];
-      const ap = noWidget.dict.get(PDFName.of('AP'));
+      // Use .lookup() to follow PDF references (unlike .get() which returns raw refs)
+      const ap = noWidget.dict.lookup(PDFName.of('AP'));
       if (ap) {
-        const n = ap.get(PDFName.of('N'));
-        if (n) {
+        const n = ap.lookup(PDFName.of('N'));
+        if (n && typeof n.get === 'function') {
           const yesAppearance = n.get(PDFName.of('Yes'));
           if (yesAppearance) {
             n.set(PDFName.of('No'), yesAppearance);
@@ -117,11 +129,8 @@ export async function generatePDF(inspection) {
       }
     }
   } catch (e) {
-    console.warn('Could not fix Check Box1642:', e.message);
+    console.warn('Could not fix Check Box1642 onValues:', e.message);
   }
-
-  // Update appearance streams so field values are visible even if flatten fails
-  form.updateFieldAppearances();
 
   try {
     form.flatten();
