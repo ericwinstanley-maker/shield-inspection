@@ -722,19 +722,20 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
       }
 
       // Handle drawText overrides (for duplicate/broken PDF checkboxes)
-      // Blanks out the broken widget appearances, then draws a ✓ using ZapfDingbats
+      // Blanks out the broken widget appearances, then draws a checkmark as lines
       if (itemCBMap.drawText) {
         // Blank out the broken duplicate widgets so they render as invisible
         if (itemCBMap.removeFields) {
           for (const fieldName of itemCBMap.removeFields) {
             try {
-              const brokenField = form.getField(fieldName);
+              const brokenField = form.getCheckBox(fieldName);
+              brokenField.uncheck();
+              // Remove appearance dictionaries from all widgets so nothing renders
               const widgets = brokenField.acroField.getWidgets();
               for (const w of widgets) {
-                // Remove the appearance dictionary so the widget draws nothing
                 w.dict.delete(PDFName.of('AP'));
+                w.dict.delete(PDFName.of('AS'));
               }
-              form.removeField(brokenField);
             } catch (e) { /* field may not exist */ }
           }
         }
@@ -745,23 +746,18 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
             if (item.selectedOptions[opt]) {
               const coords = itemCBMap.drawText[opt];
               const sz = coords.size || 10;
-              const x = coords.x;
-              const y = coords.y;
-              // Draw a ✓ checkmark as two lines matching the form's native checkbox style
-              const checkColor = rgb(0.2, 0.2, 0.2);
-              // Short stroke: bottom-left to bottom-center
+              // Draw a checkmark as two lines matching the form's native checkbox style
               drawPage.drawLine({
-                start: { x: x, y: y + sz * 0.45 },
-                end: { x: x + sz * 0.35, y: y + sz * 0.1 },
+                start: { x: coords.x + 1, y: coords.y + sz * 0.4 },
+                end:   { x: coords.x + sz * 0.35, y: coords.y + 1 },
                 thickness: 1.5,
-                color: checkColor,
+                color: rgb(0.2, 0.2, 0.2),
               });
-              // Long stroke: bottom-center to top-right
               drawPage.drawLine({
-                start: { x: x + sz * 0.35, y: y + sz * 0.1 },
-                end: { x: x + sz * 0.85, y: y + sz * 0.85 },
+                start: { x: coords.x + sz * 0.35, y: coords.y + 1 },
+                end:   { x: coords.x + sz - 1, y: coords.y + sz - 1 },
                 thickness: 1.5,
-                color: checkColor,
+                color: rgb(0.2, 0.2, 0.2),
               });
             }
           });
