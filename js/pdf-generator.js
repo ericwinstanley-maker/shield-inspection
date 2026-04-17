@@ -724,6 +724,11 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
         extraTextFields: {
           'numComponents': 'Utilities 4'
         }
+      },
+      1: { // Item 2 - Vent systems, flues & chimneys (Is fireplace a DIRECT-VENTED gas unit?)
+        options: {
+          'isfireplacea_yes': 'Check Box1650', 'isfireplacea_no': 'Check Box1651', 'isfireplacea_na': 'Check Box1652'
+        }
       }
     }
   };
