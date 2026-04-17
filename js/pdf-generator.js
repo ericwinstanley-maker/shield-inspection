@@ -80,7 +80,7 @@ export async function generatePDF(inspection) {
   // ============================================================
   // INSPECTION SECTIONS (Pages 5-15): Fill ratings and comments
   // ============================================================
-  fillSectionFields(form, pdfDoc, font, inspection, photoRefs);
+  const deferredDraws = fillSectionFields(form, pdfDoc, font, inspection, photoRefs);
 
   // ============================================================
   // ADDENDUM CHECKBOXES (now pages 16-18 after removal)
@@ -102,6 +102,26 @@ export async function generatePDF(inspection) {
     form.flatten();
   } catch (e) {
     console.warn('Could not flatten form (values still visible):', e.message);
+  }
+
+  // Execute deferred draw overrides AFTER flatten so they appear on top of
+  // the now-static page content (e.g., broken duplicate checkboxes)
+  for (const draw of deferredDraws) {
+    const page = pdfDoc.getPages()[draw.pageIndex];
+    // Draw a checkmark as two lines matching the form's native checkbox style
+    const sz = draw.size;
+    page.drawLine({
+      start: { x: draw.x + 1, y: draw.y + sz * 0.4 },
+      end:   { x: draw.x + sz * 0.35, y: draw.y + 1 },
+      thickness: 1.5,
+      color: rgb(0.2, 0.2, 0.2),
+    });
+    page.drawLine({
+      start: { x: draw.x + sz * 0.35, y: draw.y + 1 },
+      end:   { x: draw.x + sz - 1, y: draw.y + sz - 1 },
+      thickness: 1.5,
+      color: rgb(0.2, 0.2, 0.2),
+    });
   }
 
   return pdfDoc.save();
@@ -264,6 +284,9 @@ function collectPhotoReferences(inspection) {
 // ============================================================
 
 function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
+  // Deferred draw commands for broken checkboxes — executed AFTER flatten()
+  const deferredDraws = [];
+
   // Comment fields: the right-side COMMENTS column for each item (w=122, x≈388)
   // Ordered top-to-bottom on each page, mapped to items that have comment areas
   const sectionFieldMap = {
@@ -722,46 +745,20 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
       }
 
       // Handle drawText overrides (for duplicate/broken PDF checkboxes)
-      // Blanks out the broken widget appearances, then draws a checkmark as lines
-      if (itemCBMap.drawText) {
-        // Blank out the broken duplicate widgets so they render as invisible
-        if (itemCBMap.removeFields) {
-          for (const fieldName of itemCBMap.removeFields) {
-            try {
-              const brokenField = form.getCheckBox(fieldName);
-              brokenField.uncheck();
-              // Remove appearance dictionaries from all widgets so nothing renders
-              const widgets = brokenField.acroField.getWidgets();
-              for (const w of widgets) {
-                w.dict.delete(PDFName.of('AP'));
-                w.dict.delete(PDFName.of('AS'));
-              }
-            } catch (e) { /* field may not exist */ }
+      // Instead of drawing now, collect deferred draw commands to execute
+      // AFTER form.flatten() so the checkmark appears on top of static content
+      if (itemCBMap.drawText && item.selectedOptions) {
+        Object.keys(itemCBMap.drawText).forEach(opt => {
+          if (item.selectedOptions[opt]) {
+            const coords = itemCBMap.drawText[opt];
+            deferredDraws.push({
+              pageIndex: sec.pageNum - 1,
+              x: coords.x,
+              y: coords.y,
+              size: coords.size || 10,
+            });
           }
-        }
-
-        if (item.selectedOptions) {
-          const drawPage = pdfDoc.getPages()[sec.pageNum - 1];
-          Object.keys(itemCBMap.drawText).forEach(opt => {
-            if (item.selectedOptions[opt]) {
-              const coords = itemCBMap.drawText[opt];
-              const sz = coords.size || 10;
-              // Draw a checkmark as two lines matching the form's native checkbox style
-              drawPage.drawLine({
-                start: { x: coords.x + 1, y: coords.y + sz * 0.4 },
-                end:   { x: coords.x + sz * 0.35, y: coords.y + 1 },
-                thickness: 1.5,
-                color: rgb(0.2, 0.2, 0.2),
-              });
-              drawPage.drawLine({
-                start: { x: coords.x + sz * 0.35, y: coords.y + 1 },
-                end:   { x: coords.x + sz - 1, y: coords.y + sz - 1 },
-                thickness: 1.5,
-                color: rgb(0.2, 0.2, 0.2),
-              });
-            }
-          });
-        }
+        });
       }
 
       // Set percent fields (e.g., Structural Item 4 foundation %)
@@ -866,6 +863,8 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
         }
     }
   }
+
+  return deferredDraws;
 }
 
 // ============================================================
