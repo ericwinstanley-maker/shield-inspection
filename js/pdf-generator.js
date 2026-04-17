@@ -720,6 +720,9 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
         options: {
           'gas': 'Check Box 1092', 'woodburning': 'Check Box 1093',
           'stove': 'Check Box 1094', 'none': 'Check Box 1095'
+        },
+        extraTextFields: {
+          'numComponents': 'Utilities 4'
         }
       }
     }
