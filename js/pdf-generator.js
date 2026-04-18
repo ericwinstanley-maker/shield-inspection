@@ -186,6 +186,20 @@ export async function generatePDF(inspection) {
     trySetCombo(form, 'Combo Box 1', inspection.general.propertyType);
     trySetCombo(form, 'Combo Box 2', inspection.general.garageType);
     trySetCombo(form, 'Driveway', inspection.general.driveway);
+
+    // Attending / Present checkboxes
+    const attendees = inspection.general.attendees || [];
+    const attendeeMap = {
+      'Client':                       'Check Box 1',   // Row 1 left
+      'Real Estate Agent for Seller':  'Check Box 3',   // Row 1 middle
+      'Tenant':                        'Check Box 6',   // Row 1 right
+      'Owner':                         'Check Box 2',   // Row 2 left
+      'Real Estate Agent for Buyer':   'Check Box 4',   // Row 2 middle
+      'No one':                        'Check Box 5',   // Row 2 right
+    };
+    for (const [label, fieldName] of Object.entries(attendeeMap)) {
+      trySetCheckbox(form, fieldName, attendees.includes(label));
+    }
   } catch (e) { console.warn('General info fields:', e.message); }
 
   // ============================================================
