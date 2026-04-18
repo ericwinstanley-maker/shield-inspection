@@ -1206,8 +1206,8 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       }
     }
 
-    // Wrap user comment for the right-column (beside photo)
-    const rightCommentLines = userComment ? wordWrap(userComment, rightCharsPerLine) : [];
+    // Wrap user comment at full width (below photo)
+    const commentLines = userComment ? wordWrap(userComment, fullCharsPerLine) : [];
 
     // --- Load and size the photo ---
     let image = null;
@@ -1234,16 +1234,15 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       console.warn(`Failed to load photo ${ref.photoId}:`, e.message);
     }
 
-    // --- Calculate entry height ---
+    // --- Calculate entry height (stacked: photo → comments → addendum) ---
     const headerH = 22;  // P1 badge + section title line
     const descH = 12;    // item description line
-    const photoSectionH = image ? imgH : 25;
-    const rightTextH = rightCommentLines.length * lineHeight;
-    const floatZoneH = Math.max(photoSectionH, rightTextH);  // taller of photo vs right text
+    const photoSectionH = image ? imgH + 4 : 25;  // +4 for gap below photo
+    const commentBlockH = commentLines.length > 0 ? (commentLines.length * lineHeight + 4) : 0;  // +4 gap
     const aCodeTotalLines = aCodeLines.reduce((sum, ac) => sum + ac.lines.length, 0);
     const aCodeBlockH = aCodeTotalLines > 0 ? (aCodeTotalLines * lineHeight + 6) : 0;  // +6 for gap
     const entryPadding = 15;
-    const entryHeight = headerH + descH + floatZoneH + aCodeBlockH + entryPadding;
+    const entryHeight = headerH + descH + photoSectionH + commentBlockH + aCodeBlockH + entryPadding;
 
     // Start new page if entry won't fit
     if (!page || cursorY - entryHeight < bottomMargin) {
@@ -1308,38 +1307,43 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       size: 6.5, font: font, color: mutedText
     });
 
-    // --- Float zone: photo left + comment right ---
-    const floatTop = entryTop - headerH - descH;
+    // --- Stacked layout: photo → comments → A-codes ---
+    const contentTop = entryTop - headerH - descH;
+    let belowY = contentTop;
 
     // Draw photo (left-aligned)
     if (image) {
-      const imgY = floatTop - imgH;
+      const imgY = belowY - imgH;
       page.drawImage(image, {
         x: entryX + 5, y: imgY,
         width: imgW, height: imgH
       });
+      belowY = imgY - 4;  // gap below photo
     } else {
       page.drawText('[Photo unavailable]', {
-        x: entryX + 10, y: floatTop - 15,
+        x: entryX + 10, y: belowY - 15,
         size: 7, font: font, color: mutedText
       });
+      belowY -= 25;
     }
 
-    // Draw user comment to the right of the photo
-    for (let l = 0; l < rightCommentLines.length; l++) {
-      page.drawText(rightCommentLines[l], {
-        x: rightTextX, y: floatTop - 10 - l * lineHeight,
-        size: fontSize, font: font, color: darkText
-      });
+    // Draw user comment below the photo
+    if (commentLines.length > 0) {
+      for (let l = 0; l < commentLines.length; l++) {
+        page.drawText(commentLines[l], {
+          x: entryX + 5, y: belowY - l * lineHeight,
+          size: fontSize, font: font, color: darkText
+        });
+      }
+      belowY -= commentLines.length * lineHeight + 4;  // gap after comments
     }
 
-    // --- A-code text: full-width below the float zone ---
+    // --- A-code text: full-width below comments ---
     if (aCodeLines.length > 0) {
-      const aCodeTop = floatTop - floatZoneH - 6;
       let lineIdx = 0;
       for (const ac of aCodeLines) {
         for (let l = 0; l < ac.lines.length; l++) {
-          const yPos = aCodeTop - lineIdx * lineHeight;
+          const yPos = belowY - lineIdx * lineHeight;
           if (l === 0) {
             // First line: bold prefix + regular text
             const prefixWidth = fontBold.widthOfTextAtSize(ac.prefix, fontSize);
