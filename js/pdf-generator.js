@@ -1198,9 +1198,10 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       for (const code of uniqueCodes) {
         const aCodeDef = A_CODES.find(ac => ac.code.toUpperCase() === code);
         if (aCodeDef) {
-          // Wrap A-code text at full width
-          const wrapped = wordWrap(`${aCodeDef.code} - ${aCodeDef.text}`, fullCharsPerLine);
-          aCodeLines.push(...wrapped);
+          const prefix = `${aCodeDef.code} - `;
+          // Wrap the full text, then track which is the first line
+          const wrapped = wordWrap(`${prefix}${aCodeDef.text}`, fullCharsPerLine);
+          aCodeLines.push({ prefix, lines: wrapped });
         }
       }
     }
@@ -1239,7 +1240,8 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
     const photoSectionH = image ? imgH : 25;
     const rightTextH = rightCommentLines.length * lineHeight;
     const floatZoneH = Math.max(photoSectionH, rightTextH);  // taller of photo vs right text
-    const aCodeBlockH = aCodeLines.length > 0 ? (aCodeLines.length * lineHeight + 6) : 0;  // +6 for gap
+    const aCodeTotalLines = aCodeLines.reduce((sum, ac) => sum + ac.lines.length, 0);
+    const aCodeBlockH = aCodeTotalLines > 0 ? (aCodeTotalLines * lineHeight + 6) : 0;  // +6 for gap
     const entryPadding = 15;
     const entryHeight = headerH + descH + floatZoneH + aCodeBlockH + entryPadding;
 
@@ -1334,11 +1336,34 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
     // --- A-code text: full-width below the float zone ---
     if (aCodeLines.length > 0) {
       const aCodeTop = floatTop - floatZoneH - 6;
-      for (let l = 0; l < aCodeLines.length; l++) {
-        page.drawText(aCodeLines[l], {
-          x: entryX + 5, y: aCodeTop - l * lineHeight,
-          size: fontSize, font: font, color: darkText
-        });
+      let lineIdx = 0;
+      for (const ac of aCodeLines) {
+        for (let l = 0; l < ac.lines.length; l++) {
+          const yPos = aCodeTop - lineIdx * lineHeight;
+          if (l === 0) {
+            // First line: bold prefix + regular text
+            const prefixWidth = fontBold.widthOfTextAtSize(ac.prefix, fontSize);
+            page.drawText(ac.prefix, {
+              x: entryX + 5, y: yPos,
+              size: fontSize, font: fontBold, color: darkText
+            });
+            // Draw the rest of the first line (after prefix) in regular
+            const restOfLine = ac.lines[0].substring(ac.prefix.length);
+            if (restOfLine) {
+              page.drawText(restOfLine, {
+                x: entryX + 5 + prefixWidth, y: yPos,
+                size: fontSize, font: font, color: darkText
+              });
+            }
+          } else {
+            // Continuation lines: regular font
+            page.drawText(ac.lines[l], {
+              x: entryX + 5, y: yPos,
+              size: fontSize, font: font, color: darkText
+            });
+          }
+          lineIdx++;
+        }
       }
     }
 
