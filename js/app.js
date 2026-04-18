@@ -7,6 +7,7 @@ import '../index.css';
 import { INSPECTION_SECTIONS, A_CODES, createNewInspection } from './models.js';
 import { saveInspection, getInspection, getAllInspections, deleteInspection, savePhoto, getPhoto, deletePhoto, compressImage, blobToDataURL, getSetting, setSetting, pullFromCloud, pushToCloud } from './db.js';
 import { signIn, signOut, getSession, isAuthConfigured } from './auth.js';
+import { openAnnotator } from './photo-annotator.js';
 
 // ============================================================
 // APP STATE
@@ -615,8 +616,14 @@ function renderCoverForm() {
     const file = e.target.files[0];
     if (!file) return;
     try {
-      const blob = await compressImage(file, 1200, 0.85);
-      const thumbnail = await compressImage(file, 300, 0.6);
+      const rawBlob = await compressImage(file, 1200, 0.85);
+
+      // Open annotator
+      const annotatedBlob = await openAnnotator(rawBlob);
+      if (!annotatedBlob) { e.target.value = ''; return; } // Cancelled
+
+      const blob = annotatedBlob;
+      const thumbnail = await compressImage(new File([blob], 'photo.jpg', { type: blob.type }), 300, 0.6);
       const photoId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
 
       // Delete old cover photo if present
@@ -965,8 +972,14 @@ async function renderSectionForm(sectionIndex) {
       if (!file) return;
 
       try {
-        const blob = await compressImage(file, 1200, 0.8);
-        const thumbnail = await compressImage(file, 150, 0.6);
+        const rawBlob = await compressImage(file, 1200, 0.8);
+
+        // Open annotator
+        const annotatedBlob = await openAnnotator(rawBlob);
+        if (!annotatedBlob) { input.value = ''; return; } // Cancelled
+
+        const blob = annotatedBlob;
+        const thumbnail = await compressImage(new File([blob], 'photo.jpg', { type: blob.type }), 150, 0.6);
         const photoId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
 
         await savePhoto({

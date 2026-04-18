@@ -1759,6 +1759,181 @@ body {
   border-color: var(--border);
 }
 
+/* --- Photo Annotator --- */
+.annotator-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: #111;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.annotator-overlay.open {
+  opacity: 1;
+}
+
+.annotator-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px var(--space-md);
+  padding-top: calc(10px + var(--safe-top));
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  flex-shrink: 0;
+}
+
+.annotator-header-btn {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-family: var(--font);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.annotator-header-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.annotator-done-btn {
+  background: var(--blue);
+  color: white;
+}
+
+.annotator-done-btn:hover {
+  background: var(--blue-light);
+}
+
+.annotator-title {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.annotator-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.annotator-canvas-wrap canvas {
+  position: absolute;
+  border-radius: 4px;
+}
+
+#ann-canvas {
+  z-index: 1;
+}
+
+#ann-preview {
+  z-index: 2;
+  cursor: crosshair;
+}
+
+.annotator-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  padding: var(--space-md);
+  padding-bottom: calc(var(--space-md) + var(--safe-bottom));
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  flex-shrink: 0;
+}
+
+.annotator-tools {
+  display: flex;
+  gap: 4px;
+}
+
+.annotator-tool {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.annotator-tool:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+.annotator-tool.active {
+  background: rgba(65, 101, 245, 0.3);
+  border-color: var(--blue);
+  color: #fff;
+}
+
+.annotator-colors {
+  display: flex;
+  gap: 6px;
+}
+
+.annotator-color {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.annotator-color:hover {
+  transform: scale(1.15);
+}
+
+.annotator-color.active {
+  border-color: #fff;
+  transform: scale(1.2);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.annotator-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.annotator-action {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: var(--radius-md);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.annotator-action:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
 /* --- Cover Photo Capture --- */
 .cover-photo-hint {
   font-size: var(--font-size-sm);
