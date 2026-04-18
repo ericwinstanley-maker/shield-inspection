@@ -305,9 +305,9 @@ export const INSPECTION_SECTIONS = [
       { id: 'int-5', num: 5, desc: 'The kitchen, walls, floors, cabinets, sink plumbing, electrical switches & receptacles.' },
       { id: 'int-6', num: 6, desc: 'Comment on the materials used for:',
         optionGroups: [
-          { label: 'Floor sheathing:', options: ['Wood', 'Vinyl/Laminate', 'Ceramic', 'Carpet'], exclusive: true },
-          { label: 'Wall sheathing:', options: ['Apparent', 'Plaster', 'Drywall', 'Paneling'], exclusive: true },
-          { label: 'Ceilings:', options: ['Apparent', 'Plaster', 'Drywall', 'Wood'], exclusive: true }
+          { label: 'Floor sheathing:', options: ['Wood', 'Vinyl/Laminate', 'Ceramic', 'Carpet'], exclusive: false },
+          { label: 'Wall sheathing:', options: ['Apparent', 'Plaster', 'Drywall', 'Paneling'], exclusive: false },
+          { label: 'Ceilings:', options: ['Apparent', 'Plaster', 'Drywall', 'Wood'], exclusive: false }
         ],
         extraFields: [
           { key: 'floorOther', label: 'Other Floor Sheathing', placeholder: 'e.g. Concrete' },
