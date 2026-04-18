@@ -508,6 +508,18 @@ function renderCoverForm() {
           `).join('')}
         </div>
       </div>
+      <div class="form-group">
+        <div class="standalone-checkbox ${insp.general.builtPre1978 ? 'checked' : ''}" id="chk-pre1978">
+          <div class="standalone-checkbox-box">✓</div>
+          <span>May have been built prior to 1978?</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="standalone-checkbox ${insp.general.reviewAddendum ? 'checked' : ''}" id="chk-review-addendum">
+          <div class="standalone-checkbox-box">✓</div>
+          <span>If this box is checked, be sure to review the addendums</span>
+        </div>
+      </div>
     </div>
 
     <div class="page-nav">
@@ -555,6 +567,20 @@ function renderCoverForm() {
       insp.general.attendees = Array.from(main.querySelectorAll('#gen-attendees .checkbox-pill.checked')).map(el => el.dataset.value);
       autoSave();
     });
+  });
+
+  // Built pre-1978 checkbox
+  document.getElementById('chk-pre1978')?.addEventListener('click', () => {
+    insp.general.builtPre1978 = !insp.general.builtPre1978;
+    document.getElementById('chk-pre1978').classList.toggle('checked', insp.general.builtPre1978);
+    autoSave();
+  });
+
+  // Review addendum checkbox
+  document.getElementById('chk-review-addendum')?.addEventListener('click', () => {
+    insp.general.reviewAddendum = !insp.general.reviewAddendum;
+    document.getElementById('chk-review-addendum').classList.toggle('checked', insp.general.reviewAddendum);
+    autoSave();
   });
 
   // Realtor release Yes/No toggle

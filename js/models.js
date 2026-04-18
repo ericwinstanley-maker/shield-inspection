@@ -495,6 +495,8 @@ export function createNewInspection() {
       attendees: [],
       structureType: '',
       occupancy: '',
+      builtPre1978: false,
+      reviewAddendum: false,
       weather: '',
       temperature: '',
       approximateAge: '',

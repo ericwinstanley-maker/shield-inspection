@@ -200,6 +200,10 @@ export async function generatePDF(inspection) {
     for (const [label, fieldName] of Object.entries(attendeeMap)) {
       trySetCheckbox(form, fieldName, attendees.includes(label));
     }
+
+    // Standalone checkboxes
+    trySetCheckbox(form, 'Check Box 9', !!inspection.general.builtPre1978);    // Built prior to 1978
+    trySetCheckbox(form, 'Check Box 10', !!inspection.general.reviewAddendum);  // Review addendum
   } catch (e) { console.warn('General info fields:', e.message); }
 
   // ============================================================
