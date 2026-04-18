@@ -424,10 +424,32 @@ function collectPhotoReferences(inspection) {
 
     for (let i = 0; i < sectionData.items.length; i++) {
       const item = sectionData.items[i];
-      if (item.photos && item.photos.length > 0) {
-        for (const photoId of item.photos) {
+      const hasPhotos = item.photos && item.photos.length > 0;
+      const hasComments = item.comments && item.comments.trim().length > 0;
+      const hasRating = item.rating && ['M', 'P', 'U'].includes(item.rating);
+
+      // Include if item has photos, comments, or a non-S rating
+      if (hasPhotos || hasComments || hasRating) {
+        if (hasPhotos) {
+          // One entry per photo
+          for (const photoId of item.photos) {
+            refs.push({
+              photoId,
+              sectionTitle: sec.title.replace(' INSPECTION', '').replace(' & SOLID FUEL-BURNING APPLIANCES', ''),
+              sectionId: sec.id,
+              itemDesc: sec.items[i].desc,
+              itemNum: sec.items[i].num,
+              itemIndex: i,
+              comments: item.comments || '',
+              rating: item.rating || '',
+              refLabel: `P${pNum}`
+            });
+            pNum++;
+          }
+        } else {
+          // Comment-only entry (no photo)
           refs.push({
-            photoId,
+            photoId: null,
             sectionTitle: sec.title.replace(' INSPECTION', '').replace(' & SOLID FUEL-BURNING APPLIANCES', ''),
             sectionId: sec.id,
             itemDesc: sec.items[i].desc,
@@ -435,7 +457,7 @@ function collectPhotoReferences(inspection) {
             itemIndex: i,
             comments: item.comments || '',
             rating: item.rating || '',
-            refLabel: `P${pNum}`
+            refLabel: `N${pNum}`
           });
           pNum++;
         }
@@ -1164,7 +1186,7 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       color: headerBlue
     });
 
-    page.drawText('PHOTO APPENDIX — Shield Inspection Services', {
+    page.drawText('SUMMARY NOTES & PHOTO APPENDIX — Shield Inspection Services', {
       x: margin, y: pageH - 35,
       size: 12, font: fontBold, color: rgb(1, 1, 1)
     });
@@ -1212,26 +1234,29 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
     // --- Load and size the photo ---
     let image = null;
     let imgW = 0, imgH = 0;
-    try {
-      const photo = await getPhoto(ref.photoId);
-      if (photo && photo.blob) {
-        const arrayBuffer = await photo.blob.arrayBuffer();
-        const uint8Array = new Uint8Array(arrayBuffer);
 
-        if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8) {
-          image = await pdfDoc.embedJpg(uint8Array);
-        } else if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50) {
-          image = await pdfDoc.embedPng(uint8Array);
-        } else {
-          image = await pdfDoc.embedJpg(uint8Array);
+    if (ref.photoId) {
+      try {
+        const photo = await getPhoto(ref.photoId);
+        if (photo && photo.blob) {
+          const arrayBuffer = await photo.blob.arrayBuffer();
+          const uint8Array = new Uint8Array(arrayBuffer);
+
+          if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8) {
+            image = await pdfDoc.embedJpg(uint8Array);
+          } else if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50) {
+            image = await pdfDoc.embedPng(uint8Array);
+          } else {
+            image = await pdfDoc.embedJpg(uint8Array);
+          }
+
+          const dims = image.scaleToFit(photoMaxW, photoMaxH);
+          imgW = dims.width;
+          imgH = dims.height;
         }
-
-        const dims = image.scaleToFit(photoMaxW, photoMaxH);
-        imgW = dims.width;
-        imgH = dims.height;
+      } catch (e) {
+        console.warn(`Failed to load photo ${ref.photoId}:`, e.message);
       }
-    } catch (e) {
-      console.warn(`Failed to load photo ${ref.photoId}:`, e.message);
     }
 
     // --- Calculate entry height (stacked: photo → comments → addendum) ---
@@ -1311,7 +1336,7 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
     const contentTop = entryTop - headerH - descH;
     let belowY = contentTop;
 
-    // Draw photo (left-aligned)
+    // Draw photo (if present)
     if (image) {
       const imgY = belowY - imgH;
       page.drawImage(image, {
@@ -1319,6 +1344,8 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
         width: imgW, height: imgH
       });
       belowY = imgY - 12;  // gap below photo
+    } else if (!ref.photoId) {
+      // Comment-only entry — no photo placeholder needed
     } else {
       page.drawText('[Photo unavailable]', {
         x: entryX + 10, y: belowY - 15,
