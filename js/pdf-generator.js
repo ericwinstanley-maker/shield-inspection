@@ -1286,20 +1286,9 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
       borderWidth: 0.5
     });
 
-    // --- P-label badge ---
-    page.drawRectangle({
-      x: entryX + 5, y: entryTop - 16,
-      width: 28, height: 14,
-      color: headerBlue
-    });
-    page.drawText(ref.refLabel, {
-      x: entryX + 8, y: entryTop - 13,
-      size: 8, font: fontBold, color: rgb(1, 1, 1)
-    });
-
     // --- Section & item label ---
     page.drawText(`${ref.sectionTitle} — Item #${ref.itemNum}`, {
-      x: entryX + 38, y: entryTop - 13,
+      x: entryX + 5, y: entryTop - 13,
       size: 8, font: fontBold, color: darkText
     });
 
