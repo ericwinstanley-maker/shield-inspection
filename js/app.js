@@ -427,7 +427,7 @@ function renderCoverForm() {
           <div class="cover-photo-capture-icon">📷</div>
           <div class="cover-photo-capture-text">Tap to take or upload photo</div>
         </button>
-        <input type="file" accept="image/*" capture="environment" class="hidden" id="cover-photo-input" />
+        <input type="file" accept="image/*" class="hidden" id="cover-photo-input" />
       </div>
     </div>
 
@@ -772,7 +772,7 @@ async function renderSectionForm(sectionIndex) {
         </div>
       </div>
       ${photosHtml}
-      <input type="file" accept="image/*" capture="environment" class="hidden" data-file-input="${i}" />
+      <input type="file" accept="image/*" class="hidden" data-file-input="${i}" />
     `;
 
     itemsContainer.appendChild(div);
