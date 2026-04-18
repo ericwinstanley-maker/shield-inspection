@@ -105,6 +105,13 @@ export async function generatePDF(inspection) {
   }
 
   // ============================================================
+  // PAGE 2: Inspection Fee (contract page)
+  // ============================================================
+  try {
+    setTextField(form, 'Text9', inspection.cover.inspectionFee, FONT_SIZE_FIELD);
+  } catch (e) { console.warn('Inspection fee field:', e.message); }
+
+  // ============================================================
   // PAGE 4: General Information
   // ============================================================
   try {

@@ -477,7 +477,8 @@ export function createNewInspection() {
       zip: '',
       clientName: '',
       inspectionDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-      coverPhotoId: null
+      coverPhotoId: null,
+      inspectionFee: ''
     },
 
     general: {

@@ -367,6 +367,15 @@ function renderCoverForm() {
           <input type="text" class="form-input" id="cover-date" value="${esc(insp.cover.inspectionDate)}" placeholder="March 30, 2026" />
         </div>
       </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Inspection Fee</label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">$</span>
+            <input type="text" class="form-input input-has-prefix" id="cover-fee" value="${esc(insp.cover.inspectionFee)}" placeholder="450" inputmode="decimal" />
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="card mb-lg">
@@ -478,6 +487,7 @@ function renderCoverForm() {
     'cover-zip': (v) => insp.cover.zip = v,
     'cover-client': (v) => insp.cover.clientName = v,
     'cover-date': (v) => insp.cover.inspectionDate = v,
+    'cover-fee': (v) => insp.cover.inspectionFee = v,
     'gen-timestart': (v) => insp.general.timeStarted = v,
     'gen-timeend': (v) => insp.general.timeCompleted = v,
     'gen-proptype': (v) => insp.general.propertyType = v,

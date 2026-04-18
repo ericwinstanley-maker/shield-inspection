@@ -1553,6 +1553,27 @@ body {
   border-left: 3px solid var(--border);
 }
 
+/* --- Input with Prefix (e.g. $ sign) --- */
+.input-with-prefix {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 14px;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.input-has-prefix {
+  padding-left: 28px;
+}
+
 /* --- Cover Photo Capture --- */
 .cover-photo-hint {
   font-size: var(--font-size-sm);
