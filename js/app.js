@@ -397,6 +397,22 @@ function renderCoverForm() {
           <input type="email" class="form-input" id="cover-client-email" value="${esc(insp.cover.clientEmail)}" placeholder="client@email.com" />
         </div>
       </div>
+      <div class="form-group">
+        <label class="form-label">Client Signature</label>
+        <div class="signature-pad-container">
+          <canvas id="signature-canvas" class="signature-canvas" width="600" height="160"></canvas>
+          <div class="signature-pad-actions">
+            <button class="btn btn-sm btn-outline" id="btn-clear-signature">Clear</button>
+          </div>
+          ${insp.cover.clientSignature ? '<div class="signature-saved-badge">✓ Signature saved</div>' : ''}
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Signature Date</label>
+          <input type="text" class="form-input" id="cover-sig-date" value="${esc(insp.cover.signatureDate || insp.cover.inspectionDate)}" placeholder="April 18, 2026" />
+        </div>
+      </div>
     </div>
 
     <div class="card mb-lg">
@@ -511,6 +527,7 @@ function renderCoverForm() {
     'cover-fee': (v) => insp.cover.inspectionFee = v,
     'cover-realtor-name': (v) => insp.cover.realtorName = v,
     'cover-client-email': (v) => insp.cover.clientEmail = v,
+    'cover-sig-date': (v) => insp.cover.signatureDate = v,
     'gen-timestart': (v) => insp.general.timeStarted = v,
     'gen-timeend': (v) => insp.general.timeCompleted = v,
     'gen-proptype': (v) => insp.general.propertyType = v,
@@ -549,6 +566,9 @@ function renderCoverForm() {
       autoSave();
     });
   });
+
+  // Signature pad — Canvas drawing for client signature
+  initSignaturePad(insp);
 
   // Cover photo — load existing thumbnail if present
   if (insp.cover.coverPhotoId) {
@@ -1341,6 +1361,123 @@ function openACodeModal(callback) {
 function closeACodeModal() {
   document.getElementById('acode-modal').classList.add('hidden');
   acodeCallback = null;
+}
+
+// ============================================================
+// SIGNATURE PAD
+// ============================================================
+
+function initSignaturePad(insp) {
+  const canvas = document.getElementById('signature-canvas');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+  let isDrawing = false;
+  let lastX = 0;
+  let lastY = 0;
+
+  // Scale canvas for retina/high-DPI
+  const rect = canvas.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+
+  // Pen style
+  ctx.strokeStyle = '#1a1a2e';
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  // Restore existing signature if present
+  if (insp.cover.clientSignature) {
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, rect.width, rect.height);
+    };
+    img.src = insp.cover.clientSignature;
+  }
+
+  function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return {
+      x: touch.clientX - r.left,
+      y: touch.clientY - r.top
+    };
+  }
+
+  function startDraw(e) {
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+  }
+
+  function draw(e) {
+    e.preventDefault();
+    if (!isDrawing) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+    lastX = pos.x;
+    lastY = pos.y;
+  }
+
+  function endDraw(e) {
+    if (e) e.preventDefault();
+    if (!isDrawing) return;
+    isDrawing = false;
+    ctx.beginPath();
+    // Save signature as PNG data URL
+    saveSignature();
+  }
+
+  function saveSignature() {
+    // Create a temporary canvas at the original resolution for storage
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = rect.width;
+    tempCanvas.height = rect.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.drawImage(canvas, 0, 0, rect.width, rect.height);
+    insp.cover.clientSignature = tempCanvas.toDataURL('image/png');
+    autoSave();
+    // Update badge
+    const container = canvas.closest('.signature-pad-container');
+    let badge = container.querySelector('.signature-saved-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.className = 'signature-saved-badge';
+      container.appendChild(badge);
+    }
+    badge.textContent = '✓ Signature saved';
+  }
+
+  // Mouse events
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', endDraw);
+  canvas.addEventListener('mouseleave', endDraw);
+
+  // Touch events
+  canvas.addEventListener('touchstart', startDraw, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', endDraw, { passive: false });
+  canvas.addEventListener('touchcancel', endDraw);
+
+  // Clear button
+  document.getElementById('btn-clear-signature').addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    insp.cover.clientSignature = null;
+    autoSave();
+    const badge = canvas.closest('.signature-pad-container').querySelector('.signature-saved-badge');
+    if (badge) badge.remove();
+  });
 }
 
 // ============================================================

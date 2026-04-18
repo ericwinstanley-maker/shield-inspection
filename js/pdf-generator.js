@@ -130,6 +130,42 @@ export async function generatePDF(inspection) {
   } catch (e) { console.warn('Contract auth fields:', e.message); }
 
   // ============================================================
+  // PAGE 3: Client Signature & Date
+  // ============================================================
+  if (inspection.cover.clientSignature) {
+    try {
+      // Decode the data URL to raw bytes
+      const dataUrl = inspection.cover.clientSignature;
+      const base64 = dataUrl.split(',')[1];
+      const binaryStr = atob(base64);
+      const sigBytes = new Uint8Array(binaryStr.length);
+      for (let i = 0; i < binaryStr.length; i++) {
+        sigBytes[i] = binaryStr.charCodeAt(i);
+      }
+
+      const sigImage = await pdfDoc.embedPng(sigBytes);
+      const page3 = pdfDoc.getPages()[2];
+
+      // Client Signature area: x=263, y=279, w=150, h=32
+      const sigDims = sigImage.scaleToFit(150, 32);
+      page3.drawImage(sigImage, {
+        x: 263,
+        y: 279,
+        width: sigDims.width,
+        height: sigDims.height,
+      });
+    } catch (e) {
+      console.warn('Client signature embed failed:', e.message);
+    }
+  }
+
+  // Signature date
+  try {
+    const sigDate = inspection.cover.signatureDate || inspection.cover.inspectionDate || '';
+    setTextField(form, 'Text8', sigDate, FONT_SIZE_FIELD);
+  } catch (e) { console.warn('Signature date field:', e.message); }
+
+  // ============================================================
   // PAGE 4: General Information
   // ============================================================
   try {

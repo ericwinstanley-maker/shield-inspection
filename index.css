@@ -1574,6 +1574,47 @@ body {
   padding-left: 28px;
 }
 
+/* --- Signature Pad --- */
+.signature-pad-container {
+  position: relative;
+}
+
+.signature-canvas {
+  width: 100%;
+  height: 120px;
+  background: #ffffff;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  cursor: crosshair;
+  touch-action: none;
+  transition: border-color var(--transition-fast);
+}
+
+.signature-canvas:hover,
+.signature-canvas:active {
+  border-color: var(--blue);
+}
+
+.signature-pad-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-sm);
+}
+
+.signature-saved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: var(--green-bg);
+  color: var(--green);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  margin-top: var(--space-sm);
+}
+
 /* --- Cover Photo Capture --- */
 .cover-photo-hint {
   font-size: var(--font-size-sm);

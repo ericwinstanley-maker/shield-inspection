@@ -481,7 +481,9 @@ export function createNewInspection() {
       inspectionFee: '',
       realtorRelease: '',
       realtorName: '',
-      clientEmail: ''
+      clientEmail: '',
+      clientSignature: null,
+      signatureDate: ''
     },
 
     general: {
