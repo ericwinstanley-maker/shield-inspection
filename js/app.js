@@ -427,7 +427,8 @@ function renderCoverForm() {
           <div class="cover-photo-capture-icon">📷</div>
           <div class="cover-photo-capture-text">Tap to take or upload photo</div>
         </button>
-        <input type="file" accept="image/*" class="hidden" id="cover-photo-input" />
+        <input type="file" accept="image/*" capture="environment" class="hidden" id="cover-photo-input-camera" />
+        <input type="file" accept="image/*" class="hidden" id="cover-photo-input-gallery" />
       </div>
     </div>
 
@@ -603,11 +604,14 @@ function renderCoverForm() {
 
   // Cover photo — capture button
   document.getElementById('btn-capture-cover-photo').addEventListener('click', () => {
-    document.getElementById('cover-photo-input').click();
+    showPhotoActionSheet(
+      () => document.getElementById('cover-photo-input-camera').click(),
+      () => document.getElementById('cover-photo-input-gallery').click()
+    );
   });
 
-  // Cover photo — file input change
-  document.getElementById('cover-photo-input').addEventListener('change', async (e) => {
+  // Cover photo — file input change (shared handler for both camera and gallery)
+  const handleCoverPhotoChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     try {
@@ -644,7 +648,9 @@ function renderCoverForm() {
       console.error(err);
     }
     e.target.value = '';
-  });
+  };
+  document.getElementById('cover-photo-input-camera').addEventListener('change', handleCoverPhotoChange);
+  document.getElementById('cover-photo-input-gallery').addEventListener('change', handleCoverPhotoChange);
 
   // Cover photo — remove button
   document.getElementById('btn-remove-cover-photo').addEventListener('click', async () => {
@@ -798,7 +804,8 @@ async function renderSectionForm(sectionIndex) {
         </div>
       </div>
       ${photosHtml}
-      <input type="file" accept="image/*" class="hidden" data-file-input="${i}" />
+      <input type="file" accept="image/*" capture="environment" class="hidden" data-file-camera="${i}" />
+      <input type="file" accept="image/*" class="hidden" data-file-gallery="${i}" />
     `;
 
     itemsContainer.appendChild(div);
@@ -940,20 +947,21 @@ async function renderSectionForm(sectionIndex) {
     });
   });
 
-  // Photo button
+  // Photo button — show action sheet
   itemsContainer.querySelectorAll('[data-action="photo"]').forEach(btn => {
     btn.addEventListener('click', () => {
       const idx = parseInt(btn.dataset.itemIdx);
-      const fileInput = itemsContainer.querySelector(`[data-file-input="${idx}"]`);
-      fileInput.click();
+      showPhotoActionSheet(
+        () => itemsContainer.querySelector(`[data-file-camera="${idx}"]`).click(),
+        () => itemsContainer.querySelector(`[data-file-gallery="${idx}"]`).click()
+      );
     });
   });
 
-  // File input change
-  itemsContainer.querySelectorAll('[data-file-input]').forEach(input => {
-    input.addEventListener('change', async (e) => {
-      const idx = parseInt(input.dataset.fileInput);
-      const file = e.target.files[0];
+  // File input change (shared handler for both camera and gallery)
+  const handleSectionPhotoChange = async (input) => {
+      const idx = parseInt(input.dataset.fileCamera ?? input.dataset.fileGallery);
+      const file = input.files[0];
       if (!file) return;
 
       try {
@@ -985,7 +993,13 @@ async function renderSectionForm(sectionIndex) {
       }
 
       input.value = '';
-    });
+  };
+
+  itemsContainer.querySelectorAll('[data-file-camera]').forEach(input => {
+    input.addEventListener('change', () => handleSectionPhotoChange(input));
+  });
+  itemsContainer.querySelectorAll('[data-file-gallery]').forEach(input => {
+    input.addEventListener('change', () => handleSectionPhotoChange(input));
   });
 
   // Photo delete
@@ -1503,6 +1517,54 @@ function initSignaturePad(insp) {
     autoSave();
     const badge = canvas.closest('.signature-pad-container').querySelector('.signature-saved-badge');
     if (badge) badge.remove();
+  });
+}
+// ============================================================
+// PHOTO ACTION SHEET
+// ============================================================
+
+function showPhotoActionSheet(onCamera, onGallery) {
+  // Remove existing action sheet if any
+  const existing = document.getElementById('photo-action-sheet');
+  if (existing) existing.remove();
+
+  const sheet = document.createElement('div');
+  sheet.id = 'photo-action-sheet';
+  sheet.className = 'photo-action-sheet';
+  sheet.innerHTML = `
+    <div class="photo-action-backdrop"></div>
+    <div class="photo-action-panel">
+      <button class="photo-action-btn" id="photo-action-camera">
+        <span class="photo-action-icon">📷</span>
+        <span>Take Photo</span>
+      </button>
+      <button class="photo-action-btn" id="photo-action-gallery">
+        <span class="photo-action-icon">🖼️</span>
+        <span>Choose from Library</span>
+      </button>
+      <button class="photo-action-btn photo-action-cancel" id="photo-action-cancel">Cancel</button>
+    </div>
+  `;
+
+  document.body.appendChild(sheet);
+
+  // Force reflow then animate in
+  requestAnimationFrame(() => sheet.classList.add('open'));
+
+  function close() {
+    sheet.classList.remove('open');
+    setTimeout(() => sheet.remove(), 250);
+  }
+
+  sheet.querySelector('.photo-action-backdrop').addEventListener('click', close);
+  sheet.querySelector('#photo-action-cancel').addEventListener('click', close);
+  sheet.querySelector('#photo-action-camera').addEventListener('click', () => {
+    close();
+    setTimeout(() => onCamera(), 100);
+  });
+  sheet.querySelector('#photo-action-gallery').addEventListener('click', () => {
+    close();
+    setTimeout(() => onGallery(), 100);
   });
 }
 
