@@ -108,7 +108,13 @@ export async function generatePDF(inspection) {
   // PAGE 2: Inspection Fee (contract page)
   // ============================================================
   try {
-    setTextField(form, 'Text9', inspection.cover.inspectionFee, FONT_SIZE_FIELD);
+    const feeVal = inspection.cover.inspectionFee;
+    if (feeVal) {
+      const field = form.getTextField('Text9');
+      field.setText('$' + String(feeVal));
+      field.setFontSize(FONT_SIZE_FIELD);
+      field.setAlignment(1); // 1 = left align within the field
+    }
   } catch (e) { console.warn('Inspection fee field:', e.message); }
 
   // ============================================================
