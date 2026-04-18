@@ -92,6 +92,26 @@ export function onAuthChange(callback) {
 }
 
 /**
+ * Send a password reset email
+ */
+export async function resetPassword(email) {
+  const client = getClient();
+  const { error } = await client.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+  if (error) throw error;
+}
+
+/**
+ * Update password (used after reset link clicked)
+ */
+export async function updatePassword(newPassword) {
+  const client = getClient();
+  const { error } = await client.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+}
+
+/**
  * Check if Supabase is configured
  */
 export function isAuthConfigured() {

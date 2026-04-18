@@ -1505,6 +1505,24 @@ body {
   color: var(--text-muted);
 }
 
+.login-forgot {
+  text-align: center;
+  margin-top: var(--space-md);
+}
+
+.login-forgot a {
+  color: var(--blue);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+
+.login-forgot a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
 /* --- Logout Button (Header) --- */
 .btn-logout {
   background: transparent;

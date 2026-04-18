@@ -6,7 +6,7 @@
 import '../index.css';
 import { INSPECTION_SECTIONS, A_CODES, createNewInspection } from './models.js';
 import { saveInspection, getInspection, getAllInspections, deleteInspection, savePhoto, getPhoto, deletePhoto, compressImage, blobToDataURL, getSetting, setSetting, pullFromCloud, pushToCloud } from './db.js';
-import { signIn, signOut, getSession, isAuthConfigured } from './auth.js';
+import { signIn, signOut, getSession, isAuthConfigured, resetPassword, updatePassword, onAuthChange } from './auth.js';
 import { openAnnotator } from './photo-annotator.js';
 
 // ============================================================
@@ -131,6 +131,103 @@ function initAuth() {
       await signOut();
     } catch { /* ignore */ }
     showLogin();
+  });
+
+  // Forgot Password link
+  document.getElementById('forgot-password-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('login-form').classList.add('hidden');
+    document.getElementById('forgot-form').classList.remove('hidden');
+    errorEl.classList.remove('visible');
+  });
+
+  // Back to Login link
+  document.getElementById('back-to-login').addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById('forgot-form').classList.add('hidden');
+    document.getElementById('login-form').classList.remove('hidden');
+  });
+
+  // Forgot Password form submit
+  document.getElementById('forgot-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('reset-email').value.trim();
+    const btn = document.getElementById('reset-btn');
+    if (!email) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    errorEl.classList.remove('visible');
+
+    try {
+      await resetPassword(email);
+      errorEl.textContent = '✓ Reset link sent! Check your email inbox.';
+      errorEl.classList.add('visible');
+      errorEl.style.color = 'var(--green)';
+      errorEl.style.background = 'var(--green-bg)';
+    } catch (err) {
+      errorEl.textContent = err.message || 'Failed to send reset email.';
+      errorEl.classList.add('visible');
+      errorEl.style.color = '';
+      errorEl.style.background = '';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send Reset Link';
+    }
+  });
+
+  // New Password form submit (after clicking reset link in email)
+  document.getElementById('new-password-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPw = document.getElementById('new-password').value;
+    const confirmPw = document.getElementById('confirm-password').value;
+    const btn = document.getElementById('set-password-btn');
+
+    if (newPw !== confirmPw) {
+      errorEl.textContent = 'Passwords do not match.';
+      errorEl.classList.add('visible');
+      errorEl.style.color = '';
+      errorEl.style.background = '';
+      return;
+    }
+
+    if (newPw.length < 6) {
+      errorEl.textContent = 'Password must be at least 6 characters.';
+      errorEl.classList.add('visible');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Updating...';
+    errorEl.classList.remove('visible');
+
+    try {
+      await updatePassword(newPw);
+      errorEl.textContent = '✓ Password updated! You are now signed in.';
+      errorEl.classList.add('visible');
+      errorEl.style.color = 'var(--green)';
+      errorEl.style.background = 'var(--green-bg)';
+      setTimeout(() => showApp(), 1500);
+    } catch (err) {
+      errorEl.textContent = err.message || 'Failed to update password.';
+      errorEl.classList.add('visible');
+      errorEl.style.color = '';
+      errorEl.style.background = '';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Set New Password';
+    }
+  });
+
+  // Listen for PASSWORD_RECOVERY event (user clicked reset link)
+  onAuthChange((event) => {
+    if (event === 'PASSWORD_RECOVERY') {
+      // Show the new password form
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('forgot-form').classList.add('hidden');
+      document.getElementById('new-password-form').classList.remove('hidden');
+      showLogin();
+    }
   });
 }
 
