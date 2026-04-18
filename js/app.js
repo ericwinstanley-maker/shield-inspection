@@ -31,11 +31,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Check auth
   if (isAuthConfigured()) {
-    const session = await getSession();
-    if (session) {
-      showApp();
-    } else {
+    // Detect password recovery flow from URL hash (e.g., #access_token=...&type=recovery)
+    const hash = window.location.hash;
+    const isRecovery = hash.includes('type=recovery') || hash.includes('type=magiclink');
+
+    if (isRecovery) {
+      // Show the "Set New Password" form instead of auto-logging in
       showLogin();
+      document.getElementById('login-form').classList.add('hidden');
+      document.getElementById('forgot-form').classList.add('hidden');
+      document.getElementById('new-password-form').classList.remove('hidden');
+      document.getElementById('login-error').textContent = '';
+      // Clear the hash so it doesn't trigger again on refresh
+      history.replaceState(null, '', window.location.pathname);
+    } else {
+      const session = await getSession();
+      if (session) {
+        showApp();
+      } else {
+        showLogin();
+      }
     }
   } else {
     // Auth not configured — show app directly (dev mode)
