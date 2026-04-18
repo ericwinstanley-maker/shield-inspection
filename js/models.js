@@ -478,7 +478,10 @@ export function createNewInspection() {
       clientName: '',
       inspectionDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
       coverPhotoId: null,
-      inspectionFee: ''
+      inspectionFee: '',
+      realtorRelease: '',
+      realtorName: '',
+      clientEmail: ''
     },
 
     general: {

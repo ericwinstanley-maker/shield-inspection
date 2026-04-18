@@ -112,6 +112,24 @@ export async function generatePDF(inspection) {
   } catch (e) { console.warn('Inspection fee field:', e.message); }
 
   // ============================================================
+  // PAGE 3: Contract Authorization (realtor release, email)
+  // ============================================================
+  try {
+    // Realtor release checkboxes: Check Box3 = yes, Check Box4 = no
+    if (inspection.cover.realtorRelease === 'yes') {
+      trySetCheckbox(form, 'Check Box3', true);
+      trySetCheckbox(form, 'Check Box4', false);
+    } else if (inspection.cover.realtorRelease === 'no') {
+      trySetCheckbox(form, 'Check Box3', false);
+      trySetCheckbox(form, 'Check Box4', true);
+    }
+    // Realtor name
+    setTextField(form, 'Text3', inspection.cover.realtorName, FONT_SIZE_FIELD);
+    // Client email
+    setTextField(form, 'Text4', inspection.cover.clientEmail, FONT_SIZE_FIELD);
+  } catch (e) { console.warn('Contract auth fields:', e.message); }
+
+  // ============================================================
   // PAGE 4: General Information
   // ============================================================
   try {

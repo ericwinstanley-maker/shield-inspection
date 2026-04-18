@@ -379,6 +379,27 @@ function renderCoverForm() {
     </div>
 
     <div class="card mb-lg">
+      <div class="card-header"><span class="card-title">Contract Authorization</span></div>
+      <div class="form-group">
+        <label class="form-label">I authorize this report to be released to my realtor</label>
+        <div class="checkbox-group" id="realtor-release" data-exclusive="true">
+          <div class="checkbox-pill ${insp.cover.realtorRelease === 'yes' ? 'checked' : ''}" data-value="yes">Yes</div>
+          <div class="checkbox-pill ${insp.cover.realtorRelease === 'no' ? 'checked' : ''}" data-value="no">No</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Realtor Name</label>
+          <input type="text" class="form-input" id="cover-realtor-name" value="${esc(insp.cover.realtorName)}" placeholder="Jane Doe" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client Email</label>
+          <input type="email" class="form-input" id="cover-client-email" value="${esc(insp.cover.clientEmail)}" placeholder="client@email.com" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-lg">
       <div class="card-header"><span class="card-title">Property Photo</span></div>
       <p class="cover-photo-hint">Take or upload a photo of the front of the house. This will appear on the cover page of the report.</p>
       <div class="cover-photo-area" id="cover-photo-area">
@@ -488,6 +509,8 @@ function renderCoverForm() {
     'cover-client': (v) => insp.cover.clientName = v,
     'cover-date': (v) => insp.cover.inspectionDate = v,
     'cover-fee': (v) => insp.cover.inspectionFee = v,
+    'cover-realtor-name': (v) => insp.cover.realtorName = v,
+    'cover-client-email': (v) => insp.cover.clientEmail = v,
     'gen-timestart': (v) => insp.general.timeStarted = v,
     'gen-timeend': (v) => insp.general.timeCompleted = v,
     'gen-proptype': (v) => insp.general.propertyType = v,
@@ -513,6 +536,16 @@ function renderCoverForm() {
     pill.addEventListener('click', () => {
       pill.classList.toggle('checked');
       insp.general.attendees = Array.from(main.querySelectorAll('#gen-attendees .checkbox-pill.checked')).map(el => el.dataset.value);
+      autoSave();
+    });
+  });
+
+  // Realtor release Yes/No toggle
+  main.querySelectorAll('#realtor-release .checkbox-pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      main.querySelectorAll('#realtor-release .checkbox-pill').forEach(p => p.classList.remove('checked'));
+      pill.classList.add('checked');
+      insp.cover.realtorRelease = pill.dataset.value;
       autoSave();
     });
   });
