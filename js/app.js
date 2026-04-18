@@ -370,6 +370,22 @@ function renderCoverForm() {
     </div>
 
     <div class="card mb-lg">
+      <div class="card-header"><span class="card-title">Property Photo</span></div>
+      <p class="cover-photo-hint">Take or upload a photo of the front of the house. This will appear on the cover page of the report.</p>
+      <div class="cover-photo-area" id="cover-photo-area">
+        <div class="cover-photo-preview ${insp.cover.coverPhotoId ? '' : 'hidden'}" id="cover-photo-preview">
+          <img id="cover-photo-img" src="" alt="Property photo" />
+          <button class="cover-photo-remove" id="btn-remove-cover-photo" title="Remove photo">&times;</button>
+        </div>
+        <button class="cover-photo-capture ${insp.cover.coverPhotoId ? 'hidden' : ''}" id="btn-capture-cover-photo">
+          <div class="cover-photo-capture-icon">📷</div>
+          <div class="cover-photo-capture-text">Tap to take or upload photo</div>
+        </button>
+        <input type="file" accept="image/*" capture="environment" class="hidden" id="cover-photo-input" />
+      </div>
+    </div>
+
+    <div class="card mb-lg">
       <div class="card-header"><span class="card-title">General Information</span></div>
       <div class="form-row">
         <div class="form-group">
@@ -489,6 +505,69 @@ function renderCoverForm() {
       insp.general.attendees = Array.from(main.querySelectorAll('#gen-attendees .checkbox-pill.checked')).map(el => el.dataset.value);
       autoSave();
     });
+  });
+
+  // Cover photo — load existing thumbnail if present
+  if (insp.cover.coverPhotoId) {
+    loadCoverPhotoPreview(insp.cover.coverPhotoId);
+  }
+
+  // Cover photo — capture button
+  document.getElementById('btn-capture-cover-photo').addEventListener('click', () => {
+    document.getElementById('cover-photo-input').click();
+  });
+
+  // Cover photo — file input change
+  document.getElementById('cover-photo-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const blob = await compressImage(file, 1200, 0.85);
+      const thumbnail = await compressImage(file, 300, 0.6);
+      const photoId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36);
+
+      // Delete old cover photo if present
+      if (insp.cover.coverPhotoId) {
+        await deletePhoto(insp.cover.coverPhotoId);
+      }
+
+      await savePhoto({
+        id: photoId,
+        inspectionId: insp.id,
+        itemId: 'cover-photo',
+        sectionId: 'cover',
+        blob: blob,
+        thumbnail: thumbnail,
+        label: 'Property front',
+        timestamp: new Date().toISOString()
+      });
+
+      insp.cover.coverPhotoId = photoId;
+      await saveInspection(insp);
+      showToast('Property photo saved', 'success');
+
+      // Show preview
+      loadCoverPhotoPreview(photoId);
+      document.getElementById('cover-photo-preview').classList.remove('hidden');
+      document.getElementById('btn-capture-cover-photo').classList.add('hidden');
+    } catch (err) {
+      showToast('Failed to save photo', 'error');
+      console.error(err);
+    }
+    e.target.value = '';
+  });
+
+  // Cover photo — remove button
+  document.getElementById('btn-remove-cover-photo').addEventListener('click', async () => {
+    if (insp.cover.coverPhotoId) {
+      await deletePhoto(insp.cover.coverPhotoId);
+      insp.cover.coverPhotoId = null;
+      await saveInspection(insp);
+      showToast('Property photo removed', 'success');
+    }
+    document.getElementById('cover-photo-preview').classList.add('hidden');
+    document.getElementById('btn-capture-cover-photo').classList.remove('hidden');
+    document.getElementById('cover-photo-img').src = '';
   });
 
   document.getElementById('btn-back-dash').addEventListener('click', () => navigate('dashboard'));
@@ -1245,6 +1324,23 @@ function showToast(message, type = '') {
   toast.textContent = message;
   container.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
+}
+
+// ============================================================
+// COVER PHOTO PREVIEW
+// ============================================================
+
+async function loadCoverPhotoPreview(photoId) {
+  try {
+    const photo = await getPhoto(photoId);
+    if (photo) {
+      const url = await blobToDataURL(photo.thumbnail || photo.blob);
+      const imgEl = document.getElementById('cover-photo-img');
+      if (imgEl) imgEl.src = url;
+    }
+  } catch (e) {
+    console.warn('Failed to load cover photo preview:', e.message);
+  }
 }
 
 // ============================================================

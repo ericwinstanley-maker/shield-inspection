@@ -61,6 +61,50 @@ export async function generatePDF(inspection) {
   } catch (e) { console.warn('Cover page fields:', e.message); }
 
   // ============================================================
+  // PAGE 1: Cover Photo (front of house, below Date)
+  // ============================================================
+  if (inspection.cover.coverPhotoId) {
+    try {
+      const coverPhoto = await getPhoto(inspection.cover.coverPhotoId);
+      if (coverPhoto && coverPhoto.blob) {
+        const arrayBuffer = await coverPhoto.blob.arrayBuffer();
+        const uint8Array = new Uint8Array(arrayBuffer);
+
+        let coverImage;
+        if (uint8Array[0] === 0xFF && uint8Array[1] === 0xD8) {
+          coverImage = await pdfDoc.embedJpg(uint8Array);
+        } else if (uint8Array[0] === 0x89 && uint8Array[1] === 0x50) {
+          coverImage = await pdfDoc.embedPng(uint8Array);
+        } else {
+          coverImage = await pdfDoc.embedJpg(uint8Array);
+        }
+
+        // Position the photo on page 1, centered below the Date field
+        const coverPage = pdfDoc.getPages()[0];
+        const pageWidth = coverPage.getWidth();
+
+        // Max photo dimensions — fit in the space below Date (y=184) with some padding
+        const maxPhotoW = 320;
+        const maxPhotoH = 140;
+        const dims = coverImage.scaleToFit(maxPhotoW, maxPhotoH);
+
+        // Date field bottom is at y=184. Place photo centered below with a small gap.
+        const photoX = (pageWidth - dims.width) / 2;
+        const photoY = 170 - dims.height;  // 14pt gap below Date field bottom
+
+        coverPage.drawImage(coverImage, {
+          x: photoX,
+          y: photoY,
+          width: dims.width,
+          height: dims.height,
+        });
+      }
+    } catch (e) {
+      console.warn('Cover photo embed failed:', e.message);
+    }
+  }
+
+  // ============================================================
   // PAGE 4: General Information
   // ============================================================
   try {

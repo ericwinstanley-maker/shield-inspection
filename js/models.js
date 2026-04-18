@@ -476,7 +476,8 @@ export function createNewInspection() {
       state: 'NY',
       zip: '',
       clientName: '',
-      inspectionDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+      inspectionDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      coverPhotoId: null
     },
 
     general: {

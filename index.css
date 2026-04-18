@@ -1552,3 +1552,107 @@ body {
   border-radius: var(--radius-md);
   border-left: 3px solid var(--border);
 }
+
+/* --- Cover Photo Capture --- */
+.cover-photo-hint {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+  line-height: 1.4;
+}
+
+.cover-photo-area {
+  position: relative;
+}
+
+.cover-photo-capture {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  min-height: 180px;
+  background: var(--bg-input);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: var(--space-xl);
+}
+
+.cover-photo-capture:hover {
+  border-color: var(--blue);
+  background: var(--blue-glow);
+}
+
+.cover-photo-capture:active {
+  transform: scale(0.98);
+}
+
+.cover-photo-capture-icon {
+  font-size: 40px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.cover-photo-capture:hover .cover-photo-capture-icon {
+  opacity: 1;
+}
+
+.cover-photo-capture-text {
+  font-size: var(--font-size-sm);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.cover-photo-preview {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid var(--border);
+  background: var(--bg-input);
+  transition: border-color var(--transition-fast);
+}
+
+.cover-photo-preview:hover {
+  border-color: var(--blue);
+}
+
+.cover-photo-preview img {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  display: block;
+  background: #000;
+}
+
+.cover-photo-remove {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 32px;
+  height: 32px;
+  background: var(--red);
+  border: none;
+  border-radius: var(--radius-full);
+  color: white;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+}
+
+.cover-photo-remove:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.cover-photo-remove:active {
+  transform: scale(0.95);
+}
+

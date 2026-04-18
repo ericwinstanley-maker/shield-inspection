@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "pdf-parse": "^2.4.5",
+    "pdfjs-dist": "^4.0.379",
     "vite": "^8.0.1"
   },
   "dependencies": {
