@@ -97,7 +97,7 @@ export function onAuthChange(callback) {
 export async function resetPassword(email) {
   const client = getClient();
   const { error } = await client.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin
+    redirectTo: 'https://shield-inspection.vercel.app'
   });
   if (error) throw error;
 }
