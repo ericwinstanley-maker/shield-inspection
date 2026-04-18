@@ -1109,7 +1109,7 @@ async function renderSummary() {
     </div>
 
     <div class="card mb-lg">
-      <div class="card-header"><span class="card-title">Addendum Codes (Auto-detected + Manual)</span></div>
+      <div class="card-header"><span class="card-title">Addendum Codes</span></div>
       <div class="section-subtitle mb-md">Codes referenced in your comments are auto-checked. You can manually add or remove codes below.</div>
       <div class="addendum-list" id="addendum-list">
         ${A_CODES.map(ac => {
