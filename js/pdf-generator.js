@@ -1261,8 +1261,8 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
 
     // --- Calculate entry height (stacked: photo → comments → addendum) ---
     const headerH = 22;  // P1 badge + section title line
-    const descH = 12;    // item description line
-    const photoSectionH = image ? imgH + 12 : 25;  // +12 for gap below photo
+    const descH = 18;    // item description line + gap
+    const photoSectionH = image ? imgH + 12 : (ref.photoId ? 25 : 0);  // no photo block for comment-only
     const commentBlockH = commentLines.length > 0 ? (commentLines.length * lineHeight + 4) : 0;  // +4 gap
     const aCodeTotalLines = aCodeLines.reduce((sum, ac) => sum + ac.lines.length, 0);
     const aCodeBlockH = aCodeTotalLines > 0 ? (aCodeTotalLines * lineHeight + 6) : 0;  // +6 for gap

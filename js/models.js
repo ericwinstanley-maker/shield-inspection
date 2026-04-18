@@ -299,7 +299,7 @@ export const INSPECTION_SECTIONS = [
       { id: 'int-3', num: 3, desc: 'A representative number of doors and windows throughout.', helperText: "The inspector will generally check for the water-tightness of the home. This includes a spot check around the top, bottom and sides of doors, windows, etc. Caulking may be missing, loose or deteriorated as well as applicable flashing materials. The standards of practice do not require inspectors to check and inspect storm windows and screens, however, the home inspector will bring this to your attention as applicable. The inspection includes a careful observation for cracked, broken or missing window panes. Condensation typically shows up when there is a compromised seal and during great temperature differences between the indoors and outdoors." },
       { id: 'int-4', num: 4, desc: 'Garage doors and garage door openers as well as reversing mechanisms and other related safety items with the garage.',
         optionGroups: [
-          { label: 'Door opens:', options: ['Manually', 'Motorized'], exclusive: true }
+          { label: 'Door opens:', options: ['Manually', 'Motorized'], exclusive: false }
         ]
       },
       { id: 'int-5', num: 5, desc: 'The kitchen, walls, floors, cabinets, sink plumbing, electrical switches & receptacles.' },
