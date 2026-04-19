@@ -342,20 +342,13 @@ function trySetCheckbox(form, fieldName, checked) {
 
 /**
  * Set a radio-button-style rating group (S/M/P/U) on the PDF.
- * All CheckBoxGrp fields have 4 widgets with on-values [Yes, Yes1, Yes2, Yes3]
- * except CheckBoxGrp28-33 (Electrical) which use [Yes, Yes2, Yes2, Yes3].
+ * All CheckBoxGrp fields have 4 widgets with on-values [Yes, Yes1, Yes2, Yes3].
  */
 function setRatingGroup(form, groupName, rating) {
   if (!rating) return;
 
   // Standard mapping: S→Yes, M→Yes1, P→Yes2, U→Yes3
-  let ratingMap = { 'S': 'Yes', 'M': 'Yes1', 'P': 'Yes2', 'U': 'Yes3' };
-
-  // Electrical groups 28-33 have M widget using 'Yes2' instead of 'Yes1'
-  const grpNum = parseInt(groupName.replace('CheckBoxGrp', ''), 10);
-  if (grpNum >= 28 && grpNum <= 33) {
-    ratingMap = { 'S': 'Yes', 'M': 'Yes2', 'P': 'Yes2', 'U': 'Yes3' };
-  }
+  const ratingMap = { 'S': 'Yes', 'M': 'Yes1', 'P': 'Yes2', 'U': 'Yes3' };
 
   const valName = ratingMap[rating];
   if (!valName) return;
