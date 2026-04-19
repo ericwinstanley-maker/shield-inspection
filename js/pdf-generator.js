@@ -233,6 +233,14 @@ export async function generatePDF(inspection) {
     console.warn('Could not flatten form (values still visible):', e.message);
   }
 
+  // Remove the AcroForm dictionary entirely — this ensures the PDF
+  // has zero interactive fields even if flatten() missed some
+  try {
+    pdfDoc.catalog.delete(PDFName.of('AcroForm'));
+  } catch (e) {
+    console.warn('Could not remove AcroForm:', e.message);
+  }
+
   // Execute deferred draw overrides AFTER flatten so they appear on top of
   // the now-static page content (e.g., broken duplicate checkboxes)
   for (const draw of deferredDraws) {
