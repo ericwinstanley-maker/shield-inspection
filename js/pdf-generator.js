@@ -224,47 +224,7 @@ export async function generatePDF(inspection) {
   // Update appearance streams for all fields
   form.updateFieldAppearances();
 
-  // ============================================================
-  // Pre-flatten fixup: repair broken Check Box1642
-  // ============================================================
-  // Check Box1642 (Insulation Item 2 - Attic Vents Yes/No) has DUPLICATE
-  // onValues: both widgets have onValue 'Yes'. This causes form.flatten()
-  // to crash, leaving checkboxes interactive and potentially checked.
-  //
-  // Fix strategy:
-  // 1. Rename second widget's onValue from 'Yes' to 'No' (so they're unique)
-  // 2. Force ALL widgets to 'Off' appearance state (since we draw our own checkmarks)
-  // 3. Set the field value to 'Off'
-  try {
-    const cb1642 = form.getCheckBox('Check Box1642');
-    const widgets1642 = cb1642.acroField.getWidgets();
 
-    // Rename second widget's onValue so flatten() can distinguish them
-    if (widgets1642.length >= 2) {
-      const noWidget = widgets1642[1];
-      const ap = noWidget.dict.lookup(PDFName.of('AP'));
-      if (ap) {
-        const n = ap.lookup(PDFName.of('N'));
-        if (n && typeof n.get === 'function') {
-          const yesAppearance = n.get(PDFName.of('Yes'));
-          if (yesAppearance) {
-            n.set(PDFName.of('No'), yesAppearance);
-            n.delete(PDFName.of('Yes'));
-          }
-        }
-      }
-    }
-
-    // Force ALL widgets to 'Off' appearance state — critical because
-    // uncheck() only sets the first widget, and updateFieldAppearances()
-    // may have set some widgets back to 'Yes' state
-    cb1642.acroField.setValue(PDFName.of('Off'));
-    for (const w of widgets1642) {
-      w.setAppearanceState(PDFName.of('Off'));
-    }
-  } catch (e) {
-    console.warn('Could not fix Check Box1642:', e.message);
-  }
 
   try {
     form.flatten();
@@ -838,15 +798,10 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
     // === INSULATION & VENTILATION ===
     insulationVentilation: {
       1: { // Item 2 - Attic vents noted (Yes/No/N/A)
-        // Check Box1642 is fixed pre-flatten (duplicate onValues renamed).
-        // We use drawText to draw checkmarks AFTER flatten for Yes/No.
         options: {
+          'atticventsno_yes': 'Check Box1642',
+          'atticventsno_no': 'Check Box1642a',
           'atticventsno_na': 'Check Box1643'
-        },
-        drawText: {
-          // Coordinates match actual widget positions from PDF scan
-          'atticventsno_yes': { x: 89, y: 656, size: 10 },
-          'atticventsno_no': { x: 125, y: 655, size: 9 }
         }
       },
       3: { // Item 4 - Vapor retarders (Paper, Plastic, Foil, N/A)
