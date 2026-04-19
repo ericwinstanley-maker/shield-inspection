@@ -186,6 +186,7 @@ export async function generatePDF(inspection) {
     trySetCombo(form, 'Combo Box 1', inspection.general.propertyType);
     trySetCombo(form, 'Combo Box 2', inspection.general.garageType);
     trySetCombo(form, 'Driveway', inspection.general.driveway);
+    trySetCombo(form, 'Utilities', inspection.general.utilities);
 
     // Attending / Present checkboxes
     const attendees = inspection.general.attendees || [];

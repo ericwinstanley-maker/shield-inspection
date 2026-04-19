@@ -582,6 +582,15 @@ function renderCoverForm() {
           </select>
         </div>
         <div class="form-group">
+          <label class="form-label">Utilities</label>
+          <select class="form-select" id="gen-utilities">
+            <option value="">— Select —</option>
+            ${['On&Operational','Other'].map(t => `<option value="${t}" ${insp.general.utilities === t ? 'selected' : ''}>${t}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
           <label class="form-label">Weather</label>
           <input type="text" class="form-input" id="gen-weather" value="${esc(insp.general.weather)}" placeholder="Clear, Partly Cloudy..." />
         </div>
@@ -659,6 +668,7 @@ function renderCoverForm() {
     'gen-proptype': (v) => insp.general.propertyType = v,
     'gen-garage': (v) => insp.general.garageType = v,
     'gen-driveway': (v) => insp.general.driveway = v,
+    'gen-utilities': (v) => insp.general.utilities = v,
     'gen-weather': (v) => insp.general.weather = v,
     'gen-temp': (v) => insp.general.temperature = v,
     'gen-age': (v) => insp.general.approximateAge = v,

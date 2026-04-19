@@ -492,6 +492,7 @@ export function createNewInspection() {
       propertyType: '',
       garageType: '',
       driveway: '',
+      utilities: '',
       attendees: [],
       structureType: '',
       occupancy: '',
