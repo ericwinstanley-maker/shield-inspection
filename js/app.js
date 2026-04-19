@@ -36,13 +36,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const isRecovery = hash.includes('type=recovery') || hash.includes('type=magiclink');
 
     if (isRecovery) {
-      // Show the "Set New Password" form instead of auto-logging in
+      // Let Supabase process the hash and establish the session FIRST
+      await getSession();
+      // Now show the "Set New Password" form
       showLogin();
       document.getElementById('login-form').classList.add('hidden');
       document.getElementById('forgot-form').classList.add('hidden');
       document.getElementById('new-password-form').classList.remove('hidden');
       document.getElementById('login-error').textContent = '';
-      // Clear the hash so it doesn't trigger again on refresh
+      // Clear the hash AFTER session is established
       history.replaceState(null, '', window.location.pathname);
     } else {
       const session = await getSession();
