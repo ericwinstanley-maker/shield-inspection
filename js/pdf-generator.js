@@ -233,8 +233,23 @@ export async function generatePDF(inspection) {
     console.warn('Could not flatten form (values still visible):', e.message);
   }
 
-  // Remove the AcroForm dictionary entirely — this ensures the PDF
-  // has zero interactive fields even if flatten() missed some
+  // Strip ALL remaining widget annotations from every page.
+  // flatten() renders values into the page content stream, but some widget
+  // annotations survive (showing as blue interactive fields). Remove them.
+  try {
+    const pages = pdfDoc.getPages();
+    for (const page of pages) {
+      const annots = page.node.lookup(PDFName.of('Annots'));
+      if (annots) {
+        // Remove all annotations from this page
+        page.node.delete(PDFName.of('Annots'));
+      }
+    }
+  } catch (e) {
+    console.warn('Could not strip page annotations:', e.message);
+  }
+
+  // Remove the AcroForm dictionary entirely — belt and suspenders
   try {
     pdfDoc.catalog.delete(PDFName.of('AcroForm'));
   } catch (e) {
