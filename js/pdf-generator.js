@@ -188,6 +188,19 @@ export async function generatePDF(inspection) {
     trySetCombo(form, 'Driveway', inspection.general.driveway);
     trySetCombo(form, 'Utilities', inspection.general.utilities);
 
+    // Structure Type radio buttons (Attached/Detached/Built-In/N/A) — Radio Button 2
+    const structureTypeMap = {
+      'Attached':  'Choice3',
+      'Detached':  'Choice2',
+      'Built-in':  'Choice1',
+      'Built-In':  'Choice1',
+      'N/A':       'Choice4'
+    };
+    const structureChoice = structureTypeMap[inspection.general.structureType];
+    if (structureChoice) {
+      trySetRadio(form, 'Radio Button 2', structureChoice);
+    }
+
     // Attending / Present checkboxes
     const attendees = inspection.general.attendees || [];
     const attendeeMap = {
@@ -298,6 +311,22 @@ function trySetCheckbox(form, fieldName, checked) {
     else field.uncheck();
   } catch (e) {
     // Skip
+  }
+}
+
+function trySetRadio(form, groupName, choiceValue) {
+  try {
+    const f = form.getField(groupName);
+    const widgets = f.acroField.getWidgets();
+    f.acroField.dict.set(PDFName.of('V'), PDFName.of(choiceValue));
+    widgets.forEach(w => {
+      const onVal = w.getOnValue();
+      const onValStr = onVal ? onVal.decodeText() : '';
+      if (onValStr === choiceValue) w.setAppearanceState(PDFName.of(choiceValue));
+      else w.setAppearanceState(PDFName.of('Off'));
+    });
+  } catch (e) {
+    // Field may not exist; skip silently
   }
 }
 
