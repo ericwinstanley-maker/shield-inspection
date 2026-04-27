@@ -600,8 +600,8 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
     plumbing: {
       0: { // Item 1 - Water supply & distribution
         options: {
-          'visiblesupply_copper': 'Check Box 137', 'visiblesupply_galvanized': 'Check Box 138',
-          'visiblesupply_plastic': 'Check Box 139', 'visiblesupply_lead': 'Check Box 148',
+          'visiblesuppl_copper': 'Check Box 137', 'visiblesuppl_galvanized': 'Check Box 138',
+          'visiblesuppl_plastic': 'Check Box 139', 'visiblesuppl_lead': 'Check Box 148',
           'watersource_municipal': 'Check Box 149', 'watersource_privatewell': 'Check Box 150'
         },
         extraTextFields: {
@@ -616,12 +616,12 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
       },
       2: { // Item 3 - Drain/waste/vent
         options: {
-          'visiblewastep_copper': 'Check Box 155', 'visiblewastep_galvanized': 'Check Box 156',
-          'visiblewastep_plastic': 'Check Box 158', 'visiblewastep_lead': 'Check Box 157',
-          'visiblewastep_castiron': 'Check Box 159', 'visiblewastep_nv': 'Check Box 160',
-          'galvanizedste_yes': { type: 'radio', field: 'Gavanized', value: 'Choice1' },
-          'galvanizedste_no': { type: 'radio', field: 'Gavanized', value: 'Choice2' },
-          'galvanizedste_na': { type: 'radio', field: 'Gavanized', value: 'Choice3' }
+          'visiblewaste_copper': 'Check Box 155', 'visiblewaste_galvanized': 'Check Box 156',
+          'visiblewaste_plastic': 'Check Box 158', 'visiblewaste_lead': 'Check Box 157',
+          'visiblewaste_castiron': 'Check Box 159', 'visiblewaste_nv': 'Check Box 160',
+          'galvanizedst_yes': { type: 'radio', field: 'Gavanized', value: 'Choice1' },
+          'galvanizedst_no': { type: 'radio', field: 'Gavanized', value: 'Choice2' },
+          'galvanizedst_na': { type: 'radio', field: 'Gavanized', value: 'Choice3' }
         },
         extraTextFields: {
           'galvWhere': 'Text Field 59'
