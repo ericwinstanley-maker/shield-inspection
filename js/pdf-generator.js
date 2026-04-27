@@ -202,6 +202,17 @@ export async function generatePDF(inspection) {
       trySetRadio(form, 'Radio Button 2', structureChoice);
     }
 
+    // Occupancy radio buttons (Owner-occupied/Vacant/N/A) — Radio Button 3
+    const occupancyMap = {
+      'Owner-occupied': 'Choice1',
+      'Vacant':         'Choice2',
+      'N/A':            'Choice3'
+    };
+    const occupancyChoice = occupancyMap[inspection.general.occupancy];
+    if (occupancyChoice) {
+      trySetRadio(form, 'Radio Button 3', occupancyChoice);
+    }
+
     // Attending / Present checkboxes
     const attendees = inspection.general.attendees || [];
     const attendeeMap = {
