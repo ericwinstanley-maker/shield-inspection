@@ -594,7 +594,10 @@ function renderCoverForm() {
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Weather</label>
-          <input type="text" class="form-input" id="gen-weather" value="${esc(insp.general.weather)}" placeholder="Clear, Partly Cloudy..." />
+          <select class="form-select" id="gen-weather">
+            <option value="">— Select —</option>
+            ${['Sunny','Cloudy','Rain','Snow','Sleet','Other'].map(t => `<option value="${t}" ${insp.general.weather === t ? 'selected' : ''}>${t}</option>`).join('')}
+          </select>
         </div>
       </div>
       <div class="form-row">

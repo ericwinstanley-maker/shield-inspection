@@ -180,13 +180,14 @@ export async function generatePDF(inspection) {
     setTextField(form, 'Text Field 3', formatTime(inspection.general.timeStarted), FONT_SIZE_FIELD);
     setTextField(form, 'Text Field 4', formatTime(inspection.general.timeCompleted), FONT_SIZE_FIELD);
     setTextField(form, 'Age', inspection.general.approximateAge, FONT_SIZE_FIELD);
-    setTextField(form, 'Text Field 8', inspection.general.squareFootage, FONT_SIZE_FIELD);
+    setTextField(form, 'Text Field 8', inspection.general.temperature, FONT_SIZE_FIELD);
 
     // Combo boxes
     trySetCombo(form, 'Combo Box 1', inspection.general.propertyType);
     trySetCombo(form, 'Combo Box 2', inspection.general.garageType);
     trySetCombo(form, 'Driveway', inspection.general.driveway);
     trySetCombo(form, 'Utilities', inspection.general.utilities);
+    trySetCombo(form, 'Weather', inspection.general.weather);
 
     // Structure Type radio buttons (Attached/Detached/Built-In/N/A) — Radio Button 2
     const structureTypeMap = {
