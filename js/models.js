@@ -124,7 +124,7 @@ export const INSPECTION_SECTIONS = [
           { key: 'brand', label: 'Brand', placeholder: '' },
           { key: 'age', label: 'Age', placeholder: '' },
           { key: 'gallons', label: 'Gallons', placeholder: '' },
-          { key: 'tprValve', label: 'Temperature/Pressure Relief (TPR) valve', placeholder: '' }
+          { key: 'tprValve', label: 'Temperature/Pressure Relief (TPR) valve', type: 'select', options: ['Present', 'Missing'] }
         ],
         options: ['Tankless', 'Appears intact'],
         optionGroups: [

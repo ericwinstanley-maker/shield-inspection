@@ -893,12 +893,23 @@ async function renderSectionForm(sectionIndex) {
     if (itemDef.extraFields) {
       if (!itemData.extraFieldValues) itemData.extraFieldValues = {};
       extraFieldsHtml = `<div class="extra-fields mt-md">
-        ${itemDef.extraFields.map(ef => `
+        ${itemDef.extraFields.map(ef => {
+          if (ef.type === 'select') {
+            return `
+            <div class="extra-field-row">
+              <label class="extra-field-label">${ef.label}</label>
+              <select class="form-select form-input-sm extra-field-input" data-extra-key="${ef.key}" data-item-idx="${i}">
+                <option value="">— Select —</option>
+                ${ef.options.map(opt => `<option value="${opt}" ${itemData.extraFieldValues[ef.key] === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+              </select>
+            </div>`;
+          }
+          return `
           <div class="extra-field-row">
             <label class="extra-field-label">${ef.label}</label>
             <input type="text" class="form-input form-input-sm extra-field-input" data-extra-key="${ef.key}" data-item-idx="${i}" placeholder="${ef.placeholder || ''}" value="${esc(itemData.extraFieldValues[ef.key] || '')}" />
-          </div>
-        `).join('')}
+          </div>`;
+        }).join('')}
       </div>`;
     }
 
