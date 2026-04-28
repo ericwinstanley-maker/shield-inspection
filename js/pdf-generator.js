@@ -643,9 +643,9 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
         options: {
           'tankless': 'Tankless',
           'appearsintact': 'Check Box 161',
-          'anycrossconn_yes': { type: 'radio', field: 'Radio Button 4', value: '0' },
-          'anycrossconn_no': { type: 'radio', field: 'Radio Button 4', value: '1' },
-          'anycrossconn_na': { type: 'radio', field: 'Radio Button 4', value: '2' },
+          'anycrossconn_yes': { type: 'radio', field: 'Radio Button 4', value: 'Choice1' },
+          'anycrossconn_no': { type: 'radio', field: 'Radio Button 4', value: 'Choice2' },
+          'anycrossconn_na': { type: 'radio', field: 'Radio Button 4', value: 'Choice3' },
           'ifthewaterhe_yes': 'Check Box1500', 'ifthewaterhe_no': 'Check Box1501', 'ifthewaterhe_na': 'Check Box1503'
         },
         extraTextFields: {
@@ -973,6 +973,8 @@ function fillSectionFields(form, pdfDoc, font, inspection, photoRefs) {
                 dropdown.addOptions([val]);
                 dropdown.select(val);
               }
+              // Set font size to fit within small combo box fields
+              dropdown.setFontSize(8);
             } catch (e) {
               // Not a dropdown, set as text field
               setTextField(form, fieldName, item.extraFieldValues[key], 9, { autoFit: true });
