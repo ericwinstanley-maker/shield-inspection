@@ -164,6 +164,9 @@ async function deleteInspectionFromCloud(id) {
   if (!user) return;
 
   const supabase = getSupabaseClient();
+  // Delete associated photos from cloud first (base64 blobs)
+  await supabase.from('inspection_photos').delete().eq('inspection_id', id);
+  // Then delete the inspection row
   await supabase.from('inspections').delete().eq('id', id);
 }
 
