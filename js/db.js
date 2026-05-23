@@ -416,10 +416,10 @@ export async function pullFromCloud() {
     }
   }
 
-  // Pull photo METADATA only (no blob_base64) — huge I/O savings
+  // Pull photo METADATA only — NO blob_base64 in the query (huge I/O savings!)
   const { data: cloudPhotos, error: photoError } = await supabase
     .from('inspection_photos')
-    .select('id, inspection_id, user_id, storage_path, blob_base64, created_at')
+    .select('id, inspection_id, user_id, storage_path, created_at')
     .eq('user_id', user.id);
 
   const cloudPhotoIds = new Set((cloudPhotos || []).map(r => r.id));
@@ -428,7 +428,7 @@ export async function pullFromCloud() {
     for (const row of cloudPhotos) {
       const local = await db.get('photos', row.id);
 
-      if (row.storage_path && !row.blob_base64) {
+      if (row.storage_path) {
         // ── New format: photo is in Supabase Storage ──
         if (!local) {
           // Download from Storage and cache locally
@@ -450,18 +450,38 @@ export async function pullFromCloud() {
           local._dirty = false;
           await db.put('photos', local);
         }
-      } else if (row.blob_base64 && !row.storage_path) {
-        // ── Legacy format: base64 still in PostgreSQL — MIGRATE ──
-        if (!local) {
-          // Pull legacy photo and cache locally
-          const blob = base64ToBlob(row.blob_base64);
-          const photoData = {
-            id: row.id,
-            inspectionId: row.inspection_id,
-            blob: blob,
-            _dirty: true   // Mark dirty so pushDirtyToCloud will migrate it
-          };
-          await db.put('photos', photoData);
+      } else {
+        // ── Legacy format: no storage_path → still base64 in PostgreSQL ──
+        if (local && !local.storagePath) {
+          // Photo exists locally — just mark dirty to trigger migration upload
+          // pushDirtyToCloud() will upload from local IndexedDB to Storage
+          // (no need to read blob_base64 from PostgreSQL!)
+          if (!local._dirty) {
+            local._dirty = true;
+            await db.put('photos', local);
+          }
+        } else if (!local) {
+          // Rare case: photo exists in cloud but not locally
+          // Need to fetch the base64 individually to pull it down
+          try {
+            const { data: fullRow, error: fetchErr } = await supabase
+              .from('inspection_photos')
+              .select('blob_base64')
+              .eq('id', row.id)
+              .single();
+
+            if (!fetchErr && fullRow?.blob_base64) {
+              const blob = base64ToBlob(fullRow.blob_base64);
+              await db.put('photos', {
+                id: row.id,
+                inspectionId: row.inspection_id,
+                blob: blob,
+                _dirty: true   // Will be migrated to Storage on next push
+              });
+            }
+          } catch (fetchErr) {
+            console.warn(`Failed to fetch legacy photo ${row.id}:`, fetchErr.message);
+          }
         }
         // Migration to Storage will happen on next pushDirtyToCloud()
       }
