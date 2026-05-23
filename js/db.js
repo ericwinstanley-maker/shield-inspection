@@ -382,10 +382,12 @@ export async function pullFromCloud() {
     .order('updated_at', { ascending: false });
 
   if (error) throw error;
-  if (!cloudInspections || cloudInspections.length === 0) return { pulled: 0 };
+
+  // Build sets of cloud IDs for reconciliation
+  const cloudInspectionIds = new Set((cloudInspections || []).map(r => r.id));
 
   let pulled = 0;
-  for (const row of cloudInspections) {
+  for (const row of (cloudInspections || [])) {
     const local = await db.get('inspections', row.id);
     // Cloud wins if no local copy or cloud is newer (and local isn't dirty)
     if (!local || (!local._dirty && new Date(row.updated_at) > new Date(local.updatedAt))) {
@@ -399,11 +401,28 @@ export async function pullFromCloud() {
     }
   }
 
+  // ── Reconcile: remove local inspections deleted from cloud ──
+  const localInspections = await db.getAll('inspections');
+  for (const local of localInspections) {
+    if (!cloudInspectionIds.has(local.id) && !local._dirty) {
+      // This inspection no longer exists in the cloud and isn't dirty locally
+      // → it was deleted on another device, remove it locally too
+      await db.delete('inspections', local.id);
+      // Also clean up associated local photos
+      const orphanPhotos = await db.getAllFromIndex('photos', 'inspectionId', local.id);
+      for (const photo of orphanPhotos) {
+        await db.delete('photos', photo.id);
+      }
+    }
+  }
+
   // Pull photo METADATA only (no blob_base64) — huge I/O savings
   const { data: cloudPhotos, error: photoError } = await supabase
     .from('inspection_photos')
     .select('id, inspection_id, user_id, storage_path, blob_base64, created_at')
     .eq('user_id', user.id);
+
+  const cloudPhotoIds = new Set((cloudPhotos || []).map(r => r.id));
 
   if (!photoError && cloudPhotos) {
     for (const row of cloudPhotos) {
@@ -446,6 +465,14 @@ export async function pullFromCloud() {
         }
         // Migration to Storage will happen on next pushDirtyToCloud()
       }
+    }
+  }
+
+  // ── Reconcile: remove local photos deleted from cloud ──
+  const localPhotos = await db.getAll('photos');
+  for (const local of localPhotos) {
+    if (!cloudPhotoIds.has(local.id) && !local._dirty) {
+      await db.delete('photos', local.id);
     }
   }
 
