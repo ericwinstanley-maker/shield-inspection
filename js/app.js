@@ -5,7 +5,7 @@
 
 import '../index.css';
 import { INSPECTION_SECTIONS, A_CODES, createNewInspection } from './models.js';
-import { saveInspection, getInspection, getAllInspections, deleteInspection, savePhoto, getPhoto, deletePhoto, compressImage, blobToDataURL, getSetting, setSetting, pullFromCloud, pushToCloud } from './db.js';
+import { saveInspection, saveInspectionLocal, getInspection, getAllInspections, deleteInspection, savePhoto, getPhoto, deletePhoto, compressImage, blobToDataURL, getSetting, setSetting, pullFromCloud, pushDirtyToCloud, syncToCloud, processPendingDeletes } from './db.js';
 import { signIn, signOut, getSession, isAuthConfigured, resetPassword, updatePassword, onAuthChange } from './auth.js';
 import { openAnnotator } from './photo-annotator.js';
 
@@ -90,9 +90,14 @@ async function syncWithCloud() {
   syncBtn.style.color = 'var(--blue)';
 
   try {
-    // Pull remote data first, then push local data
+    // 1. Process any pending deletes first (retry failed deletions)
+    await processPendingDeletes();
+
+    // 2. Pull remote data (metadata + lazy photos)
     const { pulled } = await pullFromCloud();
-    const { pushed } = await pushToCloud();
+
+    // 3. Push only dirty (changed) records
+    const { pushed } = await pushDirtyToCloud();
 
     if (pulled > 0) {
       // Refresh dashboard to show pulled data
@@ -111,6 +116,13 @@ async function syncWithCloud() {
     showToast('Offline — data saved locally', 'error');
   }
 }
+
+// Sync to cloud when app goes to background (user switches tabs/apps)
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && isAuthConfigured()) {
+    syncToCloud().catch(e => console.warn('Background sync error:', e));
+  }
+});
 
 function initAuth() {
   const form = document.getElementById('login-form');
@@ -325,6 +337,11 @@ function updateActiveNav(page) {
 // ============================================================
 
 function navigate(page, param) {
+  // Sync dirty data to cloud when navigating between pages
+  if (state.currentInspection && isAuthConfigured()) {
+    syncToCloud().catch(e => console.warn('Nav sync error:', e));
+  }
+
   state.currentPage = page;
 
   switch (page) {
@@ -414,8 +431,13 @@ async function renderDashboard() {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation();
       if (confirm('Delete this inspection? This cannot be undone.')) {
-        await deleteInspection(btn.dataset.id);
-        showToast('Inspection deleted', 'success');
+        try {
+          await deleteInspection(btn.dataset.id);
+          showToast('Inspection deleted', 'success');
+        } catch (err) {
+          console.warn('Delete error:', err);
+          showToast('Deleted locally — will sync when online', 'error');
+        }
         renderDashboard();
       }
     });
@@ -1727,7 +1749,7 @@ function autoSave() {
   if (state.autoSaveTimer) clearTimeout(state.autoSaveTimer);
   state.autoSaveTimer = setTimeout(async () => {
     if (state.currentInspection) {
-      await saveInspection(state.currentInspection);
+      await saveInspectionLocal(state.currentInspection);  // Local IndexedDB only — no cloud sync
     }
   }, 500);
 }
