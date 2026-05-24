@@ -367,16 +367,16 @@ export async function lockPDF(pdfBytes, ownerPassword) {
   const U = computeUserValue(encryptionKey, fileId);
 
   // Create the /Encrypt dictionary
-  const encryptDict = PDFDict.withContext(context);
-  encryptDict.set(PDFName.of('Filter'), PDFName.of('Standard'));
-  encryptDict.set(PDFName.of('V'), PDFNumber.of(2));
-  encryptDict.set(PDFName.of('R'), PDFNumber.of(3));
-  encryptDict.set(PDFName.of('Length'), PDFNumber.of(128));
-  encryptDict.set(PDFName.of('P'), PDFNumber.of(PERMISSIONS));
-  encryptDict.set(PDFName.of('O'), PDFHexString.of(bytesToHex(O)));
-  encryptDict.set(PDFName.of('U'), PDFHexString.of(bytesToHex(U)));
+  const encDictObj = PDFDict.withContext(context);
+  encDictObj.set(PDFName.of('Filter'), PDFName.of('Standard'));
+  encDictObj.set(PDFName.of('V'), PDFNumber.of(2));
+  encDictObj.set(PDFName.of('R'), PDFNumber.of(3));
+  encDictObj.set(PDFName.of('Length'), PDFNumber.of(128));
+  encDictObj.set(PDFName.of('P'), PDFNumber.of(PERMISSIONS));
+  encDictObj.set(PDFName.of('O'), PDFHexString.of(bytesToHex(O)));
+  encDictObj.set(PDFName.of('U'), PDFHexString.of(bytesToHex(U)));
 
-  const encryptRef = context.register(encryptDict);
+  const encryptRef = context.register(encDictObj);
   context.trailerInfo.Encrypt = encryptRef;
 
   // Encrypt all indirect objects
