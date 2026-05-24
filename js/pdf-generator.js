@@ -5,6 +5,7 @@
 // ============================================================
 
 import { PDFDocument, rgb, StandardFonts, PDFName } from 'pdf-lib';
+import { lockPDF } from './pdf-lock.js';
 import { INSPECTION_SECTIONS, A_CODES } from './models.js';
 import { getPhoto, blobToDataURL } from './db.js';
 
@@ -278,7 +279,9 @@ export async function generatePDF(inspection) {
     });
   }
 
-  return pdfDoc.save();
+  // Save, then lock with owner-password protection (view/print only, no editing)
+  const pdfBytes = await pdfDoc.save();
+  return lockPDF(pdfBytes, 'ShieldInspect2024!');
 }
 
 // ============================================================
