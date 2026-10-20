@@ -161,9 +161,59 @@ export async function savePhoto(photoData) {
   return photoData;
 }
 
-export async function getPhoto(id) {
+export async function getPhoto(id, inspectionId = null) {
+  if (!id) return null;
   const db = await getDB();
-  return db.get('photos', id);
+  let photo = await db.get('photos', id);
+  if (photo && photo.blob) {
+    return photo;
+  }
+
+  // Not in local cache or blob is missing — lazy-load from Supabase Storage
+  if (isAuthConfigured()) {
+    try {
+      const user = await getUser();
+      if (user) {
+        let inspId = inspectionId || photo?.inspectionId;
+        if (!inspId) {
+          const allInspections = await db.getAll('inspections');
+          for (const insp of allInspections) {
+            if (insp.cover?.coverPhotoId === id) {
+              inspId = insp.id;
+              break;
+            }
+            const foundInSections = insp.sections?.some(s =>
+              s.items?.some(item => item.photos?.includes(id))
+            );
+            if (foundInSections) {
+              inspId = insp.id;
+              break;
+            }
+          }
+        }
+
+        const storagePath = photo?.storagePath || (inspId ? `${user.id}/${inspId}/${id}.jpg` : null);
+        if (storagePath) {
+          const blob = await downloadPhotoFromStorage(storagePath);
+          if (blob) {
+            photo = {
+              id: id,
+              inspectionId: inspId || photo?.inspectionId,
+              blob: blob,
+              storagePath: storagePath,
+              _dirty: false
+            };
+            await db.put('photos', photo);
+            return photo;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn(`Failed to lazy-load photo ${id} from cloud:`, e.message);
+    }
+  }
+
+  return photo || null;
 }
 
 export async function getPhotosByInspection(inspectionId) {
@@ -424,13 +474,35 @@ export async function pullFromCloud() {
 
   const cloudPhotoIds = new Set((cloudPhotos || []).map(r => r.id));
 
+  // Also collect all photo IDs directly referenced by active inspections
+  const referencedPhotos = new Map(); // photoId -> inspectionId
+  const allCurrentInspections = await db.getAll('inspections');
+  for (const insp of allCurrentInspections) {
+    if (insp.cover?.coverPhotoId) {
+      referencedPhotos.set(insp.cover.coverPhotoId, insp.id);
+    }
+    if (insp.sections) {
+      for (const sec of insp.sections) {
+        if (sec.items) {
+          for (const item of sec.items) {
+            if (item.photos) {
+              for (const pid of item.photos) {
+                referencedPhotos.set(pid, insp.id);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (!photoError && cloudPhotos) {
     for (const row of cloudPhotos) {
       const local = await db.get('photos', row.id);
 
       if (row.storage_path) {
         // ── New format: photo is in Supabase Storage ──
-        if (!local) {
+        if (!local || !local.blob) {
           // Download from Storage and cache locally
           try {
             const blob = await downloadPhotoFromStorage(row.storage_path);
@@ -488,10 +560,41 @@ export async function pullFromCloud() {
     }
   }
 
+  // ── Also ensure any photo referenced in an inspection is downloaded from Storage ──
+  for (const [photoId, inspectionId] of referencedPhotos.entries()) {
+    const local = await db.get('photos', photoId);
+    if (!local || !local.blob) {
+      const storagePath = `${user.id}/${inspectionId}/${photoId}.jpg`;
+      try {
+        const blob = await downloadPhotoFromStorage(storagePath);
+        if (blob) {
+          await db.put('photos', {
+            id: photoId,
+            inspectionId: inspectionId,
+            blob: blob,
+            storagePath: storagePath,
+            _dirty: false
+          });
+          // Backfill row in inspection_photos table so DB and Storage stay in sync
+          supabase.from('inspection_photos').upsert({
+            id: photoId,
+            inspection_id: inspectionId,
+            user_id: user.id,
+            storage_path: storagePath,
+            blob_base64: null
+          }, { onConflict: 'id' }).then(() => {}).catch(() => {});
+        }
+      } catch (err) {
+        // Photo not yet in storage or removed; continue
+      }
+    }
+  }
+
   // ── Reconcile: remove local photos deleted from cloud ──
+  // Only remove if NOT in cloudPhotos AND NOT referenced in any active inspection
   const localPhotos = await db.getAll('photos');
   for (const local of localPhotos) {
-    if (!cloudPhotoIds.has(local.id) && !local._dirty) {
+    if (!cloudPhotoIds.has(local.id) && !referencedPhotos.has(local.id) && !local._dirty) {
       await db.delete('photos', local.id);
     }
   }
@@ -650,6 +753,20 @@ export async function createThumbnail(blob, size = 150) {
  */
 export function blobToDataURL(blob) {
   return new Promise((resolve, reject) => {
+    if (!blob) return resolve('');
+    if (typeof blob === 'string') return resolve(blob);
+    if (!(blob instanceof Blob)) {
+      try {
+        const wrapped = new Blob([blob], { type: 'image/jpeg' });
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(wrapped);
+        return;
+      } catch (e) {
+        return reject(e);
+      }
+    }
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
     reader.onerror = reject;

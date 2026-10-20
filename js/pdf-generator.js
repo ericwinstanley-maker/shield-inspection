@@ -65,7 +65,7 @@ export async function generatePDF(inspection) {
   // ============================================================
   if (inspection.cover.coverPhotoId) {
     try {
-      const coverPhoto = await getPhoto(inspection.cover.coverPhotoId);
+      const coverPhoto = await getPhoto(inspection.cover.coverPhotoId, inspection.id);
       if (coverPhoto && coverPhoto.blob) {
         const arrayBuffer = await coverPhoto.blob.arrayBuffer();
         const uint8Array = new Uint8Array(arrayBuffer);
@@ -1229,7 +1229,7 @@ async function generatePhotoAppendix(pdfDoc, font, fontBold, inspection, photoRe
 
     if (ref.photoId) {
       try {
-        const photo = await getPhoto(ref.photoId);
+        const photo = await getPhoto(ref.photoId, inspection.id);
         if (photo && photo.blob) {
           const arrayBuffer = await photo.blob.arrayBuffer();
           const uint8Array = new Uint8Array(arrayBuffer);

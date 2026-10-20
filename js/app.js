@@ -940,7 +940,7 @@ async function renderSectionForm(sectionIndex) {
     if (itemData.photos && itemData.photos.length > 0) {
       const photoThumbs = [];
       for (const photoId of itemData.photos) {
-        const photo = await getPhoto(photoId);
+        const photo = await getPhoto(photoId, insp.id);
         if (photo) {
           const url = await blobToDataURL(photo.thumbnail || photo.blob);
           photoThumbs.push(`<div class="photo-thumb" data-photo-id="${photoId}">
@@ -1773,11 +1773,11 @@ function showToast(message, type = '') {
 
 async function loadCoverPhotoPreview(photoId) {
   try {
-    const photo = await getPhoto(photoId);
+    const photo = await getPhoto(photoId, state.currentInspection?.id);
     if (photo) {
       const url = await blobToDataURL(photo.thumbnail || photo.blob);
       const imgEl = document.getElementById('cover-photo-img');
-      if (imgEl) imgEl.src = url;
+      if (imgEl && url) imgEl.src = url;
     }
   } catch (e) {
     console.warn('Failed to load cover photo preview:', e.message);
